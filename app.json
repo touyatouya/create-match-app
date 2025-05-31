@@ -37,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "579307b1-5ce8-4028-b125-7d0dfd314aad"
+      }
+    },
+    "owner": "touyatouya",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/579307b1-5ce8-4028-b125-7d0dfd314aad"
     }
   }
 }
