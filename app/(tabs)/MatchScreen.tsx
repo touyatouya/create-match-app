@@ -20,6 +20,7 @@ const MatchScreen: React.FC = () => {
     round,
     setRound,
     coatCount,
+    pairs,
   } = useContext(AppContext);
 
   const handlePlayerSwap = (playerId: number, partnerId: number) => {
@@ -231,6 +232,8 @@ const MatchScreen: React.FC = () => {
     setRound(courtSets.length + 1);
   };
 
+  const pairedPlayerIds = pairs.flatMap((pair) => [pair.player1, pair.player2]);
+
   // スコアの高いコート構成を選ぶ関数
   function selectBestCourtSet(
     requiredPlayers: number[],
@@ -303,6 +306,24 @@ const MatchScreen: React.FC = () => {
           allPlayersInThisSet.includes(rp)
         );
         if (!isAllRequiredPresent) continue;
+
+        // すべてのペアが同じチームに存在するかをチェック
+        const areAllPairsValid = pairs.every((pair) => {
+          return courtTeams.every((team) => {
+            const aHas1 = team.teamA.includes(pair.player1);
+            const aHas2 = team.teamA.includes(pair.player2);
+            const bHas1 = team.teamB.includes(pair.player1);
+            const bHas2 = team.teamB.includes(pair.player2);
+
+            const sameInA = aHas1 && aHas2;
+            const sameInB = bHas1 && bHas2;
+            const bothAbsent = !aHas1 && !bHas1 && !aHas2 && !bHas2;
+
+            return sameInA || sameInB || bothAbsent;
+          });
+        });
+
+        if (!areAllPairsValid) continue;
 
         const totalScore = courtTeams.reduce((acc, team) => {
           return (

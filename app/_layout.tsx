@@ -1,10 +1,28 @@
 import { AppProvider } from "@/context/AppContext";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
   return (
     <AppProvider>
-      <Slot />;
+      <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="pair-screen"
+          options={{
+            title: "ペア作成",
+            headerShown: true,
+          }}
+        />
+      </Stack>
     </AppProvider>
   );
 }

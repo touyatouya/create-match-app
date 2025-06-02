@@ -2,8 +2,10 @@ import { AppContext } from "@/context/AppContext";
 import { Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useContext, useEffect } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import React, { useContext, useEffect, useLayoutEffect } from "react";
 import {
+  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -11,45 +13,82 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Player } from "../../types";
+import { Pair, Player } from "../../types";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, playerId, setPlayerId } = useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
 
-  useEffect(() => {
-    const loadName = async () => {
-      const names = await AsyncStorage.getItem("playerNames");
-      let namesLength: number = 0;
-      if (names) namesLength = JSON.parse(names).length;
+  // const clearStorage = async () => {
+  //   try {
+  //     await AsyncStorage.clear();
+  //     Alert.alert("ローカルストレージがクリアされました");
+  //   } catch (e) {
+  //     Alert.alert("エラー", "ローカルストレージの削除に失敗しました");
+  //   }
+  // };
 
-      if (names && namesLength > 0) {
-        const parsedNames = JSON.parse(names);
+  useEffect(() => {
+    const loadData = async () => {
+      const playersData = await AsyncStorage.getItem("players");
+      let playersDataLength: number = 0;
+      if (playersData) playersDataLength = JSON.parse(playersData).length;
+
+      if (playersData && playersDataLength > 0) {
+        const parsedPlayers = JSON.parse(playersData);
         let players: Player[] = [];
-        let lastPlayerId: number = 0;
-        for (let i = 0; i < parsedNames.length; i++) {
+        for (let i = 0; i < parsedPlayers.length; i++) {
           players.push({
-            id: i,
-            name: parsedNames[i],
+            id: parsedPlayers[i].id,
+            name: parsedPlayers[i].name,
             matchCount: 0,
             isJoin: false,
             isRest: false,
             teammatePlayerIds: [],
             opponentPlayerIds: [],
           });
-          if (i === parsedNames.length - 1) lastPlayerId = i;
         }
         setPlayers(players);
-        setPlayerId(lastPlayerId + 1);
+      }
+
+      const pairsData = await AsyncStorage.getItem("pairs");
+      let pairsLength: number = 0;
+      if (pairsData) pairsLength = JSON.parse(pairsData).length;
+
+      if (pairsData && pairsLength > 0) {
+        const parsedPairs = JSON.parse(pairsData);
+        let pairs: Pair[] = [];
+        for (let i = 0; i < parsedPairs.length; i++) {
+          pairs.push({
+            id: parsedPairs[i].id,
+            player1: parsedPairs[i].player1,
+            player2: parsedPairs[i].player2,
+          });
+        }
+        setPairs(pairs);
       }
     };
-    loadName();
+    loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const savePlayerNames = async (players: string[]) => {
+  const navigation = useNavigation();
+  const router = useRouter();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          title="ペア編集"
+          onPress={() => router.push("/pair-screen")} // ← これでOK
+        />
+      ),
+    });
+  }, [navigation, router]);
+
+  const savePlayerNames = async (players: { id: number; name: string }[]) => {
     try {
-      await AsyncStorage.setItem("playerNames", JSON.stringify(players));
+      await AsyncStorage.setItem("players", JSON.stringify(players));
     } catch (e) {
       console.error("保存エラー:", e);
     }
@@ -60,8 +99,14 @@ const PlayerScreen: React.FC = () => {
     let newPlayers: Player[] = [];
 
     setPlayers((prev) => {
+      const playerIds = prev.map((player) => player.id);
+      let newPlayerId: number;
+      do {
+        newPlayerId = Math.floor(Math.random() * 10000); // 0〜10000の自然数
+      } while (playerIds.includes(newPlayerId));
+
       const newPlayer: Player = {
-        id: playerId,
+        id: newPlayerId,
         name: newPlayerName,
         matchCount: 0,
         isJoin: true,
@@ -75,8 +120,14 @@ const PlayerScreen: React.FC = () => {
     });
 
     setNewPlayerName("");
-    setPlayerId((prev) => prev + 1);
-    savePlayerNames(newPlayers.map((player) => player.name));
+    savePlayerNames(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+        };
+      })
+    );
   };
 
   const removePlayer = (id: number): void => {
@@ -86,7 +137,14 @@ const PlayerScreen: React.FC = () => {
       return newPlayers;
     });
     setNewPlayerName("");
-    savePlayerNames(newPlayers.map((player) => player.name));
+    savePlayerNames(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+        };
+      })
+    );
   };
 
   const joinPlayer = (id: number): void => {
@@ -98,6 +156,35 @@ const PlayerScreen: React.FC = () => {
 
   const joinedPlayer = players.filter((player) => player.isJoin);
 
+  const joinAllPlayer = () => {
+    const updatedPlayers = players.map((player) => {
+      return { ...player, isJoin: true };
+    });
+    setPlayers(updatedPlayers);
+  };
+
+  const noJoinAllPlayer = () => {
+    const updatedPlayers = players.map((player) => {
+      return { ...player, isJoin: false };
+    });
+    setPlayers(updatedPlayers);
+  };
+
+  // const findPairPlayerId = (id: number) => {
+  //   let isPlayer1 = false;
+  //   let isPlayer2 = false;
+  //   const pair = pairs.find((pair) => {
+  //     isPlayer1 = pair.player1 === id;
+  //     isPlayer2 = pair.player2 === id;
+  //     return isPlayer1 || isPlayer2;
+  //   });
+
+  //   if (pair) {
+  //     if (isPlayer1) return pair.player2;
+  //     if (isPlayer2) return pair.player1;
+  //   }
+  // };
+
   const renderItem = ({ item }: { item: Player }) => (
     <TouchableOpacity
       onPress={() => joinPlayer(item.id)}
@@ -106,6 +193,15 @@ const PlayerScreen: React.FC = () => {
       <View style={item.isJoin ? styles.joinPlayerItem : styles.restPlayerItem}>
         <View style={styles.playerInfo}>
           <Text style={styles.playerName}>{item.name}</Text>
+          {/* {findPairPlayerId(item.id) && (
+            <Text style={styles.playerName}>
+              {
+                players.find(
+                  (player) => player.id === findPairPlayerId(item.id)
+                )?.name
+              }
+            </Text>
+          )} */}
         </View>
         {item.isJoin ? (
           <View style={styles.joinBadge}>
@@ -119,11 +215,11 @@ const PlayerScreen: React.FC = () => {
         ) : (
           <View style={styles.restBadge}>
             <MaterialCommunityIcons
-              name="human-handsup"
+              name="human-handsdown"
               size={24}
               color="black"
             />
-            <Text style={styles.restText}>参加する</Text>
+            <Text style={styles.restText}>不参加</Text>
           </View>
         )}
         <View style={styles.matchCountBadge}>
@@ -141,6 +237,7 @@ const PlayerScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
       <View style={styles.addPlayerContainer}>
         <TextInput
           style={styles.input}
@@ -158,6 +255,15 @@ const PlayerScreen: React.FC = () => {
       <Text style={styles.joinedPlayer}>
         参加プレイヤー：{joinedPlayer.length}人
       </Text>
+      <TouchableOpacity style={styles.allPlayerButton} onPress={joinAllPlayer}>
+        <Text style={styles.addButtonText}>全プレイヤーを参加にする</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.allPlayerButton}
+        onPress={noJoinAllPlayer}
+      >
+        <Text style={styles.addButtonText}>全プレイヤーを不参加にする</Text>
+      </TouchableOpacity>
       {/* <TouchableOpacity onPress={addPlayer}>
         <View style={styles.allJoinBadge}>
           <Text>全プレイヤーを参加にする</Text>
@@ -185,6 +291,20 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  allPlayerButton: {
+    backgroundColor: "#007BFF",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  addButtonText: {
+    color: "white",
+    marginLeft: 8,
+    fontWeight: "600",
+  },
   table: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -247,7 +367,7 @@ const styles = StyleSheet.create({
   joinPlayerItem: {
     flexDirection: "row",
     backgroundColor: "hsl(50.96234309623431, 100%, 53.13725490196079%)",
-    padding: 16,
+    padding: 14,
     borderRadius: 8,
     marginBottom: 8,
     alignItems: "center",
@@ -261,7 +381,11 @@ const styles = StyleSheet.create({
   restPlayerItem: {
     flexDirection: "row",
     backgroundColor: "white",
-    padding: 16,
+    // backgroundColor: "#ccc4c4",
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 4,
+    paddingRight: 4,
     borderRadius: 8,
     marginBottom: 8,
     alignItems: "center",
@@ -336,21 +460,22 @@ const styles = StyleSheet.create({
   },
   matchCountText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
   restText: {
     color: "black",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
   joinText: {
     color: "white",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
   removeButton: {
     padding: 4,
+    display: "none",
   },
   emptyText: {
     textAlign: "center",

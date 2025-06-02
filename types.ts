@@ -45,4 +45,10 @@ export interface CourtSet {
   courts: Match[];
 }
 
+export interface Pair {
+  id: number;
+  player1: number;
+  player2: number;
+}
+
 export type Team = "teamA" | "teamB";
