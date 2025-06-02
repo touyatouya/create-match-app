@@ -1,0 +1,7 @@
+<svg width="100" height="60" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- 外枠 -->
+  <rect x="3" y="3" width="94" height="54" stroke="black" stroke-width="6" fill="white"/>
+
+  <!-- ネット -->
+  <line x1="50" y1="6" x2="50" y2="54" stroke="black" stroke-width="4" stroke-dasharray="2.8"/>
+</svg>
