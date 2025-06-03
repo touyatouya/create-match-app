@@ -1,12 +1,14 @@
 import { AppContext } from "@/context/AppContext";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
 import {
   Button,
   FlatList,
+  InputAccessoryView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -18,6 +20,7 @@ import { Pair, Player } from "../../types";
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
+  const [isEdit, setIsEdit] = React.useState(false);
 
   // const clearStorage = async () => {
   //   try {
@@ -77,14 +80,27 @@ const PlayerScreen: React.FC = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => (
-        <Button
-          title="ペア編集"
-          onPress={() => router.push("/pair-screen")} // ← これでOK
-        />
-      ),
+      headerRight: () =>
+        isEdit || (
+          <Button
+            title="ペア編集"
+            onPress={() => router.push("/pair-screen")} // ← これでOK
+          />
+        ),
+      headerLeft: () =>
+        isEdit ? (
+          <Button
+            title="完了"
+            onPress={() => setIsEdit(false)} // ← これでOK
+          />
+        ) : (
+          <Button
+            title="編集"
+            onPress={() => setIsEdit(true)} // ← これでOK
+          />
+        ),
     });
-  }, [navigation, router]);
+  }, [isEdit, navigation, router]);
 
   const savePlayerNames = async (players: { id: number; name: string }[]) => {
     try {
@@ -170,20 +186,20 @@ const PlayerScreen: React.FC = () => {
     setPlayers(updatedPlayers);
   };
 
-  // const findPairPlayerId = (id: number) => {
-  //   let isPlayer1 = false;
-  //   let isPlayer2 = false;
-  //   const pair = pairs.find((pair) => {
-  //     isPlayer1 = pair.player1 === id;
-  //     isPlayer2 = pair.player2 === id;
-  //     return isPlayer1 || isPlayer2;
-  //   });
+  const findPairPlayerId = (id: number) => {
+    let isPlayer1 = false;
+    let isPlayer2 = false;
+    const pair = pairs.find((pair) => {
+      isPlayer1 = pair.player1 === id;
+      isPlayer2 = pair.player2 === id;
+      return isPlayer1 || isPlayer2;
+    });
 
-  //   if (pair) {
-  //     if (isPlayer1) return pair.player2;
-  //     if (isPlayer2) return pair.player1;
-  //   }
-  // };
+    if (pair) {
+      if (isPlayer1) return pair.player2;
+      if (isPlayer2) return pair.player1;
+    }
+  };
 
   const renderItem = ({ item }: { item: Player }) => (
     <TouchableOpacity
@@ -191,18 +207,21 @@ const PlayerScreen: React.FC = () => {
       // style={styles.removeButton}
     >
       <View style={item.isJoin ? styles.joinPlayerItem : styles.restPlayerItem}>
-        <View style={styles.playerInfo}>
-          <Text style={styles.playerName}>{item.name}</Text>
-          {/* {findPairPlayerId(item.id) && (
-            <Text style={styles.playerName}>
+        {/* <View style={styles.playerInfo}> */}
+        <Text style={styles.playerName}>{item.name}</Text>
+        {/* </View> */}
+        {findPairPlayerId(item.id) && (
+          <View style={styles.pairInfo}>
+            <FontAwesome5 name="handshake" size={18} color="black" />
+            <Text style={styles.pairName}>
               {
                 players.find(
                   (player) => player.id === findPairPlayerId(item.id)
                 )?.name
               }
             </Text>
-          )} */}
-        </View>
+          </View>
+        )}
         {item.isJoin ? (
           <View style={styles.joinBadge}>
             <MaterialCommunityIcons
@@ -225,21 +244,33 @@ const PlayerScreen: React.FC = () => {
         <View style={styles.matchCountBadge}>
           <Text style={styles.matchCountText}>試合: {item.matchCount}</Text>
         </View>
+        {isEdit && (
+          <TouchableOpacity
+            onPress={() => removePlayer(item.id)}
+            style={styles.removeButton}
+          >
+            <Ionicons name="close-circle" size={24} color="#FF6B6B" />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
-          onPress={() => removePlayer(item.id)}
+          onPress={() => router.push("/player-edit-screen")}
           style={styles.removeButton}
         >
-          <Ionicons name="close-circle" size={24} color="#FF6B6B" />
+          <AntDesign name="right" size={24} color="black" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
+
+  const inputAccessoryViewID = "uniqueID";
+  const textInputRef = useRef<TextInput>(null);
 
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
       <View style={styles.addPlayerContainer}>
         <TextInput
+          ref={textInputRef}
           style={styles.input}
           placeholder="プレイヤー名を入力して新規登録"
           placeholderTextColor="#999"
@@ -247,8 +278,38 @@ const PlayerScreen: React.FC = () => {
           onChangeText={setNewPlayerName}
           onSubmitEditing={addPlayer}
           autoCapitalize="words"
+          inputAccessoryViewID={
+            Platform.OS === "ios" ? inputAccessoryViewID : undefined
+          }
+          returnKeyType="done"
         />
-        <TouchableOpacity style={styles.addButton} onPress={addPlayer}>
+        {/* iOS限定: キーボード上に完了ボタンを表示 */}
+        {Platform.OS === "ios" && (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <View style={styles.accessory}>
+              <Button
+                title="キャンセル"
+                onPress={() => {
+                  textInputRef.current?.blur(); // キーボードを閉じる
+                }}
+              />
+              <Button
+                title="完了"
+                onPress={() => {
+                  addPlayer();
+                  textInputRef.current?.blur(); // キーボードを閉じる
+                }}
+              />
+            </View>
+          </InputAccessoryView>
+        )}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            addPlayer();
+            textInputRef.current?.blur(); // キーボードを閉じる
+          }}
+        >
           <Ionicons name="add" size={24} color="white" />
         </TouchableOpacity>
       </View>
@@ -264,16 +325,6 @@ const PlayerScreen: React.FC = () => {
       >
         <Text style={styles.addButtonText}>全プレイヤーを不参加にする</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={addPlayer}>
-        <View style={styles.allJoinBadge}>
-          <Text>全プレイヤーを参加にする</Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={addPlayer}>
-        <View style={styles.allJoinBadge}>
-          <Text>全プレイヤーを不参加にする</Text>
-        </View>
-      </TouchableOpacity> */}
       <FlatList
         data={players}
         renderItem={renderItem}
@@ -291,6 +342,16 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  accessory: {
+    backgroundColor: "#f2f2f2",
+    padding: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+    // alignItems: "flex-end",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
   allPlayerButton: {
     backgroundColor: "#007BFF",
     flexDirection: "row",
@@ -367,7 +428,10 @@ const styles = StyleSheet.create({
   joinPlayerItem: {
     flexDirection: "row",
     backgroundColor: "hsl(50.96234309623431, 100%, 53.13725490196079%)",
-    padding: 14,
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 4,
+    paddingRight: 4,
     borderRadius: 8,
     marginBottom: 8,
     alignItems: "center",
@@ -402,7 +466,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   playerName: {
+    flex: 3,
     fontSize: 24,
+    fontWeight: "500",
+  },
+  pairInfo: {
+    flexDirection: "row",
+    flex: 2,
+    fontSize: 20,
+    fontWeight: "500",
+    justifyContent: "flex-start",
+    alignItems: "baseline",
+  },
+  pairName: {
+    justifyContent: "flex-start",
+    fontSize: 16,
     fontWeight: "500",
   },
   playerStats: {
@@ -427,7 +505,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 10,
+    marginRight: 5,
   },
   joinBadge: {
     // flex: 1,
@@ -436,7 +514,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 10,
+    marginRight: 5,
   },
   allJoinBadge: {
     // flex: 1,
@@ -446,7 +524,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 10,
+    marginRight: 5,
   },
   restBadge: {
     flexDirection: "row",
@@ -456,7 +534,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 10,
+    marginRight: 5,
   },
   matchCountText: {
     color: "white",
@@ -474,8 +552,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   removeButton: {
-    padding: 4,
-    display: "none",
+    display: "flex",
   },
   emptyText: {
     textAlign: "center",

@@ -1,8 +1,10 @@
 import { AppContext } from "@/context/AppContext";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useContext } from "react";
+import { useNavigation } from "expo-router";
+import React, { useContext, useLayoutEffect } from "react";
 import {
   Alert,
+  Button,
   SectionList,
   StyleSheet,
   Text,
@@ -23,6 +25,30 @@ const MatchScreen: React.FC = () => {
     pairs,
   } = useContext(AppContext);
 
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          title="リセット"
+          onPress={() => {
+            setCourtSets([]);
+            setRound(0);
+            setPlayers((prev) => {
+              return prev.map((player) => {
+                return {
+                  ...player,
+                  matchCount: 0,
+                };
+              });
+            });
+          }} // ← これでOK
+        />
+      ),
+    });
+  }, [navigation, setCourtSets, setRound, setPlayers]);
+
   const handlePlayerSwap = (playerId: number, partnerId: number) => {
     const replaceplayers = players.filter((player) => {
       const isMyself = player.id === playerId;
@@ -34,35 +60,43 @@ const MatchScreen: React.FC = () => {
       replaceplayers.length > 0
         ? "交代させるプレイヤーを選択"
         : "交代できるプレイヤーがいません",
-      replaceplayers
-        .sort((playerA, playerB) => {
-          const isRestA =
-            restPlayers.length > 0 &&
-            restPlayers.find((restPlayer) => restPlayer.id === playerA.id) !=
-              null;
+      [
+        ...replaceplayers
+          .sort((playerA, playerB) => {
+            const isRestA =
+              restPlayers.length > 0 &&
+              restPlayers.find((restPlayer) => restPlayer.id === playerA.id) !=
+                null;
 
-          const isRestB =
-            restPlayers.length > 0 &&
-            restPlayers.find((restPlayer) => restPlayer.id === playerB.id) !=
-              null;
+            const isRestB =
+              restPlayers.length > 0 &&
+              restPlayers.find((restPlayer) => restPlayer.id === playerB.id) !=
+                null;
 
-          const result = isRestA === isRestB ? 0 : isRestA ? 1 : -1;
+            const result = isRestA === isRestB ? 0 : isRestA ? 1 : -1;
 
-          return result;
-        })
-        .map((player) => {
-          const isRest =
-            restPlayers.length > 0 &&
-            restPlayers.find((restPlayer) => restPlayer.id === player.id) !=
-              null;
-          return {
-            text: isRest ? `休憩中：${player.name}` : `試合中：${player.name}`,
-            onPress: () =>
-              isRest
-                ? changePlayableRestPlayer(playerId, player.id)
-                : changePlayer(playerId, player.id),
-          };
-        }),
+            return result;
+          })
+          .map((player) => {
+            const isRest =
+              restPlayers.length > 0 &&
+              restPlayers.find((restPlayer) => restPlayer.id === player.id) !=
+                null;
+            return {
+              text: isRest
+                ? `休憩中：${player.name}`
+                : `試合中：${player.name}`,
+              onPress: () =>
+                isRest
+                  ? changePlayableRestPlayer(playerId, player.id)
+                  : changePlayer(playerId, player.id),
+            };
+          }),
+        {
+          text: "キャンセル",
+          style: "cancel",
+        },
+      ],
       { cancelable: true }
     );
   };
