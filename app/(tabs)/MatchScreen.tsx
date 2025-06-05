@@ -353,7 +353,9 @@ const MatchScreen: React.FC = () => {
             const sameInB = bHas1 && bHas2;
             const bothAbsent = !aHas1 && !bHas1 && !aHas2 && !bHas2;
 
-            return sameInA || sameInB || bothAbsent;
+            const eitherOnly = (aHas1 || bHas1) !== (aHas2 || bHas2); // どちらか一方だけ出場
+
+            return sameInA || sameInB || bothAbsent || eitherOnly;
           });
         });
 

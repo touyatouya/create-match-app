@@ -202,14 +202,9 @@ const PlayerScreen: React.FC = () => {
   };
 
   const renderItem = ({ item }: { item: Player }) => (
-    <TouchableOpacity
-      onPress={() => joinPlayer(item.id)}
-      // style={styles.removeButton}
-    >
+    <TouchableOpacity onPress={() => joinPlayer(item.id)}>
       <View style={item.isJoin ? styles.joinPlayerItem : styles.restPlayerItem}>
-        {/* <View style={styles.playerInfo}> */}
         <Text style={styles.playerName}>{item.name}</Text>
-        {/* </View> */}
         {findPairPlayerId(item.id) && (
           <View style={styles.pairInfo}>
             <FontAwesome5 name="handshake" size={18} color="black" />
@@ -253,7 +248,12 @@ const PlayerScreen: React.FC = () => {
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          onPress={() => router.push("/player-edit-screen")}
+          onPress={() =>
+            router.push({
+              pathname: "/player-edit-screen",
+              params: { playerId: item.id },
+            })
+          }
           style={styles.removeButton}
         >
           <AntDesign name="right" size={24} color="black" />

@@ -1,28 +1,3 @@
-// export interface Player {
-//   id: string;
-//   name: string;
-//   isResting: boolean;
-//   matchCount: number; // プレイヤーの試合数を追跡
-// }
-
-// export interface Court {
-//   id: string;
-//   courtNumber: number;
-// }
-
-// export interface Match {
-//   id: string;
-//   courtId: string;
-//   players: Player[];
-// }
-
-// export interface AppState {
-//   players: Player[];
-//   courts: Court[];
-//   matches: Match[];
-//   history: Match[][]; // 過去の試合組み合わせを保存
-// }
-
 export interface Player {
   id: number;
   name: string;

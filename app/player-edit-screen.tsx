@@ -5,173 +5,137 @@ import {
   FontAwesome6,
   Ionicons,
 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack, useNavigation, useRouter } from "expo-router";
-import React, { useContext, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Pair, Player } from "../types";
+import {
+  Stack,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from "expo-router";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import {
+  Alert,
+  Button,
+  InputAccessoryView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const PlayerEditScreen: React.FC = () => {
-  const { players, pairs, setPairs } = useContext(AppContext);
+  const { players, setPlayers, pairs } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
+  const [newPlayerName, setNewPlayerName] = React.useState("");
+
+  const textInputRef = useRef<TextInput>(null);
+
+  const { playerId } = useLocalSearchParams();
+
+  const id = Number(playerId);
 
   const navigation = useNavigation();
   const router = useRouter();
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <Button
-  //         title="ペア編集"
-  //         onPress={() => alert("追加ボタンが押されました")}
-  //       />
-  //     ),
-  //     headerLeft: () => (
-  //       <Button title="<プレイヤー" onPress={() => router.back()} />
-  //     ),
-  //   });
-  // }, [navigation, router]);
+  const playerName = players.find((player) => player.id === id)?.name;
 
-  const savePairs = async (
-    pairs: { id: number; player1: number; player2: number }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("pairs", JSON.stringify(pairs));
-    } catch (e) {
-      console.error("保存エラー:", e);
+  useEffect(() => {
+    if (playerName != null) {
+      console.log("playerName", playerName);
+      setNewPlayerName(playerName);
     }
-  };
+  }, [playerName]);
 
-  const selectPlayer = (id: number) => {
-    setPair((prev) => {
-      let newPair: number[] = [];
-      if (prev.some((p) => p === id)) {
-        newPair = prev.filter((p) => p !== id);
-      } else if (prev.length === 2) {
-        newPair = [prev[0], id];
-      } else {
-        newPair = [...prev, id];
-      }
-
-      return newPair;
-    });
-  };
-
-  const createPair = () => {
-    let newPairs: Pair[] = [];
-
-    if (pair.length !== 2)
-      return Alert.alert("2人選んでください", "", [
+  const checkNameEmpty = () => {
+    if (newPlayerName === "" || newPlayerName == null) {
+      Alert.alert("名前を入力してください", "", [
         {
           text: "OK",
           style: "cancel",
         },
       ]);
+      console.log("textInputRef", textInputRef);
+      // 少し遅らせてフォーカスを戻す（iOS対策）
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 300);
+      return;
+    }
+    textInputRef.current?.blur();
+  };
 
-    setPairs((prev) => {
-      const pairIds = prev.map((pair) => pair.id);
-      let newPairId: number;
-      do {
-        newPairId = Math.floor(Math.random() * 10000); // 1〜10000の自然数
-      } while (pairIds.includes(newPairId));
-
-      const newPair: Pair = {
-        id: prev.length + 1,
-        player1: pair[0],
-        player2: pair[1],
-      };
-      newPairs = [...prev, newPair];
-      return newPairs;
+  const updatePlayerName = () => {
+    if (newPlayerName === "" || newPlayerName == null) {
+      Alert.alert("名前を入力してください", "", [
+        {
+          text: "OK",
+          style: "cancel",
+        },
+      ]);
+      // 少し遅らせてフォーカスを戻す（iOS対策）
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 300);
+      return;
+    }
+    setPlayers((prev) => {
+      return prev.map((player) => {
+        if (player.id === id) {
+          return {
+            ...player,
+            name: newPlayerName,
+          };
+        }
+        return { ...player };
+      });
     });
-    setPair([]);
-    savePairs(
-      newPairs.map((pair) => {
-        return { id: pair.id, player1: pair.player1, player2: pair.player2 };
-      })
-    );
   };
 
-  // const renderPlayer = ({ item }: { item: Player }) => (
-  //   <TouchableOpacity onPress={() => selectPlayer(item.id)}>
-  //     <View
-  //       style={
-  //         pair.some((p) => item.id === p)
-  //           ? styles.joinPlayerItem
-  //           : styles.restPlayerItem
-  //       }
-  //     >
-  //       <View style={styles.playerInfo}>
-  //         <Text style={styles.playerName}>{item.name}</Text>
-  //       </View>
-  //       {pair.some((p) => item.id === p) && (
-  //         <View style={styles.joinBadge}>
-  //           <Text style={styles.joinText}>選択中</Text>
-  //         </View>
-  //       )}
-  //     </View>
-  //   </TouchableOpacity>
-  // );
-
-  const NotPaierPlayer = players.filter(
-    (player) =>
-      !pairs.find(
-        (pair) => pair.player1 === player.id || pair.player2 === player.id
-      )
-  );
-
-  type SectionDataItem = Pair | Player;
-
-  type Section = {
-    title: string;
-    type: "pairs" | "players";
-    data: SectionDataItem[];
-  };
-
-  const sections: Section[] = [
-    {
-      title: "",
-      data: pairs,
-      type: "pairs",
-    },
-    {
-      title: "ペア未設定プレイヤー",
-      data: NotPaierPlayer,
-      type: "players",
-    },
-  ];
-
-  const removePair = (id: number): void => {
-    let newPairs: Pair[] = [];
-    setPairs((prev) => {
-      newPairs = prev.filter((player) => player.id !== id);
-      return newPairs;
+  const updatePlayerNameAndBlur = () => {
+    if (newPlayerName === "" || newPlayerName == null) {
+      Alert.alert("名前を入力してください", "", [
+        {
+          text: "OK",
+          style: "cancel",
+        },
+      ]);
+      // 少し遅らせてフォーカスを戻す（iOS対策）
+      setTimeout(() => {
+        textInputRef.current?.focus();
+      }, 300);
+      return;
+    }
+    setPlayers((prev) => {
+      return prev.map((player) => {
+        if (player.id === id) {
+          return {
+            ...player,
+            name: newPlayerName,
+          };
+        }
+        return { ...player };
+      });
     });
-    savePairs(
-      newPairs.map((pair) => {
-        return { id: pair.id, player1: pair.player1, player2: pair.player2 };
-      })
-    );
+    textInputRef.current?.blur();
   };
 
-  // const renderPair = ({ item }: { item: Pair }) => (
-  //   <View style={styles.restPlayerItem}>
-  //     <View style={styles.playerInfo}>
-  //       <Text style={styles.playerName}>
-  //         {players.find((player) => player.id === item.player1)?.name}
-  //       </Text>
-  //       <Text style={styles.playerName}>-</Text>
-  //       <Text style={styles.playerName}>
-  //         {players.find((player) => player.id === item.player2)?.name}
-  //       </Text>
-  //     </View>
-  //     <TouchableOpacity
-  //       onPress={() => removePair(item.id)}
-  //       style={styles.removeButton}
-  //     >
-  //       <Ionicons name="close-circle" size={24} color="#FF6B6B" />
-  //     </TouchableOpacity>
-  //   </View>
-  // );
+  const inputAccessoryViewID = "uniqueID2";
+
+  const findPairPlayerId = (id: number) => {
+    let isPlayer1 = false;
+    let isPlayer2 = false;
+    const pair = pairs.find((pair) => {
+      isPlayer1 = pair.player1 === id;
+      isPlayer2 = pair.player2 === id;
+      return isPlayer1 || isPlayer2;
+    });
+
+    if (pair) {
+      if (isPlayer1) return pair.player2;
+      if (isPlayer2) return pair.player1;
+    }
+  };
 
   return (
     <>
@@ -200,7 +164,7 @@ const PlayerEditScreen: React.FC = () => {
             </TouchableOpacity>
           ),
         }}
-      ></Stack.Screen>
+      />
       <View style={styles.container}>
         <View style={styles.item}>
           <Ionicons
@@ -211,7 +175,29 @@ const PlayerEditScreen: React.FC = () => {
           />
           <View style={styles.info}>
             <Text style={styles.label}>プレイヤー名</Text>
-            <Text style={styles.value}>田中 太郎</Text>
+            <View style={styles.addPlayerContainer}>
+              <TextInput
+                ref={textInputRef}
+                style={styles.input}
+                value={newPlayerName}
+                onChangeText={setNewPlayerName}
+                onSubmitEditing={updatePlayerName}
+                autoCapitalize="words"
+                inputAccessoryViewID={
+                  Platform.OS === "ios" ? inputAccessoryViewID : undefined
+                }
+                returnKeyType="done"
+              />
+              {/* iOS限定: キーボード上に完了ボタンを表示 */}
+              {Platform.OS === "ios" && (
+                <InputAccessoryView nativeID={inputAccessoryViewID}>
+                  <View style={styles.accessory}>
+                    <Button title="キャンセル" onPress={checkNameEmpty} />
+                    <Button title="完了" onPress={updatePlayerNameAndBlur} />
+                  </View>
+                </InputAccessoryView>
+              )}
+            </View>
           </View>
         </View>
 
@@ -224,10 +210,26 @@ const PlayerEditScreen: React.FC = () => {
           />
           <View style={styles.info}>
             <Text style={styles.label}>ペア</Text>
-            <Text style={styles.value}>佐藤 花子</Text>
+            {findPairPlayerId(id) ? (
+              <Text style={styles.value}>
+                {
+                  players.find((player) => player.id === findPairPlayerId(id))
+                    ?.name
+                }
+              </Text>
+            ) : (
+              <Text style={styles.value}>未設定</Text>
+            )}
           </View>
-          <TouchableOpacity>
-            <Text style={styles.link}>ペア編集</Text>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/pair-edit-screen",
+                params: { playerId: id },
+              })
+            }
+          >
+            <Text style={styles.link}>編集</Text>
           </TouchableOpacity>
         </View>
 
@@ -239,76 +241,47 @@ const PlayerEditScreen: React.FC = () => {
             <Text style={styles.value}>A</Text>
           </View>
           <TouchableOpacity>
-            <Text style={styles.link}>レベル変更</Text>
+            <Text style={styles.link}>変更</Text>
           </TouchableOpacity>
         </View>
-        {/* <SectionList
-          sections={sections}
-          keyExtractor={(item, index) => item.id.toString() + index}
-          renderItem={({ item, section }) => {
-            if (section.type === "pairs") {
-              const pairs = item as Pair;
-              return renderPair({ item: pairs }); // 例: カード表示など
-            } else if (section.type === "players") {
-              const player = item as Player;
-              return renderPlayer({ item: player }); // 例: 名前だけ表示など
-            }
-            return null;
-          }}
-          renderSectionHeader={({ section }) => {
-            if (section.type === "pairs") {
-              return (
-                <View style={styles.pairHeader}>
-                  <View style={styles.restingTitle}>
-                    <MaterialCommunityIcons
-                      name="human-male-male"
-                      size={24}
-                      color="black"
-                    />
-                    <Text style={styles.restingSectionTitle}>ペア一覧</Text>
-                  </View>
-                </View>
-              );
-            } else if (section.type === "players") {
-              return (
-                <View style={styles.playerHeader}>
-                  <View style={styles.restingTitle}>
-                    <MaterialCommunityIcons
-                      name="human-male"
-                      size={24}
-                      color="black"
-                    />
-                    <Text style={styles.restingSectionTitle}>
-                      ペア未設定プレイヤー
-                    </Text>
-                  </View>
-                </View>
-              );
-            }
-            return null;
-          }}
-          // contentContainerStyle={styles.sectionListContainer}
-        />
-        <TouchableOpacity style={styles.allPlayerButton} onPress={createPair}>
-          <Text style={styles.addButtonText}>ペア作成</Text>
-        </TouchableOpacity> */}
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  accessory: {
+    backgroundColor: "#f2f2f2",
+    padding: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+
+    // alignItems: "flex-end",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 12,
     paddingHorizontal: 16,
+  },
+  addPlayerContainer: {
+    flexDirection: "row",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 24,
+  },
+  input: {
+    flex: 1,
+    height: 48,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "white",
   },
   backText: {
     fontSize: 16,
@@ -323,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: "#ccc",
-    paddingVertical: 16,
+    paddingVertical: 32,
   },
   icon: {
     width: 30,
