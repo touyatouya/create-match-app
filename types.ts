@@ -4,6 +4,7 @@ export interface Player {
   matchCount: number;
   isRest: boolean;
   isJoin: boolean;
+  rank: Rank;
   teammatePlayerIds: Player["id"][];
   opponentPlayerIds: Player["id"][];
 }
@@ -27,3 +28,10 @@ export interface Pair {
 }
 
 export type Team = "teamA" | "teamB";
+
+export enum Rank {
+  A = "Aランク",
+  B = "Bランク",
+  C = "Cランク",
+  未設定 = "未設定",
+}

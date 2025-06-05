@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Pair, Player } from "../../types";
+import { Pair, Player, Rank } from "../../types";
 
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
@@ -47,6 +47,7 @@ const PlayerScreen: React.FC = () => {
             matchCount: 0,
             isJoin: false,
             isRest: false,
+            rank: parsedPlayers[i].rank,
             teammatePlayerIds: [],
             opponentPlayerIds: [],
           });
@@ -102,7 +103,9 @@ const PlayerScreen: React.FC = () => {
     });
   }, [isEdit, navigation, router]);
 
-  const savePlayerNames = async (players: { id: number; name: string }[]) => {
+  const savePlayerNames = async (
+    players: { id: number; name: string; rank: Rank }[]
+  ) => {
     try {
       await AsyncStorage.setItem("players", JSON.stringify(players));
     } catch (e) {
@@ -127,6 +130,7 @@ const PlayerScreen: React.FC = () => {
         matchCount: 0,
         isJoin: true,
         isRest: false,
+        rank: Rank.未設定,
         teammatePlayerIds: [],
         opponentPlayerIds: [],
       };
@@ -141,6 +145,7 @@ const PlayerScreen: React.FC = () => {
         return {
           id: player.id,
           name: player.name,
+          rank: player.rank,
         };
       })
     );
@@ -158,6 +163,7 @@ const PlayerScreen: React.FC = () => {
         return {
           id: player.id,
           name: player.name,
+          rank: player.rank,
         };
       })
     );

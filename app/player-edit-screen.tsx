@@ -1,22 +1,21 @@
 import { AppContext } from "@/context/AppContext";
+import { Player, Rank } from "@/types";
 import {
   AntDesign,
   FontAwesome5,
   FontAwesome6,
   Ionicons,
 } from "@expo/vector-icons";
-import {
-  Stack,
-  useLocalSearchParams,
-  useNavigation,
-  useRouter,
-} from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
   InputAccessoryView,
+  Modal,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -26,8 +25,12 @@ import {
 
 const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers, pairs } = useContext(AppContext);
-  const [pair, setPair] = useState<number[]>([]);
   const [newPlayerName, setNewPlayerName] = React.useState("");
+
+  // const options = ["Aランク", "Bランク", "Cランク", "未設定"];
+
+  const [selected, setSelected] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -35,14 +38,57 @@ const PlayerEditScreen: React.FC = () => {
 
   const id = Number(playerId);
 
-  const navigation = useNavigation();
+  const savePlayerInfo = async (
+    players: { id: number; name: string; rank: Rank }[]
+  ) => {
+    try {
+      await AsyncStorage.setItem("players", JSON.stringify(players));
+    } catch (e) {
+      console.error("保存エラー:", e);
+    }
+  };
+
+  const handleSelect = (value: Rank) => {
+    setSelected(value);
+    let newPlayers: Player[] = [];
+    setPlayers((prev) => {
+      newPlayers = prev.map((player) => {
+        if (player.id === id) {
+          return {
+            ...player,
+            rank: value,
+          };
+        }
+        return { ...player };
+      });
+
+      return newPlayers;
+    });
+    savePlayerInfo(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+          rank: player.rank,
+        };
+      })
+    );
+    setVisible(false);
+  };
+
+  const player = players.find((player) => player.id === id);
+
+  useEffect(() => {
+    if (player != null) setSelected(player.rank);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const router = useRouter();
 
-  const playerName = players.find((player) => player.id === id)?.name;
+  const playerName = player?.name;
 
   useEffect(() => {
     if (playerName != null) {
-      console.log("playerName", playerName);
       setNewPlayerName(playerName);
     }
   }, [playerName]);
@@ -79,8 +125,10 @@ const PlayerEditScreen: React.FC = () => {
       }, 300);
       return;
     }
+
+    let newPlayers: Player[] = [];
     setPlayers((prev) => {
-      return prev.map((player) => {
+      newPlayers = prev.map((player) => {
         if (player.id === id) {
           return {
             ...player,
@@ -89,7 +137,18 @@ const PlayerEditScreen: React.FC = () => {
         }
         return { ...player };
       });
+      return newPlayers;
     });
+
+    savePlayerInfo(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+          rank: player.rank,
+        };
+      })
+    );
   };
 
   const updatePlayerNameAndBlur = () => {
@@ -238,11 +297,43 @@ const PlayerEditScreen: React.FC = () => {
           <FontAwesome6 name="ranking-star" size={24} color="black" />
           <View style={styles.info}>
             <Text style={styles.label}>レベル</Text>
-            <Text style={styles.value}>A</Text>
+            <TouchableOpacity
+              onPress={() => setVisible(true)}
+              style={styles.selectButton}
+            >
+              <Text style={styles.selectButtonText}>{selected}</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity>
-            <Text style={styles.link}>変更</Text>
-          </TouchableOpacity>
+
+          <Modal
+            animationType="fade"
+            transparent
+            visible={visible}
+            onRequestClose={() => setVisible(false)}
+          >
+            <Pressable
+              style={styles.modalBackground}
+              onPress={() => setVisible(false)}
+            >
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>レベルを選択</Text>
+                {Object.values(Rank).map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={styles.optionRow}
+                    onPress={() => handleSelect(option)}
+                  >
+                    <View style={styles.radioOuter}>
+                      {selected === option && (
+                        <View style={styles.radioInner} />
+                      )}
+                    </View>
+                    <Text style={styles.optionText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </Pressable>
+          </Modal>
         </View>
       </View>
     </>
@@ -250,6 +341,61 @@ const PlayerEditScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  // container: {
+  //   padding: 24,
+  // },
+  selectButton: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+  },
+  selectButtonText: {
+    fontSize: 16,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 24,
+    borderRadius: 12,
+    width: "80%",
+    elevation: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#007AFF",
+  },
+  optionText: {
+    fontSize: 16,
+  },
   accessory: {
     backgroundColor: "#f2f2f2",
     padding: 8,

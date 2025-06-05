@@ -5,7 +5,7 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Stack, useNavigation, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import {
   Alert,
@@ -21,22 +21,7 @@ const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
 
-  const navigation = useNavigation();
   const router = useRouter();
-
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <Button
-  //         title="ペア編集"
-  //         onPress={() => alert("追加ボタンが押されました")}
-  //       />
-  //     ),
-  //     headerLeft: () => (
-  //       <Button title="<プレイヤー" onPress={() => router.back()} />
-  //     ),
-  //   });
-  // }, [navigation, router]);
 
   const savePairs = async (
     pairs: { id: number; player1: number; player2: number }[]
