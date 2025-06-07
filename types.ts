@@ -5,20 +5,18 @@ export interface Player {
   isRest: boolean;
   isJoin: boolean;
   rank: Rank;
-  teammatePlayerIds: Player["id"][];
-  opponentPlayerIds: Player["id"][];
 }
 
 export interface Match {
   id: number;
   teamA: Player["id"][]; // 使用例：idが1・2 VS 3・4の場合、{...,teamA:[1,2], teamB:[3,4]...}
   teamB: Player["id"][];
-  coatNumber: number; // 何コートの試合か
+  courtId: number; // 何コートの試合か
 }
 
-export interface CourtSet {
+export interface GameRound {
   id: number;
-  courts: Match[];
+  matches: Match[];
 }
 
 export interface Pair {
@@ -27,11 +25,18 @@ export interface Pair {
   player2: number;
 }
 
+export interface Court {
+  id: number;
+  rank: Rank;
+}
+
 export type Team = "teamA" | "teamB";
 
 export enum Rank {
   A = "Aランク",
   B = "Bランク",
   C = "Cランク",
+  D = "Dランク",
+  E = "Eランク",
   未設定 = "未設定",
 }

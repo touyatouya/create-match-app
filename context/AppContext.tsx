@@ -1,15 +1,13 @@
-import { CourtSet, Pair, Player } from "@/types";
+import { Court, GameRound, Pair, Player, Rank } from "@/types";
 import React, { createContext, ReactNode } from "react";
 
 type AppContextType = {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
-  coatCount: number;
-  setCoatCount: React.Dispatch<React.SetStateAction<number>>;
-  courtSets: CourtSet[];
-  setCourtSets: React.Dispatch<React.SetStateAction<CourtSet[]>>;
-  round: number;
-  setRound: React.Dispatch<React.SetStateAction<number>>;
+  courts: Court[];
+  setCourts: React.Dispatch<React.SetStateAction<Court[]>>;
+  gameRounds: GameRound[];
+  setGameRounds: React.Dispatch<React.SetStateAction<GameRound[]>>;
   pairs: Pair[];
   setPairs: React.Dispatch<React.SetStateAction<Pair[]>>;
 };
@@ -17,12 +15,10 @@ type AppContextType = {
 export const AppContext = createContext<AppContextType>({
   players: [],
   setPlayers: () => {},
-  coatCount: 0,
-  setCoatCount: () => {},
-  courtSets: [],
-  setCourtSets: () => {},
-  round: 0,
-  setRound: () => {},
+  courts: [],
+  setCourts: () => {},
+  gameRounds: [],
+  setGameRounds: () => {},
   pairs: [],
   setPairs: () => {},
 });
@@ -33,9 +29,10 @@ type AppContextProps = {
 
 export const AppProvider = ({ children }: AppContextProps) => {
   const [players, setPlayers] = React.useState<Player[]>([]);
-  const [coatCount, setCoatCount] = React.useState(1);
-  const [courtSets, setCourtSets] = React.useState<CourtSet[]>([]);
-  const [round, setRound] = React.useState(0);
+  const [courts, setCourts] = React.useState<Court[]>([
+    { id: 0, rank: Rank.未設定 },
+  ]);
+  const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
 
   return (
@@ -43,12 +40,10 @@ export const AppProvider = ({ children }: AppContextProps) => {
       value={{
         players,
         setPlayers,
-        coatCount,
-        setCoatCount,
-        courtSets,
-        setCourtSets,
-        round,
-        setRound,
+        courts,
+        setCourts,
+        gameRounds,
+        setGameRounds,
         pairs,
         setPairs,
       }}

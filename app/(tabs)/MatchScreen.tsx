@@ -11,19 +11,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CourtSet, Match, Player } from "../../types";
+import { GameRound, Match, Player, Rank } from "../../types";
+
+type SectionDataItem = Match | Player;
+
+type Section = {
+  title: string;
+  type: "match" | "rest";
+  data: SectionDataItem[];
+};
 
 const MatchScreen: React.FC = () => {
-  const {
-    players,
-    setPlayers,
-    courtSets,
-    setCourtSets,
-    round,
-    setRound,
-    coatCount,
-    pairs,
-  } = useContext(AppContext);
+  const { players, setPlayers, gameRounds, setGameRounds, pairs, courts } =
+    useContext(AppContext);
 
   const navigation = useNavigation();
 
@@ -33,8 +33,7 @@ const MatchScreen: React.FC = () => {
         <Button
           title="リセット"
           onPress={() => {
-            setCourtSets([]);
-            setRound(0);
+            setGameRounds([]);
             setPlayers((prev) => {
               return prev.map((player) => {
                 return {
@@ -43,11 +42,11 @@ const MatchScreen: React.FC = () => {
                 };
               });
             });
-          }} // ← これでOK
+          }}
         />
       ),
     });
-  }, [navigation, setCourtSets, setRound, setPlayers]);
+  }, [navigation, setGameRounds, setPlayers]);
 
   const handlePlayerSwap = (playerId: number, partnerId: number) => {
     const replaceplayers = players.filter((player) => {
@@ -101,14 +100,9 @@ const MatchScreen: React.FC = () => {
     );
   };
 
-  // const getCourtName = (courtId: string): string => {
-  //   const court = courts.find((c) => c.id === courtId);
-  //   return court ? `コート ${court.courtNumber}` : "不明なコート";
-  // };
-
-  const renderMatch = ({ item }: { item: Match }) => (
+  const renderMatch = ({ item, index }: { item: Match; index: number }) => (
     <View style={styles.matchCard}>
-      <Text style={styles.courtName}>{item.coatNumber}コート</Text>
+      <Text style={styles.courtName}>{index + 1}コート</Text>
 
       <View style={styles.teams}>
         {/* チーム1 */}
@@ -156,49 +150,10 @@ const MatchScreen: React.FC = () => {
     </View>
   );
 
-  // const renderHistoryMatch = (match: Match, index: number) => (
-  //   <View key={match.id} style={styles.historyMatchCard}>
-  //     <Text style={styles.historyCourtName}>{getCourtName(match.courtId)}</Text>
-
-  //     <View style={styles.historyTeams}>
-  //       {/* チーム1 */}
-  //       <View style={styles.historyTeam}>
-  //         <Text style={styles.historyPlayerName}>{match.players[0]?.name}</Text>
-  //         <Text style={styles.historyPlayerName}>{match.players[1]?.name}</Text>
-  //       </View>
-
-  //       <Text style={styles.historyVsText}>vs</Text>
-
-  //       {/* チーム2 */}
-  //       <View style={styles.historyTeam}>
-  //         <Text style={styles.historyPlayerName}>{match.players[2]?.name}</Text>
-  //         <Text style={styles.historyPlayerName}>{match.players[3]?.name}</Text>
-  //       </View>
-  //     </View>
-  //   </View>
-  // );
-
-  // const renderHistoryRound = ({
-  //   item,
-  //   index,
-  // }: {
-  //   item: Match[];
-  //   index: number;
-  // }) => (
-  //   <View style={styles.historyRound}>
-  //     <Text style={styles.historyRoundTitle}>
-  //       過去の試合 #{matchHistory.length - index}
-  //     </Text>
-  //     <View style={styles.historyMatches}>
-  //       {item.map((match, matchIndex) => renderHistoryMatch(match, matchIndex))}
-  //     </View>
-  //   </View>
-  // );
-
-  const matches: Match[] = courtSets.flatMap((courtSet) => courtSet.courts);
+  const matches: Match[] = gameRounds.flatMap((gameRound) => gameRound.matches);
 
   const playablePlayers = players.filter((player) => {
-    return courtSets[round - 1]?.courts.some((match) => {
+    return gameRounds[gameRounds.length - 1]?.matches.some((match) => {
       return (
         match.teamA.some((playerId) => playerId === player.id) ||
         match.teamB.some((playerId) => playerId === player.id)
@@ -217,7 +172,7 @@ const MatchScreen: React.FC = () => {
       .filter((player) => player.isJoin && !player.isRest)
       .sort((a, b) => a.matchCount - b.matchCount);
 
-    if (sortedPlayer.length < coatCount * 4)
+    if (sortedPlayer.length < courts.length * 4)
       return Alert.alert(
         "試合を作成できません",
         "コート数に対する人数が足りません。\nコート数を減らすか、人数を増やしてください。"
@@ -247,43 +202,41 @@ const MatchScreen: React.FC = () => {
       }
       normalPlayers = [...separatedPlayers[i]];
 
-      if (priorityPlayers.length + normalPlayers.length >= coatCount * 4) break;
+      if (priorityPlayers.length + normalPlayers.length >= courts.length * 4)
+        break;
     }
 
-    const courtSet: CourtSet = selectBestCourtSet(
+    const gameRound: GameRound = selectBestGameRounds(
       priorityPlayers.map((player) => player.id),
       normalPlayers.map((player) => player.id)
     );
 
-    if (courtSet == null) return;
+    if (gameRound == null) return;
 
-    setCourtSets((prev) => [...prev, courtSet]);
+    setGameRounds((prev) => [...prev, gameRound]);
 
-    const preMatches: Match[] = courtSets.flatMap(
-      (courtSet) => courtSet.courts
+    const preMatches: Match[] = gameRounds.flatMap(
+      (gameRound) => gameRound.matches
     );
-    countMatch([...preMatches, ...courtSet.courts]);
-    setRound(courtSets.length + 1);
+    countMatch([...preMatches, ...gameRound.matches]);
   };
 
-  const pairedPlayerIds = pairs.flatMap((pair) => [pair.player1, pair.player2]);
-
   // スコアの高いコート構成を選ぶ関数
-  function selectBestCourtSet(
+  function selectBestGameRounds(
     requiredPlayers: number[],
     optionalPlayers: number[]
-  ): CourtSet {
-    const players = [...requiredPlayers, ...optionalPlayers];
+  ): GameRound {
+    const playersId = [...requiredPlayers, ...optionalPlayers];
 
     // 計算量削減のため100個に制限
-    const partitions = getRandomGroupPartitions(players, 100);
+    const partitions = getRandomGroupPartitions(playersId, 100);
 
     // 計算量削減のため100個に制限
     const limitedPartitions = partitions
       .sort(() => Math.random() - 0.5)
       .slice(0, 100);
 
-    let bestSets: CourtSet[] = [];
+    let bestSets: GameRound[] = [];
     let bestScore = -Infinity;
 
     for (const coatSet of limitedPartitions) {
@@ -321,15 +274,43 @@ const MatchScreen: React.FC = () => {
       const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 50);
 
       for (const courtTeams of allCourtTeamCombinations) {
-        const courtSet: CourtSet = {
-          id: courtSets.length > 0 ? courtSets[courtSets.length - 1].id + 1 : 0,
-          courts: courtTeams.map((team, index) => ({
+        const gameRound: GameRound = {
+          id:
+            gameRounds.length > 0
+              ? gameRounds[gameRounds.length - 1].id + 1
+              : 0,
+          matches: courtTeams.map((team, index) => ({
             id: index,
-            coatNumber: index + 1,
+            courtId: courts[index].id,
             teamA: team.teamA,
             teamB: team.teamB,
           })),
         };
+
+        // 各マッチの courtId と court.rank を取得
+        const matchesWithCourts = gameRound.matches.map((match) => {
+          const court = courts.find((c) => c.id === match.courtId);
+          return { ...match, courtRank: court?.rank ?? Rank.未設定 };
+        });
+
+        // プレイヤーのランク情報を参照用に変換
+        const playerRankMap = new Map<number, Rank>();
+        players.forEach((p) => playerRankMap.set(p.id, p.rank));
+
+        // コートごとのレベルとプレイヤーランクが合っているか
+        const isCourtLevelValid = matchesWithCourts.every((match) => {
+          const allPlayers = [...match.teamA, ...match.teamB];
+          const rank = match.courtRank;
+
+          if (rank === Rank.未設定) return true; // コート未設定 → OK
+
+          return allPlayers.every((pid) => {
+            const pr = playerRankMap.get(pid) ?? Rank.未設定;
+            return pr === Rank.未設定 || pr === rank;
+          });
+        });
+
+        if (!isCourtLevelValid) continue;
 
         // 必須プレイヤーが全員含まれていなければスキップ
         const allPlayersInThisSet = courtTeams.flatMap((team) => [
@@ -370,9 +351,9 @@ const MatchScreen: React.FC = () => {
 
         if (totalScore > bestScore) {
           bestScore = totalScore;
-          bestSets = [courtSet];
+          bestSets = [gameRound];
         } else if (totalScore === bestScore) {
-          bestSets.push(courtSet);
+          bestSets.push(gameRound);
         }
       }
     }
@@ -394,36 +375,7 @@ const MatchScreen: React.FC = () => {
       };
     });
 
-    // プレイヤー毎の味方、相手集計
-    const teammateOpponentCountedPlayers: Player[] = matchCountedPlayers.map(
-      (player) => {
-        let tmpTeammatePlayerIds: number[] = [];
-        let tmpOpponentPlayerIds: number[] = [];
-
-        newMatches.forEach((match) => {
-          const teamA: Player["id"][] = match.teamA;
-          const teamB: Player["id"][] = match.teamB;
-
-          if (teamA.includes(player.id) && teamA.length === 2) {
-            const teammateIds = match.teamA.filter((id) => id !== player.id);
-            tmpTeammatePlayerIds.push(...teammateIds);
-            tmpOpponentPlayerIds.push(...teamB);
-          } else if (teamB.includes(player.id) && teamB.length === 2) {
-            const teammateIds = match.teamB.filter((id) => id !== player.id);
-            tmpTeammatePlayerIds.push(...teammateIds);
-            tmpOpponentPlayerIds.push(...teamA);
-          }
-        });
-
-        return {
-          ...player,
-          teammatePlayerIds: tmpTeammatePlayerIds,
-          opponentPlayerIds: tmpOpponentPlayerIds,
-        };
-      }
-    );
-
-    setPlayers(teammateOpponentCountedPlayers);
+    setPlayers(matchCountedPlayers);
   };
 
   const countPairedBefore = (player1: number, player2: number) => {
@@ -466,7 +418,7 @@ const MatchScreen: React.FC = () => {
 
     for (let i = 0; i < trials; i++) {
       const shuffled = [...players].sort(() => Math.random() - 0.5);
-      const groups = Array.from({ length: coatCount }, (_, idx) =>
+      const groups = Array.from({ length: courts.length }, (_, idx) =>
         shuffled.slice(idx * 4, (idx + 1) * 4)
       );
 
@@ -545,7 +497,7 @@ const MatchScreen: React.FC = () => {
   }
 
   const changePlayer = (targetPlayerId: number, selectedPlayerId: number) => {
-    setCourtSets((prevCourtSets) => {
+    setGameRounds((prevGameRounds) => {
       let sourceSetIndex = -1,
         sourceMatchIndex = -1,
         sourceTeam: "teamA" | "teamB" = "teamA",
@@ -557,8 +509,8 @@ const MatchScreen: React.FC = () => {
         targetIndex = -1;
 
       // プレイヤーBの位置を探す
-      for (let csIdx = 0; csIdx < prevCourtSets.length; csIdx++) {
-        const courts = prevCourtSets[csIdx].courts;
+      for (let csIdx = 0; csIdx < prevGameRounds.length; csIdx++) {
+        const courts = prevGameRounds[csIdx].matches;
         for (let mIdx = 0; mIdx < courts.length; mIdx++) {
           const match = courts[mIdx];
           const teamAIdx = match.teamA.indexOf(selectedPlayerId);
@@ -602,19 +554,20 @@ const MatchScreen: React.FC = () => {
         targetIndex === -1
       ) {
         console.warn("どちらかのプレイヤーの位置が見つかりません");
-        return prevCourtSets;
+        return prevGameRounds;
       }
 
-      return prevCourtSets.map((cs, csIdx) => {
+      return prevGameRounds.map((gr, csIdx) => {
         return {
-          ...cs,
-          courts: cs.courts.map((m) => {
+          ...gr,
+          courts: gr.matches.map((m) => {
             let updatedMatch = { ...m };
 
             // プレイヤーAの位置をプレイヤーBに置換
             if (
               csIdx === targetSetIndex &&
-              m.id === prevCourtSets[targetSetIndex].courts[targetMatchIndex].id
+              m.id ===
+                prevGameRounds[targetSetIndex].matches[targetMatchIndex].id
             ) {
               const newTeam = [...m[targetTeam]];
               newTeam[targetIndex] = selectedPlayerId;
@@ -624,7 +577,8 @@ const MatchScreen: React.FC = () => {
             // プレイヤーBの位置をプレイヤーAに置換
             if (
               csIdx === sourceSetIndex &&
-              m.id === prevCourtSets[sourceSetIndex].courts[sourceMatchIndex].id
+              m.id ===
+                prevGameRounds[sourceSetIndex].matches[sourceMatchIndex].id
             ) {
               const newTeam = [...m[sourceTeam]];
               newTeam[sourceIndex] = targetPlayerId;
@@ -642,13 +596,13 @@ const MatchScreen: React.FC = () => {
     playablePlayerId: number,
     restPlayerId: number
   ) => {
-    setCourtSets((prevCourtSets) => {
+    setGameRounds((prevGameRounds) => {
       let playablePlayerMatchIndex = -1,
         playablePlayerTeam: "teamA" | "teamB" = "teamA",
         playablePlayerIndex = -1;
 
       // プレイ中プレイヤーの位置を探す
-      const courts = prevCourtSets[round - 1].courts;
+      const courts = prevGameRounds[prevGameRounds.length - 1].matches;
       for (let match_i = 0; match_i < courts.length; match_i++) {
         const match = courts[match_i];
 
@@ -673,20 +627,20 @@ const MatchScreen: React.FC = () => {
           playablePlayerMatchIndex === -1
         );
         console.warn("playablePlayerIndex === -1", playablePlayerIndex === -1);
-        return prevCourtSets;
+        return prevGameRounds;
       }
 
-      const courtSets = prevCourtSets.map((courtSet, courtSet_i) => {
-        if (courtSet_i === round - 1) {
+      const gameRounds = prevGameRounds.map((gameRound, gameRound_i) => {
+        if (gameRound_i === prevGameRounds.length - 1) {
           return {
-            ...courtSet,
-            courts: courtSet.courts.map((match) => {
+            ...gameRound,
+            courts: gameRound.matches.map((match) => {
               let updatedMatch = { ...match };
 
               // プレイ中プレイヤーの位置を休憩プレイヤーに置換
               if (
                 match.id ===
-                prevCourtSets[courtSet_i].courts[playablePlayerMatchIndex].id
+                prevGameRounds[gameRound_i].matches[playablePlayerMatchIndex].id
               ) {
                 const newTeam = [...match[playablePlayerTeam]];
                 newTeam[playablePlayerIndex] = restPlayerId;
@@ -697,38 +651,20 @@ const MatchScreen: React.FC = () => {
             }),
           };
         } else {
-          return { ...courtSet };
+          return { ...gameRound };
         }
       });
 
-      return courtSets;
+      return gameRounds;
     });
-    const matches: Match[] = courtSets.flatMap((courtSet) => courtSet.courts);
+    const matches: Match[] = gameRounds.flatMap(
+      (gameRound) => gameRound.matches
+    );
     countMatch([...matches]);
-  };
-
-  const deleteAllMatch = () => {
-    setCourtSets([]);
-    setRound(0);
-  };
-
-  const deleteMatch = (courtSet_i: number) => {
-    if (courtSet_i < 0) return;
-    let prevLength: number = 0;
-    setCourtSets((prev) => {
-      const newCourtSets = prev.filter((_, i) => i !== courtSet_i);
-      prevLength = prev.length;
-      return newCourtSets;
-    });
-
-    if (prevLength - 1 === courtSet_i) setRound((prev) => prev - 1);
   };
 
   const getPlayerName = (id: number) => {
     return players.find((player) => player.id === id)?.name;
-  };
-  const getPlayerMatchCount = (id: number) => {
-    return players.find((player) => player.id === id)?.matchCount;
   };
 
   const renderRestingPlayer = ({ item }: { item: Player }) => (
@@ -737,18 +673,10 @@ const MatchScreen: React.FC = () => {
     </View>
   );
 
-  type SectionDataItem = Match | Player;
-
-  type Section = {
-    title: string;
-    type: "match" | "rest";
-    data: SectionDataItem[];
-  };
-
   const sections: Section[] = [
     {
       title: "",
-      data: courtSets[round - 1]?.courts,
+      data: gameRounds[gameRounds.length - 1]?.matches,
       type: "match",
     },
     {
@@ -769,14 +697,14 @@ const MatchScreen: React.FC = () => {
         <Text style={styles.generateButtonText}>新しい組み合わせを生成</Text>
       </TouchableOpacity>
 
-      {courtSets[round - 1] != null && (
+      {gameRounds[gameRounds.length - 1] != null && (
         <SectionList
           sections={sections}
           keyExtractor={(item, index) => item.id.toString() + index}
-          renderItem={({ item, section }) => {
+          renderItem={({ item, index, section }) => {
             if (section.type === "match") {
               const match = item as Match;
-              return renderMatch({ item: match }); // 例: カード表示など
+              return renderMatch({ item: match, index: index }); // 例: カード表示など
             } else if (section.type === "rest") {
               const restPlayer = item as Player;
               return renderRestingPlayer({ item: restPlayer }); // 例: 名前だけ表示など
@@ -806,63 +734,11 @@ const MatchScreen: React.FC = () => {
           // contentContainerStyle={styles.sectionListContainer}
         />
       )}
-
-      {/* {matches.length > 0 ? (
-        <FlatList
-          data={courtSets[round - 1].courts}
-          renderItem={renderMatch}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.matchesList}
-        />
-      ) : (
-        <Text style={styles.emptyText}>
-          試合がありません。「新しい組み合わせを生成」ボタンを押して組み合わせを作成してください。
-        </Text>
-      )} */}
-
-      {/* <View style={styles.restingSection}>
-        <View style={styles.restingHeader}>
-          <View style={styles.restingTitle}>
-            <Ionicons name="cafe" size={24} color="#edab12" />
-            <Text style={styles.restingSectionTitle}>休憩中のプレイヤー</Text>
-          </View>
-          <Text style={styles.restingCount}>{restPlayers.length}人</Text>
-        </View>
-        {restPlayers.length > 0 ? (
-          <FlatList
-            data={restPlayers}
-            renderItem={renderRestingPlayer}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.restingPlayersList}
-          />
-        ) : (
-          <Text style={styles.emptyRestingText}>
-            休憩中のプレイヤーはいません
-          </Text>
-        )}
-      </View> */}
-
-      {/* {matchHistory.length > 0 && (
-        <View style={styles.historySection}>
-          <Text style={styles.historySectionTitle}>過去の試合履歴</Text>
-          <FlatList
-            data={[...matchHistory].reverse()}
-            renderItem={renderHistoryRound}
-            keyExtractor={(_, index) => `history-${index}`}
-            contentContainerStyle={styles.historyList}
-          />
-        </View>
-      )} */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // padding: 4,
-    // backgroundColor: "#f8f9fa",
-  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -888,9 +764,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: "600",
     fontSize: 16,
-  },
-  matchesList: {
-    paddingBottom: 16,
   },
   matchCard: {
     backgroundColor: "white",
@@ -943,18 +816,6 @@ const styles = StyleSheet.create({
     color: "#FF6B6B",
     marginHorizontal: 6,
   },
-  restingSection: {
-    // flexDirection: "column",
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
   restingHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -974,10 +835,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
   },
-  restingPlayersList: {
-    flexDirection: "column",
-    paddingBottom: 8,
-  },
   restingPlayerItem: {
     flexDirection: "column",
     alignItems: "center",
@@ -995,91 +852,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#664500",
     marginRight: 5,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: "#999",
-    marginTop: 40,
-    marginBottom: 40,
-    fontSize: 15,
-  },
-  emptyRestingText: {
-    color: "#999",
-    textAlign: "center",
-    paddingVertical: 12,
-  },
-  historySection: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  historySectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 12,
-  },
-  historyList: {
-    paddingBottom: 8,
-  },
-  historyRound: {
-    marginBottom: 16,
-  },
-  historyRoundTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#666",
-    marginBottom: 8,
-  },
-  historyMatches: {},
-  historyMatchCard: {
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-  },
-  historyCourtName: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 8,
-    color: "#555",
-  },
-  historyTeams: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  historyTeam: {
-    flex: 1,
-    padding: 8,
-    backgroundColor: "white",
-    borderRadius: 6,
-  },
-  historyPlayerName: {
-    fontSize: 12,
-    color: "#333",
-    marginBottom: 4,
-  },
-  historyVsText: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#FF6B6B",
-    marginHorizontal: 8,
-  },
-  matchCountBadge: {
-    backgroundColor: "#4CAF50",
-    color: "white",
-    fontSize: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
-    overflow: "hidden",
   },
 });
 
