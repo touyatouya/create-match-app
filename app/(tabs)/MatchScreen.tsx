@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GameRound, Match, Player } from "../../types";
+import { GameRound, Match, Player, Rank, rankOrder } from "../../types";
 
 type SectionDataItem = Match | Player;
 
@@ -119,6 +119,7 @@ const MatchScreen: React.FC = () => {
             >
               <View style={styles.playerInfo}>
                 <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
+                <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text>
               </View>
               <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
             </TouchableOpacity>
@@ -141,6 +142,7 @@ const MatchScreen: React.FC = () => {
             >
               <View style={styles.playerInfo}>
                 <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
+                <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text>
               </View>
               <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
             </TouchableOpacity>
@@ -226,15 +228,17 @@ const MatchScreen: React.FC = () => {
     requiredPlayers: number[],
     optionalPlayers: number[]
   ): GameRound {
-    const playersId = [...requiredPlayers, ...optionalPlayers];
-
     // 計算量削減のため100個に制限
-    const partitions = getRandomGroupPartitions(playersId, 100);
+    const partitions = getRandomGroupPartitions(
+      requiredPlayers,
+      optionalPlayers,
+      100
+    );
 
-    // 計算量削減のため100個に制限
-    const limitedPartitions = partitions
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 100);
+    console.log("partitions", partitions, partitions.length);
+
+    // ランダムに並び替え
+    const limitedPartitions = partitions.sort(() => Math.random() - 0.5);
 
     let bestSets: GameRound[] = [];
     let bestScore = -Infinity;
@@ -383,29 +387,122 @@ const MatchScreen: React.FC = () => {
     );
   };
 
-  // 12人を3グループに分割（各グループ4人）
   const getRandomGroupPartitions = (
-    players: number[],
+    requiredPlayers: number[],
+    optionalPlayers: number[],
     trials = 100
   ): number[][][] => {
     const results: number[][][] = [];
     const seen = new Set<string>();
+    const totalPlayers = [...requiredPlayers, ...optionalPlayers];
 
-    for (let i = 0; i < trials; i++) {
-      const shuffled = [...players].sort(() => Math.random() - 0.5);
-      const groups = Array.from({ length: courts.length }, (_, idx) =>
-        shuffled.slice(idx * 4, (idx + 1) * 4)
+    const getRankValue = (id: number) => {
+      const player = players.find((p) => p.id === id);
+      return rankOrder[player?.rank ?? Rank.未設定];
+    };
+
+    for (let t = 0; t < trials; t++) {
+      const shuffledRequired = [...requiredPlayers].sort(
+        () => Math.random() - 0.5
+      );
+      const shuffledOptional = [...optionalPlayers].sort(
+        () => Math.random() - 0.5
+      );
+      const remainingPlayers = [...shuffledOptional];
+
+      const allGroups: number[][] = [];
+
+      const groupSize = 4;
+      const totalGroupCount = courts.length;
+      const requiredQueue = [...shuffledRequired];
+      const usedPlayerIds = new Set<number>();
+
+      // ① requiredPlayers を優先的にグループに入れる
+      while (allGroups.length < totalGroupCount && requiredQueue.length > 0) {
+        const group: number[] = [];
+
+        // 必須プレイヤーを最大4人入れる
+        while (group.length < groupSize && requiredQueue.length > 0) {
+          const p = requiredQueue.shift()!;
+          group.push(p);
+          usedPlayerIds.add(p);
+        }
+
+        // 不足人数を optional からランクが近い順に補充
+        const needed = groupSize - group.length;
+        if (needed > 0) {
+          // ランクが近い順に並べ替えて取得
+          const sortedOptional = [...remainingPlayers].sort(
+            (a, b) =>
+              Math.abs(getRankValue(a) - getRankValue(group[0])) -
+              Math.abs(getRankValue(b) - getRankValue(group[0]))
+          );
+
+          for (const p of sortedOptional) {
+            if (group.length >= groupSize) break;
+            group.push(p);
+            usedPlayerIds.add(p);
+            const index = remainingPlayers.indexOf(p);
+            if (index !== -1) remainingPlayers.splice(index, 1);
+          }
+        }
+
+        if (group.length === groupSize) {
+          allGroups.push(group);
+        }
+      }
+
+      // ② 残った optionalPlayers でさらにグループ作成（ランク重視）
+      const leftovers = totalPlayers.filter((id) => !usedPlayerIds.has(id));
+      const sortedLeftovers = [...leftovers].sort(
+        (a, b) => getRankValue(a) - getRankValue(b)
       );
 
-      if (groups.every((g) => g.length === 4)) {
-        const key = groups
+      while (
+        allGroups.length < totalGroupCount &&
+        sortedLeftovers.length >= groupSize
+      ) {
+        // ランク差が最小の4人グループを作る
+        let bestGroup: number[] = [];
+        let bestGap = Infinity;
+
+        for (let i = 0; i <= sortedLeftovers.length - groupSize; i++) {
+          const group = sortedLeftovers.slice(i, i + groupSize);
+          const ranks = group.map(getRankValue);
+          const gap = Math.max(...ranks) - Math.min(...ranks);
+          if (gap < bestGap) {
+            bestGroup = group;
+            bestGap = gap;
+            if (gap === 0) break; // 完全一致なら即採用
+          }
+        }
+
+        if (bestGroup.length === groupSize) {
+          allGroups.push(bestGroup);
+          for (const id of bestGroup) {
+            const idx = sortedLeftovers.indexOf(id);
+            if (idx !== -1) sortedLeftovers.splice(idx, 1);
+          }
+        } else {
+          break;
+        }
+      }
+
+      // ✅ requiredPlayers が全員含まれており、十分なグループ数なら採用
+      const allUsed = allGroups.flat();
+      const includesAllRequired = requiredPlayers.every((id) =>
+        allUsed.includes(id)
+      );
+
+      if (includesAllRequired && allGroups.length === totalGroupCount) {
+        const key = allGroups
           .map((g) => [...g].sort((a, b) => a - b).join(","))
           .sort()
           .join("|");
 
         if (!seen.has(key)) {
           seen.add(key);
-          results.push(groups);
+          results.push(allGroups);
         }
       }
     }
@@ -642,9 +739,20 @@ const MatchScreen: React.FC = () => {
     return players.find((player) => player.id === id)?.name;
   };
 
+  const getPlayerRank = (id: number) => {
+    const rank = players.find((player) => player.id === id)?.rank;
+    if (rank === Rank.A) return "A";
+    else if (rank === Rank.B) return "B";
+    else if (rank === Rank.C) return "C";
+    else if (rank === Rank.D) return "D";
+    else if (rank === Rank.E) return "E";
+    else if (rank === Rank.未設定) return "-";
+  };
+
   const renderRestingPlayer = ({ item }: { item: Player }) => (
     <View style={styles.restingPlayerItem}>
       <Text style={styles.restingPlayerName}>{item.name}</Text>
+      <Text style={styles.playerRank}>{getPlayerRank(item.id)}</Text>
     </View>
   );
 
@@ -779,11 +887,20 @@ const styles = StyleSheet.create({
   },
   playerInfo: {
     flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
   },
   playerName: {
     fontSize: 24,
     color: "#333",
     fontWeight: "500",
+  },
+  playerRank: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "500",
+    marginRight: 4,
   },
   vsText: {
     fontSize: 14,
@@ -811,8 +928,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   restingPlayerItem: {
-    flexDirection: "column",
-    alignItems: "center",
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
     backgroundColor: "#FFF9E6",
     paddingHorizontal: 12,
     paddingVertical: 8,

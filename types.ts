@@ -39,3 +39,12 @@ export enum Rank {
   E = "Eランク",
   未設定 = "未設定",
 }
+
+export const rankOrder: Record<Rank, number> = {
+  [Rank.A]: 0,
+  [Rank.B]: 1,
+  [Rank.C]: 2,
+  [Rank.D]: 3,
+  [Rank.E]: 4,
+  [Rank.未設定]: 5,
+};
