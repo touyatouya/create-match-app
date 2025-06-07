@@ -1,15 +1,9 @@
 import { AppContext } from "@/context/AppContext";
-import { Court, Rank } from "@/types";
+import { Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const CoatScreen: React.FC = () => {
   const { courts, setCourts } = useContext(AppContext);
@@ -22,48 +16,12 @@ const CoatScreen: React.FC = () => {
     });
   };
 
-  const removeCourt = (id: number) => {
+  const removeCourt = () => {
     setCourts((prev) => {
       if (prev.length === 1) return prev;
-      return prev.filter((court) => court.id !== id);
+      return prev.filter((_, index) => prev.length - 1 !== index);
     });
   };
-
-  const rankOrder: Rank[] = [Rank.A, Rank.B, Rank.C, Rank.未設定];
-
-  const getNextRank = (current: Rank): Rank => {
-    const index = rankOrder.indexOf(current);
-    return rankOrder[(index + 1) % rankOrder.length];
-  };
-
-  const updateCourtRank = (courtId: number) => {
-    setCourts((prev) =>
-      prev.map((court) =>
-        court.id === courtId
-          ? { ...court, rank: getNextRank(court.rank) }
-          : court
-      )
-    );
-  };
-
-  const renderItem = ({ item, index }: { item: Court; index: number }) => (
-    <View style={styles.courtItem}>
-      <Text style={styles.courtTitle}>{index + 1}コート</Text>
-      <View style={styles.courtInfo}>
-        <View style={styles.rankToggle}>
-          <TouchableOpacity onPress={() => updateCourtRank(item.id)}>
-            <Text style={styles.rankText}>レベル: {item.rank}</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={styles.trashIcon}
-          onPress={() => removeCourt(item.id)}
-        >
-          <Feather name="trash" size={24} color="red" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -71,21 +29,13 @@ const CoatScreen: React.FC = () => {
         <Text style={styles.title}>コート管理</Text>
         <Text style={styles.count}>{courts.length}コート</Text>
       </View>
-      <FlatList
-        data={courts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            プレイヤーがいません。追加してください。
-          </Text>
-        }
-        style={styles.list}
-      />
       <TouchableOpacity style={styles.addButton} onPress={addCourt}>
         <Feather name="plus-circle" size={24} color="white" />
         <Text style={styles.addButtonText}>コートを追加</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.addButton} onPress={removeCourt}>
+        <Feather name="plus-circle" size={24} color="white" />
+        <Text style={styles.addButtonText}>コートを削除</Text>
       </TouchableOpacity>
     </View>
   );

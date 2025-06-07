@@ -27,7 +27,6 @@ export interface Pair {
 
 export interface Court {
   id: number;
-  rank: Rank;
 }
 
 export type Team = "teamA" | "teamB";

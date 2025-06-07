@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GameRound, Match, Player, Rank } from "../../types";
+import { GameRound, Match, Player } from "../../types";
 
 type SectionDataItem = Match | Player;
 
@@ -286,31 +286,6 @@ const MatchScreen: React.FC = () => {
             teamB: team.teamB,
           })),
         };
-
-        // 各マッチの courtId と court.rank を取得
-        const matchesWithCourts = gameRound.matches.map((match) => {
-          const court = courts.find((c) => c.id === match.courtId);
-          return { ...match, courtRank: court?.rank ?? Rank.未設定 };
-        });
-
-        // プレイヤーのランク情報を参照用に変換
-        const playerRankMap = new Map<number, Rank>();
-        players.forEach((p) => playerRankMap.set(p.id, p.rank));
-
-        // コートごとのレベルとプレイヤーランクが合っているか
-        const isCourtLevelValid = matchesWithCourts.every((match) => {
-          const allPlayers = [...match.teamA, ...match.teamB];
-          const rank = match.courtRank;
-
-          if (rank === Rank.未設定) return true; // コート未設定 → OK
-
-          return allPlayers.every((pid) => {
-            const pr = playerRankMap.get(pid) ?? Rank.未設定;
-            return pr === Rank.未設定 || pr === rank;
-          });
-        });
-
-        if (!isCourtLevelValid) continue;
 
         // 必須プレイヤーが全員含まれていなければスキップ
         const allPlayersInThisSet = courtTeams.flatMap((team) => [
