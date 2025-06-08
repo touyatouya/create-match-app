@@ -1,7 +1,7 @@
 import { AppContext } from "@/context/AppContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
-import React, { useContext, useLayoutEffect } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -11,7 +11,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GameRound, Match, Player, Rank, rankOrder } from "../../types";
+import { Checkbox } from "react-native-paper";
+import {
+  GameRound,
+  Gender,
+  GenderPreferenceSetting,
+  Match,
+  Player,
+  Rank,
+  rankOrder,
+} from "../../types";
 
 type SectionDataItem = Match | Player;
 
@@ -24,6 +33,13 @@ type Section = {
 const MatchScreen: React.FC = () => {
   const { players, setPlayers, gameRounds, setGameRounds, pairs, courts } =
     useContext(AppContext);
+
+  const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
+    enabled: false,
+    men: false,
+    woman: false,
+    mix: false,
+  });
 
   const navigation = useNavigation();
 
@@ -229,13 +245,17 @@ const MatchScreen: React.FC = () => {
     optionalPlayers: number[]
   ): GameRound {
     // 計算量削減のため100個に制限
+    // const partitions = getRandomGroupPartitions(
+    //   requiredPlayers,
+    //   optionalPlayers,
+    //   100
+    // );
+
     const partitions = getRandomGroupPartitions(
       requiredPlayers,
       optionalPlayers,
       100
     );
-
-    console.log("partitions", partitions, partitions.length);
 
     // ランダムに並び替え
     const limitedPartitions = partitions.sort(() => Math.random() - 0.5);
@@ -243,8 +263,8 @@ const MatchScreen: React.FC = () => {
     let bestSets: GameRound[] = [];
     let bestScore = -Infinity;
 
-    for (const coatSet of limitedPartitions) {
-      const allTeamSplitSets = coatSet.map((group) =>
+    for (const courtSet of limitedPartitions) {
+      const allTeamSplitSets = courtSet.map((group) =>
         group.length === 4 ? getTeamSplits(group) : [{ teamA: [], teamB: [] }]
       );
 
@@ -291,17 +311,7 @@ const MatchScreen: React.FC = () => {
           })),
         };
 
-        // 必須プレイヤーが全員含まれていなければスキップ
-        const allPlayersInThisSet = courtTeams.flatMap((team) => [
-          ...team.teamA,
-          ...team.teamB,
-        ]);
-        const isAllRequiredPresent = requiredPlayers.every((rp) =>
-          allPlayersInThisSet.includes(rp)
-        );
-        if (!isAllRequiredPresent) continue;
-
-        // すべてのペアが同じチームに存在するかをチェック
+        // すべてのペアが同じチーム、両方とも休憩、片方休憩のいずれかになっているかをチェック
         const areAllPairsValid = pairs.every((pair) => {
           return courtTeams.every((team) => {
             const aHas1 = team.teamA.includes(pair.player1);
@@ -324,7 +334,9 @@ const MatchScreen: React.FC = () => {
         const totalScore = courtTeams.reduce((acc, team) => {
           return (
             acc +
-            (team.teamA.length + team.teamB.length < 2 ? 0 : scoreMatch(team))
+            (team.teamA.length + team.teamB.length < 2
+              ? 0
+              : scoreMatch(team) + scoreGender(team))
           );
         }, 0);
 
@@ -394,121 +406,255 @@ const MatchScreen: React.FC = () => {
   ): number[][][] => {
     const results: number[][][] = [];
     const seen = new Set<string>();
-    const totalPlayers = [...requiredPlayers, ...optionalPlayers];
 
     const getRankValue = (id: number) => {
       const player = players.find((p) => p.id === id);
       return rankOrder[player?.rank ?? Rank.未設定];
     };
 
+    const getRankKey = (id: number) => {
+      const player = players.find((p) => p.id === id);
+      return player?.rank ?? Rank.未設定;
+    };
+
+    const courtsCount = courts.length;
+    const totalNeeded = courtsCount * 4;
+
     for (let t = 0; t < trials; t++) {
-      const shuffledRequired = [...requiredPlayers].sort(
-        () => Math.random() - 0.5
+      const candidate: number[] = [...requiredPlayers];
+
+      // optional から required を除いたもの
+      const availableOptional = optionalPlayers.filter(
+        (id) => !requiredPlayers.includes(id)
       );
-      const shuffledOptional = [...optionalPlayers].sort(
-        () => Math.random() - 0.5
+
+      const allCandidates = [...candidate, ...availableOptional];
+
+      // --- ランクごとに分ける ---
+      const groupedByRank: { [rank: string]: number[] } = {};
+      for (const id of allCandidates) {
+        const rank = getRankKey(id);
+        if (!groupedByRank[rank]) groupedByRank[rank] = [];
+        groupedByRank[rank].push(id);
+      }
+
+      const selected: number[] = [...requiredPlayers];
+
+      // --- まずランク単位で4人組を優先的に選出 ---
+      const rankKeys = Object.keys(groupedByRank).sort(
+        (a, b) =>
+          rankOrder[a as keyof typeof rankOrder] -
+          rankOrder[b as keyof typeof rankOrder]
       );
-      const remainingPlayers = [...shuffledOptional];
 
-      const allGroups: number[][] = [];
-
-      const groupSize = 4;
-      const totalGroupCount = courts.length;
-      const requiredQueue = [...shuffledRequired];
-      const usedPlayerIds = new Set<number>();
-
-      // ① requiredPlayers を優先的にグループに入れる
-      while (allGroups.length < totalGroupCount && requiredQueue.length > 0) {
-        const group: number[] = [];
-
-        // 必須プレイヤーを最大4人入れる
-        while (group.length < groupSize && requiredQueue.length > 0) {
-          const p = requiredQueue.shift()!;
-          group.push(p);
-          usedPlayerIds.add(p);
-        }
-
-        // 不足人数を optional からランクが近い順に補充
-        const needed = groupSize - group.length;
-        if (needed > 0) {
-          // ランクが近い順に並べ替えて取得
-          const sortedOptional = [...remainingPlayers].sort(
-            (a, b) =>
-              Math.abs(getRankValue(a) - getRankValue(group[0])) -
-              Math.abs(getRankValue(b) - getRankValue(group[0]))
-          );
-
-          for (const p of sortedOptional) {
-            if (group.length >= groupSize) break;
-            group.push(p);
-            usedPlayerIds.add(p);
-            const index = remainingPlayers.indexOf(p);
-            if (index !== -1) remainingPlayers.splice(index, 1);
-          }
-        }
-
-        if (group.length === groupSize) {
-          allGroups.push(group);
+      for (const rank of rankKeys) {
+        const ids = groupedByRank[rank].filter(
+          (id) => !requiredPlayers.includes(id)
+        );
+        while (ids.length >= 4 && selected.length + 4 <= totalNeeded) {
+          selected.push(...ids.splice(0, 4));
         }
       }
 
-      // ② 残った optionalPlayers でさらにグループ作成（ランク重視）
-      const leftovers = totalPlayers.filter((id) => !usedPlayerIds.has(id));
-      const sortedLeftovers = [...leftovers].sort(
-        (a, b) => getRankValue(a) - getRankValue(b)
-      );
+      // --- 足りない場合：ランク差が最小の組み合わせで補完 ---
+      if (selected.length < totalNeeded) {
+        const remaining = Object.values(groupedByRank)
+          .flat()
+          .filter((id) => !selected.includes(id));
 
-      while (
-        allGroups.length < totalGroupCount &&
-        sortedLeftovers.length >= groupSize
-      ) {
-        // ランク差が最小の4人グループを作る
-        let bestGroup: number[] = [];
-        let bestGap = Infinity;
+        // const needed = totalNeeded - selected.length;
 
-        for (let i = 0; i <= sortedLeftovers.length - groupSize; i++) {
-          const group = sortedLeftovers.slice(i, i + groupSize);
-          const ranks = group.map(getRankValue);
-          const gap = Math.max(...ranks) - Math.min(...ranks);
-          if (gap < bestGap) {
-            bestGroup = group;
-            bestGap = gap;
-            if (gap === 0) break; // 完全一致なら即採用
+        const combinations: { group: number[]; gap: number }[] = [];
+
+        // すべての4人組をチェック（部分的）
+        for (let i = 0; i < remaining.length; i++) {
+          for (let j = i + 1; j < remaining.length; j++) {
+            for (let k = j + 1; k < remaining.length; k++) {
+              for (let l = k + 1; l < remaining.length; l++) {
+                const group = [
+                  remaining[i],
+                  remaining[j],
+                  remaining[k],
+                  remaining[l],
+                ];
+                const ranks = group.map(getRankValue);
+                const gap = Math.max(...ranks) - Math.min(...ranks);
+                combinations.push({ group, gap });
+              }
+            }
           }
         }
 
-        if (bestGroup.length === groupSize) {
-          allGroups.push(bestGroup);
-          for (const id of bestGroup) {
-            const idx = sortedLeftovers.indexOf(id);
-            if (idx !== -1) sortedLeftovers.splice(idx, 1);
-          }
-        } else {
-          break;
+        combinations.sort((a, b) => a.gap - b.gap); // ランク差が小さい順
+
+        for (const { group } of combinations) {
+          if (group.some((id) => selected.includes(id))) continue;
+          if (selected.length + 4 > totalNeeded) continue;
+
+          selected.push(...group);
+        }
+
+        // まだ足りないときは適当に埋める（最終手段）
+        const stillRemaining = remaining.filter((id) => !selected.includes(id));
+        for (const id of stillRemaining) {
+          if (selected.length >= totalNeeded) break;
+          selected.push(id);
         }
       }
 
-      // ✅ requiredPlayers が全員含まれており、十分なグループ数なら採用
-      const allUsed = allGroups.flat();
+      if (selected.length !== totalNeeded) continue;
+
+      // --- グループ化 ---
+      selected.sort((a, b) => getRankValue(a) - getRankValue(b));
+      const groups: number[][] = [];
+      for (let i = 0; i < totalNeeded; i += 4) {
+        groups.push(selected.slice(i, i + 4));
+      }
+
+      // --- 必須プレイヤーがすべて含まれているか確認 ---
+      const allUsed = groups.flat();
       const includesAllRequired = requiredPlayers.every((id) =>
         allUsed.includes(id)
       );
 
-      if (includesAllRequired && allGroups.length === totalGroupCount) {
-        const key = allGroups
+      if (includesAllRequired && groups.length === courtsCount) {
+        const key = groups
           .map((g) => [...g].sort((a, b) => a - b).join(","))
           .sort()
           .join("|");
 
         if (!seen.has(key)) {
           seen.add(key);
-          results.push(allGroups);
+          results.push(groups);
         }
       }
     }
 
     return results;
   };
+
+  // const getRandomGroupPartitions = (
+  //   requiredPlayers: number[],
+  //   optionalPlayers: number[],
+  //   trials = 100
+  // ): number[][][] => {
+  //   const results: number[][][] = [];
+  //   const seen = new Set<string>();
+  //   const totalPlayers = [...requiredPlayers, ...optionalPlayers];
+
+  //   const getRankValue = (id: number) => {
+  //     const player = players.find((p) => p.id === id);
+  //     return rankOrder[player?.rank ?? Rank.未設定];
+  //   };
+
+  //   for (let t = 0; t < trials; t++) {
+  //     const shuffledRequired = [...requiredPlayers].sort(
+  //       () => Math.random() - 0.5
+  //     );
+  //     const shuffledOptional = [...optionalPlayers].sort(
+  //       () => Math.random() - 0.5
+  //     );
+  //     const remainingPlayers = [...shuffledOptional];
+
+  //     const allGroups: number[][] = [];
+
+  //     const groupSize = 4;
+  //     const totalGroupCount = courts.length;
+  //     const requiredQueue = [...shuffledRequired];
+  //     const usedPlayerIds = new Set<number>();
+
+  //     // ① requiredPlayers を優先的にグループに入れる
+  //     while (allGroups.length < totalGroupCount && requiredQueue.length > 0) {
+  //       const group: number[] = [];
+
+  //       // 必須プレイヤーを最大4人入れる
+  //       while (group.length < groupSize && requiredQueue.length > 0) {
+  //         const p = requiredQueue.shift()!;
+  //         group.push(p);
+  //         usedPlayerIds.add(p);
+  //       }
+
+  //       // 不足人数を optional からランクが近い順に補充
+  //       const needed = groupSize - group.length;
+  //       if (needed > 0) {
+  //         // ランクが近い順に並べ替えて取得
+  //         const sortedOptional = [...remainingPlayers].sort(
+  //           (a, b) =>
+  //             Math.abs(getRankValue(a) - getRankValue(group[0])) -
+  //             Math.abs(getRankValue(b) - getRankValue(group[0]))
+  //         );
+
+  //         for (const p of sortedOptional) {
+  //           if (group.length >= groupSize) break;
+  //           group.push(p);
+  //           usedPlayerIds.add(p);
+  //           const index = remainingPlayers.indexOf(p);
+  //           if (index !== -1) remainingPlayers.splice(index, 1);
+  //         }
+  //       }
+
+  //       if (group.length === groupSize) {
+  //         allGroups.push(group);
+  //       }
+  //     }
+
+  //     // ② 残った optionalPlayers でさらにグループ作成（ランク重視）
+  //     const leftovers = totalPlayers.filter((id) => !usedPlayerIds.has(id));
+  //     const sortedLeftovers = [...leftovers].sort(
+  //       (a, b) => getRankValue(a) - getRankValue(b)
+  //     );
+
+  //     while (
+  //       allGroups.length < totalGroupCount &&
+  //       sortedLeftovers.length >= groupSize
+  //     ) {
+  //       // ランク差が最小の4人グループを作る
+  //       let bestGroup: number[] = [];
+  //       let bestGap = Infinity;
+
+  //       for (let i = 0; i <= sortedLeftovers.length - groupSize; i++) {
+  //         const group = sortedLeftovers.slice(i, i + groupSize);
+  //         const ranks = group.map(getRankValue);
+  //         const gap = Math.max(...ranks) - Math.min(...ranks);
+  //         if (gap < bestGap) {
+  //           bestGroup = group;
+  //           bestGap = gap;
+  //           if (gap === 0) break; // 完全一致なら即採用
+  //         }
+  //       }
+
+  //       if (bestGroup.length === groupSize) {
+  //         allGroups.push(bestGroup);
+  //         for (const id of bestGroup) {
+  //           const idx = sortedLeftovers.indexOf(id);
+  //           if (idx !== -1) sortedLeftovers.splice(idx, 1);
+  //         }
+  //       } else {
+  //         break;
+  //       }
+  //     }
+
+  //     // ✅ requiredPlayers が全員含まれており、十分なグループ数なら採用
+  //     const allUsed = allGroups.flat();
+  //     const includesAllRequired = requiredPlayers.every((id) =>
+  //       allUsed.includes(id)
+  //     );
+
+  //     if (includesAllRequired && allGroups.length === totalGroupCount) {
+  //       const key = allGroups
+  //         .map((g) => [...g].sort((a, b) => a - b).join(","))
+  //         .sort()
+  //         .join("|");
+
+  //       if (!seen.has(key)) {
+  //         seen.add(key);
+  //         results.push(allGroups);
+  //       }
+  //     }
+  //   }
+
+  //   return results;
+  // };
   // 各4人グループをチーム分け（2人＋2人のダブルス）
   const getTeamSplits = (
     group: number[]
@@ -524,7 +670,7 @@ const MatchScreen: React.FC = () => {
     return teamPairs;
   };
 
-  // スコア計算
+  // なるべく異なる人と試合すると高得点
   const scoreMatch = (match: { teamA: number[]; teamB: number[] }): number => {
     let score = 0;
 
@@ -543,6 +689,41 @@ const MatchScreen: React.FC = () => {
         const count = countFacedBefore(p1, p2);
         score += count * -1;
       }
+    }
+
+    return score;
+  };
+
+  // 性別設定に沿った組み合わせだと高得点
+  const scoreGender = (team: { teamA: number[]; teamB: number[] }): number => {
+    if (!genderSetting.enabled) return 0;
+    const teamAGenders = team.teamA.map(
+      (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定
+    );
+    const teamBGenders = team.teamB.map(
+      (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定
+    );
+    const teamAMale = teamAGenders.filter((g) => g === "男性").length;
+    const teamAFemale = teamAGenders.filter((g) => g === "女性").length;
+    const teamBMale = teamBGenders.filter((g) => g === "男性").length;
+    const teamBFemale = teamBGenders.filter((g) => g === "女性").length;
+
+    let score = 0;
+
+    if (
+      genderSetting.mix &&
+      teamAMale === 1 &&
+      teamAFemale === 1 &&
+      teamBMale === 1 &&
+      teamBFemale === 1
+    ) {
+      score += 3;
+    }
+    if (genderSetting.men && teamAMale === 2 && teamBMale === 2) {
+      score += 3;
+    }
+    if (genderSetting.woman && teamAFemale === 2 && teamBFemale === 2) {
+      score += 3;
     }
 
     return score;
@@ -774,6 +955,127 @@ const MatchScreen: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.title}>試合管理</Text>
       </View>
+      <View style={styles.item}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>レベルを選択</Text>
+          <TouchableOpacity
+            style={styles.optionRow}
+            onPress={() =>
+              setGenderSetting((prev) => {
+                return { ...prev, enabled: false };
+              })
+            }
+          >
+            <View style={styles.radioOuter}>
+              {!genderSetting.enabled && <View style={styles.radioInner} />}
+            </View>
+            <Text style={styles.optionText}>性別を考慮しない</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.optionRow}
+            onPress={() =>
+              setGenderSetting((prev) => {
+                return { ...prev, enabled: true };
+              })
+            }
+          >
+            <View style={styles.radioOuter}>
+              {genderSetting.enabled && <View style={styles.radioInner} />}
+            </View>
+            <Text style={styles.optionText}>性別を考慮する</Text>
+          </TouchableOpacity>
+          {genderSetting.enabled && (
+            <View>
+              <TouchableOpacity
+                style={styles.optionRow}
+                onPress={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, men: !prev.men };
+                  })
+                }
+              >
+                <View
+                  style={{
+                    padding: 0,
+                    backgroundColor: genderSetting.men ? "#007AFF" : "#f0f0f0",
+                    borderWidth: genderSetting.men ? 0 : 1,
+                    borderColor: genderSetting.men ? "none" : "#f0f0f0",
+                  }}
+                >
+                  <Checkbox
+                    status={genderSetting.men ? "checked" : "unchecked"}
+                    onPress={() =>
+                      setGenderSetting((prev) => {
+                        return { ...prev, men: !prev.men };
+                      })
+                    }
+                    color="white" // ✅ チェック時の色
+                  />
+                </View>
+                <Text style={styles.optionText}>なるべく男子ダブルス</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionRow}
+                onPress={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, woman: !prev.woman };
+                  })
+                }
+              >
+                <View
+                  style={{
+                    padding: 0,
+                    backgroundColor: genderSetting.woman
+                      ? "#007AFF"
+                      : "#f0f0f0",
+                    borderWidth: genderSetting.woman ? 0 : 1,
+                    borderColor: genderSetting.woman ? "none" : "#f0f0f0",
+                  }}
+                >
+                  <Checkbox
+                    status={genderSetting.woman ? "checked" : "unchecked"}
+                    onPress={() =>
+                      setGenderSetting((prev) => {
+                        return { ...prev, woman: !prev.woman };
+                      })
+                    }
+                    color="white" // ✅ チェック時の色
+                  />
+                </View>
+                <Text style={styles.optionText}>なるべく女子ダブルス</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.optionRow}
+                onPress={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, mix: !prev.mix };
+                  })
+                }
+              >
+                <View
+                  style={{
+                    padding: 0,
+                    backgroundColor: genderSetting.mix ? "#007AFF" : "#f0f0f0",
+                    borderWidth: genderSetting.mix ? 0 : 1,
+                    borderColor: genderSetting.mix ? "none" : "#f0f0f0",
+                  }}
+                >
+                  <Checkbox
+                    status={genderSetting.mix ? "checked" : "unchecked"}
+                    onPress={() =>
+                      setGenderSetting((prev) => {
+                        return { ...prev, mix: !prev.mix };
+                      })
+                    }
+                    color="white" // ✅ チェック時の色
+                  />
+                </View>
+                <Text style={styles.optionText}>なるべくミックスダブルス</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </View>
 
       <TouchableOpacity style={styles.generateButton} onPress={createMatch}>
         <Ionicons name="refresh" size={20} color="white" />
@@ -822,6 +1124,68 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  selectButton: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+  },
+  selectButtonText: {
+    fontSize: 16,
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 24,
+    borderRadius: 12,
+    width: "80%",
+    elevation: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  radioOuter: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#007AFF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  radioInner: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#007AFF",
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: "#ccc",
+    paddingVertical: 32,
+  },
+  info: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  label: {
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

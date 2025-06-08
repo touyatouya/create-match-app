@@ -1,10 +1,23 @@
 export interface Player {
   id: number;
   name: string;
+  gender: Gender;
   matchCount: number;
   isRest: boolean;
   isJoin: boolean;
   rank: Rank;
+}
+
+export enum Gender {
+  男性 = "男性",
+  女性 = "女性",
+  未設定 = "未設定",
+}
+export interface GenderPreferenceSetting {
+  enabled: boolean;
+  mix: boolean;
+  men: boolean;
+  woman: boolean;
 }
 
 export interface Match {
@@ -46,5 +59,5 @@ export const rankOrder: Record<Rank, number> = {
   [Rank.C]: 2,
   [Rank.D]: 3,
   [Rank.E]: 4,
-  [Rank.未設定]: 5,
+  [Rank.未設定]: 999,
 };

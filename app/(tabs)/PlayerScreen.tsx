@@ -1,5 +1,5 @@
 import { AppContext } from "@/context/AppContext";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import { Checkbox } from "react-native-paper";
-import { Pair, Player, Rank } from "../../types";
+import { Gender, Pair, Player, Rank } from "../../types";
 
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
@@ -44,6 +44,7 @@ const PlayerScreen: React.FC = () => {
           players.push({
             id: parsedPlayers[i].id,
             name: parsedPlayers[i].name,
+            gender: parsedPlayers[i].gender,
             matchCount: 0,
             isJoin: false,
             isRest: false,
@@ -125,6 +126,7 @@ const PlayerScreen: React.FC = () => {
       const newPlayer: Player = {
         id: newPlayerId,
         name: newPlayerName,
+        gender: Gender.未設定,
         matchCount: 0,
         isJoin: true,
         isRest: false,
@@ -215,6 +217,7 @@ const PlayerScreen: React.FC = () => {
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
+      <Text style={[styles.cellRank, styles.headerText]}>性別</Text>
       <Text style={[styles.cellRank, styles.headerText]}>ランク</Text>
       <Text style={[styles.cellPair, styles.headerText]}>ペア</Text>
       <Text style={[styles.cellMatch, styles.headerText]}>試合数</Text>
@@ -239,6 +242,15 @@ const PlayerScreen: React.FC = () => {
         />
       </View>
       <Text style={styles.cellName}>{item.name}</Text>
+      <Text style={styles.cellName}>
+        {item.gender === Gender.男性 ? (
+          <Foundation name="male" size={24} color="blue" />
+        ) : item.gender === Gender.女性 ? (
+          <Foundation name="female" size={24} color="red" />
+        ) : (
+          ""
+        )}
+      </Text>
       <Text style={styles.cellRank}>{dispRank(item.rank)}</Text>
       <Text style={styles.cellPair}>
         {findPairPlayerId(item.id) && (

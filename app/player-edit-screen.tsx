@@ -1,9 +1,10 @@
 import { AppContext } from "@/context/AppContext";
-import { Player, Rank } from "@/types";
+import { Gender, Player, Rank } from "@/types";
 import {
   AntDesign,
   FontAwesome5,
   FontAwesome6,
+  Foundation,
   Ionicons,
 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -196,6 +197,24 @@ const PlayerEditScreen: React.FC = () => {
     }
   };
 
+  const genderOrder: Gender[] = [Gender.男性, Gender.女性, Gender.未設定];
+
+  const toggleGender = () => {
+    const currentIndex = genderOrder.indexOf(player?.gender ?? Gender.未設定);
+    const nextGender = genderOrder[(currentIndex + 1) % genderOrder.length];
+    setPlayers((players) => {
+      return players.map((player) => {
+        if (player.id === id) {
+          return {
+            ...player,
+            gender: nextGender,
+          };
+        }
+        return { ...player };
+      });
+    });
+  };
+
   return (
     <>
       <Stack.Screen
@@ -291,6 +310,17 @@ const PlayerEditScreen: React.FC = () => {
             <Text style={styles.link}>編集</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.item}>
+          <Foundation name="male-female" size={24} color="black" />
+          <View style={styles.info}>
+            <Text style={styles.label}>性別</Text>
+            <TouchableOpacity style={[styles.button]} onPress={toggleGender}>
+              <Text style={styles.value}>
+                {player?.gender ?? Gender.未設定}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         {/* レベル */}
         <View style={styles.item}>
@@ -341,6 +371,18 @@ const PlayerEditScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    margin: 5,
+    backgroundColor: "#ccc",
+  },
+  text: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "600",
+  },
   // container: {
   //   padding: 24,
   // },
