@@ -5,6 +5,7 @@ import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Button,
+  LayoutAnimation,
   SectionList,
   StyleSheet,
   Text,
@@ -40,6 +41,8 @@ const MatchScreen: React.FC = () => {
     woman: false,
     mix: false,
   });
+
+  const [expanded, setExpanded] = useState(false);
 
   const navigation = useNavigation();
 
@@ -950,131 +953,147 @@ const MatchScreen: React.FC = () => {
     },
   ];
 
+  const toggleExpanded = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded((prev) => !prev);
+  };
+
   return (
     <View style={{ flex: 1, padding: 10 }}>
       <View style={styles.header}>
         <Text style={styles.title}>試合管理</Text>
       </View>
       <View style={styles.item}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>レベルを選択</Text>
-          <TouchableOpacity
-            style={styles.optionRow}
-            onPress={() =>
-              setGenderSetting((prev) => {
-                return { ...prev, enabled: false };
-              })
-            }
-          >
-            <View style={styles.radioOuter}>
-              {!genderSetting.enabled && <View style={styles.radioInner} />}
-            </View>
-            <Text style={styles.optionText}>性別を考慮しない</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.optionRow}
-            onPress={() =>
-              setGenderSetting((prev) => {
-                return { ...prev, enabled: true };
-              })
-            }
-          >
-            <View style={styles.radioOuter}>
-              {genderSetting.enabled && <View style={styles.radioInner} />}
-            </View>
-            <Text style={styles.optionText}>性別を考慮する</Text>
-          </TouchableOpacity>
-          {genderSetting.enabled && (
-            <View>
-              <TouchableOpacity
-                style={styles.optionRow}
-                onPress={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, men: !prev.men };
-                  })
-                }
-              >
-                <View
-                  style={{
-                    padding: 0,
-                    backgroundColor: genderSetting.men ? "#007AFF" : "#f0f0f0",
-                    borderWidth: genderSetting.men ? 0 : 1,
-                    borderColor: genderSetting.men ? "none" : "#f0f0f0",
-                  }}
+        <TouchableOpacity onPress={toggleExpanded} style={styles.header}>
+          <Text style={styles.title}>性別設定</Text>
+        </TouchableOpacity>
+        {expanded && (
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>性別設定</Text>
+            <TouchableOpacity
+              style={styles.optionRow}
+              onPress={() =>
+                setGenderSetting((prev) => {
+                  return { ...prev, enabled: false };
+                })
+              }
+            >
+              <View style={styles.radioOuter}>
+                {!genderSetting.enabled && <View style={styles.radioInner} />}
+              </View>
+              <Text style={styles.optionText}>性別を考慮しない</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionRow}
+              onPress={() =>
+                setGenderSetting((prev) => {
+                  return { ...prev, enabled: true };
+                })
+              }
+            >
+              <View style={styles.radioOuter}>
+                {genderSetting.enabled && <View style={styles.radioInner} />}
+              </View>
+              <Text style={styles.optionText}>性別を考慮する</Text>
+            </TouchableOpacity>
+            {genderSetting.enabled && (
+              <View>
+                <TouchableOpacity
+                  style={styles.optionRow}
+                  onPress={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, men: !prev.men };
+                    })
+                  }
                 >
-                  <Checkbox
-                    status={genderSetting.men ? "checked" : "unchecked"}
-                    onPress={() =>
-                      setGenderSetting((prev) => {
-                        return { ...prev, men: !prev.men };
-                      })
-                    }
-                    color="white" // ✅ チェック時の色
-                  />
-                </View>
-                <Text style={styles.optionText}>なるべく男子ダブルス</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.optionRow}
-                onPress={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, woman: !prev.woman };
-                  })
-                }
-              >
-                <View
-                  style={{
-                    padding: 0,
-                    backgroundColor: genderSetting.woman
-                      ? "#007AFF"
-                      : "#f0f0f0",
-                    borderWidth: genderSetting.woman ? 0 : 1,
-                    borderColor: genderSetting.woman ? "none" : "#f0f0f0",
-                  }}
+                  <View
+                    style={{
+                      padding: 0,
+                      backgroundColor: genderSetting.men
+                        ? "#007AFF"
+                        : "#f0f0f0",
+                      borderWidth: genderSetting.men ? 0 : 1,
+                      borderColor: genderSetting.men ? "none" : "#f0f0f0",
+                    }}
+                  >
+                    <Checkbox
+                      status={genderSetting.men ? "checked" : "unchecked"}
+                      onPress={() =>
+                        setGenderSetting((prev) => {
+                          return { ...prev, men: !prev.men };
+                        })
+                      }
+                      color="white" // ✅ チェック時の色
+                    />
+                  </View>
+                  <Text style={styles.optionText}>なるべく男子ダブルス</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.optionRow}
+                  onPress={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, woman: !prev.woman };
+                    })
+                  }
                 >
-                  <Checkbox
-                    status={genderSetting.woman ? "checked" : "unchecked"}
-                    onPress={() =>
-                      setGenderSetting((prev) => {
-                        return { ...prev, woman: !prev.woman };
-                      })
-                    }
-                    color="white" // ✅ チェック時の色
-                  />
-                </View>
-                <Text style={styles.optionText}>なるべく女子ダブルス</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.optionRow}
-                onPress={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, mix: !prev.mix };
-                  })
-                }
-              >
-                <View
-                  style={{
-                    padding: 0,
-                    backgroundColor: genderSetting.mix ? "#007AFF" : "#f0f0f0",
-                    borderWidth: genderSetting.mix ? 0 : 1,
-                    borderColor: genderSetting.mix ? "none" : "#f0f0f0",
-                  }}
+                  <View
+                    style={{
+                      padding: 0,
+                      backgroundColor: genderSetting.woman
+                        ? "#007AFF"
+                        : "#f0f0f0",
+                      borderWidth: genderSetting.woman ? 0 : 1,
+                      borderColor: genderSetting.woman ? "none" : "#f0f0f0",
+                    }}
+                  >
+                    <Checkbox
+                      status={genderSetting.woman ? "checked" : "unchecked"}
+                      onPress={() =>
+                        setGenderSetting((prev) => {
+                          return { ...prev, woman: !prev.woman };
+                        })
+                      }
+                      color="white" // ✅ チェック時の色
+                    />
+                  </View>
+                  <Text style={styles.optionText}>なるべく女子ダブルス</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.optionRow}
+                  onPress={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, mix: !prev.mix };
+                    })
+                  }
                 >
-                  <Checkbox
-                    status={genderSetting.mix ? "checked" : "unchecked"}
-                    onPress={() =>
-                      setGenderSetting((prev) => {
-                        return { ...prev, mix: !prev.mix };
-                      })
-                    }
-                    color="white" // ✅ チェック時の色
-                  />
-                </View>
-                <Text style={styles.optionText}>なるべくミックスダブルス</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+                  <View
+                    style={{
+                      padding: 0,
+                      backgroundColor: genderSetting.mix
+                        ? "#007AFF"
+                        : "#f0f0f0",
+                      borderWidth: genderSetting.mix ? 0 : 1,
+                      borderColor: genderSetting.mix ? "none" : "#f0f0f0",
+                    }}
+                  >
+                    <Checkbox
+                      status={genderSetting.mix ? "checked" : "unchecked"}
+                      onPress={() =>
+                        setGenderSetting((prev) => {
+                          return { ...prev, mix: !prev.mix };
+                        })
+                      }
+                      color="white" // ✅ チェック時の色
+                    />
+                  </View>
+                  <Text style={styles.optionText}>
+                    なるべくミックスダブルス
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
       </View>
 
       <TouchableOpacity style={styles.generateButton} onPress={createMatch}>
