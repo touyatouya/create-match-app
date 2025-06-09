@@ -19,8 +19,6 @@ import {
   GenderPreferenceSetting,
   Match,
   Player,
-  Rank,
-  rankOrder,
 } from "../../types";
 
 type SectionDataItem = Match | Player;
@@ -138,7 +136,7 @@ const MatchScreen: React.FC = () => {
             >
               <View style={styles.playerInfo}>
                 <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
-                <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text>
+                {/* <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text> */}
               </View>
               <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
             </TouchableOpacity>
@@ -161,7 +159,7 @@ const MatchScreen: React.FC = () => {
             >
               <View style={styles.playerInfo}>
                 <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
-                <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text>
+                {/* <Text style={styles.playerRank}>{getPlayerRank(playerId)}</Text> */}
               </View>
               <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
             </TouchableOpacity>
@@ -214,6 +212,7 @@ const MatchScreen: React.FC = () => {
       separatedPlayers[matchCountSeparete_i].push(sortedPlayer[player_i]);
     }
 
+    // priorityPlayersには、試合回数がnormalPlayersより1以上少なく、コート数×4人より少ない人数が入る
     let priorityPlayers: Player[] = [];
     let normalPlayers: Player[] = [];
     for (let i = 0; i < separatedPlayers.length; i++) {
@@ -247,16 +246,8 @@ const MatchScreen: React.FC = () => {
     requiredPlayers: number[],
     optionalPlayers: number[]
   ): GameRound {
-    // 計算量削減のため100個に制限
-    // const partitions = getRandomGroupPartitions(
-    //   requiredPlayers,
-    //   optionalPlayers,
-    //   100
-    // );
-
     const partitions = getRandomGroupPartitions(
-      requiredPlayers,
-      optionalPlayers,
+      [...requiredPlayers, ...optionalPlayers],
       100
     );
 
@@ -313,6 +304,16 @@ const MatchScreen: React.FC = () => {
             teamB: team.teamB,
           })),
         };
+
+        // 必須プレイヤーが全員含まれていなければスキップ
+        const allPlayersInThisSet = courtTeams.flatMap((team) => [
+          ...team.teamA,
+          ...team.teamB,
+        ]);
+        const isAllRequiredPresent = requiredPlayers.every((rp) =>
+          allPlayersInThisSet.includes(rp)
+        );
+        if (!isAllRequiredPresent) continue;
 
         // すべてのペアが同じチーム、両方とも休憩、片方休憩のいずれかになっているかをチェック
         const areAllPairsValid = pairs.every((pair) => {
@@ -402,125 +403,21 @@ const MatchScreen: React.FC = () => {
     );
   };
 
+  // 12人を3グループに分割（各グループ4人）
   const getRandomGroupPartitions = (
-    requiredPlayers: number[],
-    optionalPlayers: number[],
+    players: number[],
     trials = 100
   ): number[][][] => {
     const results: number[][][] = [];
     const seen = new Set<string>();
 
-    const getRankValue = (id: number) => {
-      const player = players.find((p) => p.id === id);
-      return rankOrder[player?.rank ?? Rank.未設定];
-    };
-
-    const getRankKey = (id: number) => {
-      const player = players.find((p) => p.id === id);
-      return player?.rank ?? Rank.未設定;
-    };
-
-    const courtsCount = courts.length;
-    const totalNeeded = courtsCount * 4;
-
-    for (let t = 0; t < trials; t++) {
-      const candidate: number[] = [...requiredPlayers];
-
-      // optional から required を除いたもの
-      const availableOptional = optionalPlayers.filter(
-        (id) => !requiredPlayers.includes(id)
+    for (let i = 0; i < trials; i++) {
+      const shuffled = [...players].sort(() => Math.random() - 0.5);
+      const groups = Array.from({ length: courts.length }, (_, idx) =>
+        shuffled.slice(idx * 4, (idx + 1) * 4)
       );
 
-      const allCandidates = [...candidate, ...availableOptional];
-
-      // --- ランクごとに分ける ---
-      const groupedByRank: { [rank: string]: number[] } = {};
-      for (const id of allCandidates) {
-        const rank = getRankKey(id);
-        if (!groupedByRank[rank]) groupedByRank[rank] = [];
-        groupedByRank[rank].push(id);
-      }
-
-      const selected: number[] = [...requiredPlayers];
-
-      // --- まずランク単位で4人組を優先的に選出 ---
-      const rankKeys = Object.keys(groupedByRank).sort(
-        (a, b) =>
-          rankOrder[a as keyof typeof rankOrder] -
-          rankOrder[b as keyof typeof rankOrder]
-      );
-
-      for (const rank of rankKeys) {
-        const ids = groupedByRank[rank].filter(
-          (id) => !requiredPlayers.includes(id)
-        );
-        while (ids.length >= 4 && selected.length + 4 <= totalNeeded) {
-          selected.push(...ids.splice(0, 4));
-        }
-      }
-
-      // --- 足りない場合：ランク差が最小の組み合わせで補完 ---
-      if (selected.length < totalNeeded) {
-        const remaining = Object.values(groupedByRank)
-          .flat()
-          .filter((id) => !selected.includes(id));
-
-        // const needed = totalNeeded - selected.length;
-
-        const combinations: { group: number[]; gap: number }[] = [];
-
-        // すべての4人組をチェック（部分的）
-        for (let i = 0; i < remaining.length; i++) {
-          for (let j = i + 1; j < remaining.length; j++) {
-            for (let k = j + 1; k < remaining.length; k++) {
-              for (let l = k + 1; l < remaining.length; l++) {
-                const group = [
-                  remaining[i],
-                  remaining[j],
-                  remaining[k],
-                  remaining[l],
-                ];
-                const ranks = group.map(getRankValue);
-                const gap = Math.max(...ranks) - Math.min(...ranks);
-                combinations.push({ group, gap });
-              }
-            }
-          }
-        }
-
-        combinations.sort((a, b) => a.gap - b.gap); // ランク差が小さい順
-
-        for (const { group } of combinations) {
-          if (group.some((id) => selected.includes(id))) continue;
-          if (selected.length + 4 > totalNeeded) continue;
-
-          selected.push(...group);
-        }
-
-        // まだ足りないときは適当に埋める（最終手段）
-        const stillRemaining = remaining.filter((id) => !selected.includes(id));
-        for (const id of stillRemaining) {
-          if (selected.length >= totalNeeded) break;
-          selected.push(id);
-        }
-      }
-
-      if (selected.length !== totalNeeded) continue;
-
-      // --- グループ化 ---
-      selected.sort((a, b) => getRankValue(a) - getRankValue(b));
-      const groups: number[][] = [];
-      for (let i = 0; i < totalNeeded; i += 4) {
-        groups.push(selected.slice(i, i + 4));
-      }
-
-      // --- 必須プレイヤーがすべて含まれているか確認 ---
-      const allUsed = groups.flat();
-      const includesAllRequired = requiredPlayers.every((id) =>
-        allUsed.includes(id)
-      );
-
-      if (includesAllRequired && groups.length === courtsCount) {
+      if (groups.every((g) => g.length === 4)) {
         const key = groups
           .map((g) => [...g].sort((a, b) => a - b).join(","))
           .sort()
@@ -923,20 +820,20 @@ const MatchScreen: React.FC = () => {
     return players.find((player) => player.id === id)?.name;
   };
 
-  const getPlayerRank = (id: number) => {
-    const rank = players.find((player) => player.id === id)?.rank;
-    if (rank === Rank.A) return "A";
-    else if (rank === Rank.B) return "B";
-    else if (rank === Rank.C) return "C";
-    else if (rank === Rank.D) return "D";
-    else if (rank === Rank.E) return "E";
-    else if (rank === Rank.未設定) return "-";
-  };
+  // const getPlayerRank = (id: number) => {
+  //   const rank = players.find((player) => player.id === id)?.rank;
+  //   if (rank === Rank.A) return "A";
+  //   else if (rank === Rank.B) return "B";
+  //   else if (rank === Rank.C) return "C";
+  //   else if (rank === Rank.D) return "D";
+  //   else if (rank === Rank.E) return "E";
+  //   else if (rank === Rank.未設定) return "-";
+  // };
 
   const renderRestingPlayer = ({ item }: { item: Player }) => (
     <View style={styles.restingPlayerItem}>
       <Text style={styles.restingPlayerName}>{item.name}</Text>
-      <Text style={styles.playerRank}>{getPlayerRank(item.id)}</Text>
+      {/* <Text style={styles.playerRank}>{getPlayerRank(item.id)}</Text> */}
     </View>
   );
 

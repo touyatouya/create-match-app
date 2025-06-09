@@ -205,20 +205,21 @@ const PlayerScreen: React.FC = () => {
     }
   };
 
-  const dispRank = (rank: Rank) => {
-    if (rank === Rank.A) return "A";
-    if (rank === Rank.B) return "B";
-    if (rank === Rank.C) return "C";
-    if (rank === Rank.D) return "D";
-    if (rank === Rank.E) return "E";
-    else return "";
-  };
+  // ランク表示用関数
+  // const dispRank = (rank: Rank) => {
+  //   if (rank === Rank.A) return "A";
+  //   if (rank === Rank.B) return "B";
+  //   if (rank === Rank.C) return "C";
+  //   if (rank === Rank.D) return "D";
+  //   if (rank === Rank.E) return "E";
+  //   else return "";
+  // };
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
-      <Text style={[styles.cellRank, styles.headerText]}>性別</Text>
-      <Text style={[styles.cellRank, styles.headerText]}>ランク</Text>
+      <Text style={[styles.cellGender, styles.headerText]}>性別</Text>
+      {/* <Text style={[styles.cellRank, styles.headerText]}>ランク</Text> */}
       <Text style={[styles.cellPair, styles.headerText]}>ペア</Text>
       <Text style={[styles.cellMatch, styles.headerText]}>試合数</Text>
     </View>
@@ -251,7 +252,7 @@ const PlayerScreen: React.FC = () => {
           ""
         )}
       </Text>
-      <Text style={styles.cellRank}>{dispRank(item.rank)}</Text>
+      {/* <Text style={styles.cellRank}>{dispRank(item.rank)}</Text> */}
       <Text style={styles.cellPair}>
         {findPairPlayerId(item.id) && (
           <View style={styles.pairInfo}>
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     // fontWeight: "bold",
   },
-  cellRank: {
+  cellGender: {
     flex: 1, // ランクは幅を狭く
     paddingHorizontal: 4,
     fontSize: 16,

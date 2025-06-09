@@ -3,20 +3,17 @@ import { Gender, Player, Rank } from "@/types";
 import {
   AntDesign,
   FontAwesome5,
-  FontAwesome6,
   Foundation,
   Ionicons,
 } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import {
   Alert,
   Button,
   InputAccessoryView,
-  Modal,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -28,10 +25,10 @@ const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers, pairs } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
 
-  // const options = ["Aランク", "Bランク", "Cランク", "未設定"];
-
-  const [selected, setSelected] = useState<string | null>(null);
-  const [visible, setVisible] = useState(false);
+  // 選択しているレベル
+  // const [selected, setSelected] = useState<string | null>(null);
+  // レベル選択モーダル
+  // const [visible, setVisible] = useState(false);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -49,40 +46,43 @@ const PlayerEditScreen: React.FC = () => {
     }
   };
 
-  const handleSelect = (value: Rank) => {
-    setSelected(value);
-    let newPlayers: Player[] = [];
-    setPlayers((prev) => {
-      newPlayers = prev.map((player) => {
-        if (player.id === id) {
-          return {
-            ...player,
-            rank: value,
-          };
-        }
-        return { ...player };
-      });
+  {
+    /* レベル選択時に発火する関数 */
+  }
+  // const handleSelect = (value: Rank) => {
+  //   setSelected(value);
+  //   let newPlayers: Player[] = [];
+  //   setPlayers((prev) => {
+  //     newPlayers = prev.map((player) => {
+  //       if (player.id === id) {
+  //         return {
+  //           ...player,
+  //           rank: value,
+  //         };
+  //       }
+  //       return { ...player };
+  //     });
 
-      return newPlayers;
-    });
-    savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          rank: player.rank,
-        };
-      })
-    );
-    setVisible(false);
-  };
+  //     return newPlayers;
+  //   });
+  //   savePlayerInfo(
+  //     newPlayers.map((player) => {
+  //       return {
+  //         id: player.id,
+  //         name: player.name,
+  //         rank: player.rank,
+  //       };
+  //     })
+  //   );
+  //   setVisible(false);
+  // };
 
   const player = players.find((player) => player.id === id);
 
-  useEffect(() => {
-    if (player != null) setSelected(player.rank);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (player != null) setSelected(player.rank);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const router = useRouter();
 
@@ -323,7 +323,7 @@ const PlayerEditScreen: React.FC = () => {
         </View>
 
         {/* レベル */}
-        <View style={styles.item}>
+        {/* <View style={styles.item}>
           <FontAwesome6 name="ranking-star" size={24} color="black" />
           <View style={styles.info}>
             <Text style={styles.label}>レベル</Text>
@@ -364,7 +364,7 @@ const PlayerEditScreen: React.FC = () => {
               </View>
             </Pressable>
           </Modal>
-        </View>
+        </View> */}
       </View>
     </>
   );

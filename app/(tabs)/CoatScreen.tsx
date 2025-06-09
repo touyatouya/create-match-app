@@ -1,5 +1,4 @@
 import { AppContext } from "@/context/AppContext";
-import { Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
@@ -12,7 +11,7 @@ const CoatScreen: React.FC = () => {
     setCourts((prev) => {
       const courtIds = prev.map((court) => court.id);
       const id = generateUniqId(courtIds);
-      return [...prev, { id: id, rank: Rank.未設定 }];
+      return [...prev, { id: id }];
     });
   };
 
@@ -71,16 +70,6 @@ const styles = StyleSheet.create({
   courtInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  rankToggle: {
-    borderRadius: 8,
-    backgroundColor: "#e6dcdc",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rankText: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
   emptyText: {
     textAlign: "center",

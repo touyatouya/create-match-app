@@ -1,4 +1,4 @@
-import { Court, GameRound, Pair, Player, Rank } from "@/types";
+import { Court, GameRound, Pair, Player } from "@/types";
 import React, { createContext, ReactNode } from "react";
 
 type AppContextType = {
@@ -29,9 +29,7 @@ type AppContextProps = {
 
 export const AppProvider = ({ children }: AppContextProps) => {
   const [players, setPlayers] = React.useState<Player[]>([]);
-  const [courts, setCourts] = React.useState<Court[]>([
-    { id: 0, rank: Rank.未設定 },
-  ]);
+  const [courts, setCourts] = React.useState<Court[]>([{ id: 0 }]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
 
