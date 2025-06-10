@@ -37,13 +37,19 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="MatchScreen/Match"
         options={{
-          href: null, // ← これでタブには出ない
+          href: null,
         }}
       />
       <Tabs.Screen
         name="MatchScreen/match"
         options={{
-          href: null, // ← これでタブには出ない
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="MatchScreen/util"
+        options={{
+          href: null,
         }}
       />
     </Tabs>
