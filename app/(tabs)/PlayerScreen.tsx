@@ -1,5 +1,10 @@
 import { AppContext } from "@/context/AppContext";
-import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  FontAwesome,
+  Foundation,
+  Ionicons,
+} from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
@@ -17,19 +22,16 @@ import {
 import { Checkbox } from "react-native-paper";
 import { Gender, Pair, Player, Rank } from "../../types";
 
+type Sort = "asc" | "desc";
+
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
   const [isEdit, setIsEdit] = React.useState(false);
-
-  // const clearStorage = async () => {
-  //   try {
-  //     await AsyncStorage.clear();
-  //     Alert.alert("ローカルストレージがクリアされました");
-  //   } catch (e) {
-  //     Alert.alert("エラー", "ローカルストレージの削除に失敗しました");
-  //   }
-  // };
+  const [isSortedMatchCount, setIsSortedMatchCount] =
+    React.useState<Sort | null>(null);
+  const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
+  const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -84,20 +86,14 @@ const PlayerScreen: React.FC = () => {
         isEdit || (
           <Button
             title="ペア編集"
-            onPress={() => router.push("/pair-screen")} // ← これでOK
+            onPress={() => router.push("/pair-screen")}
           />
         ),
       headerLeft: () =>
         isEdit ? (
-          <Button
-            title="完了"
-            onPress={() => setIsEdit(false)} // ← これでOK
-          />
+          <Button title="完了" onPress={() => setIsEdit(false)} />
         ) : (
-          <Button
-            title="編集"
-            onPress={() => setIsEdit(true)} // ← これでOK
-          />
+          <Button title="編集" onPress={() => setIsEdit(true)} />
         ),
     });
   }, [isEdit, navigation, router]);
@@ -143,6 +139,7 @@ const PlayerScreen: React.FC = () => {
         return {
           id: player.id,
           name: player.name,
+          gender: player.gender,
           rank: player.rank,
         };
       })
@@ -161,6 +158,7 @@ const PlayerScreen: React.FC = () => {
         return {
           id: player.id,
           name: player.name,
+          gender: player.gender,
           rank: player.rank,
         };
       })
@@ -205,23 +203,95 @@ const PlayerScreen: React.FC = () => {
     }
   };
 
-  // ランク表示用関数
-  // const dispRank = (rank: Rank) => {
-  //   if (rank === Rank.A) return "A";
-  //   if (rank === Rank.B) return "B";
-  //   if (rank === Rank.C) return "C";
-  //   if (rank === Rank.D) return "D";
-  //   if (rank === Rank.E) return "E";
-  //   else return "";
-  // };
+  const sortMatchCount = () => {
+    let sorted: Player[] = [];
+    setIsSortedMatchCount((prev) => {
+      sorted = [...players].sort((a, b) => {
+        if (prev === "asc") {
+          return b.matchCount - a.matchCount;
+        } else {
+          return a.matchCount - b.matchCount;
+        }
+      });
+      return prev === "asc" ? "desc" : "asc";
+    });
+    setPlayers(sorted);
+  };
+
+  const genderOrder = {
+    [Gender.男性]: 1,
+    [Gender.女性]: 2,
+    [Gender.未設定]: 3,
+  };
+
+  const sortGender = () => {
+    let sorted: Player[] = [];
+    setIsSortedGender((prev) => {
+      sorted = [...players].sort((a, b) => {
+        if (prev === "asc") {
+          return genderOrder[b.gender] - genderOrder[a.gender];
+        } else {
+          return genderOrder[a.gender] - genderOrder[b.gender];
+        }
+      });
+      return prev === "asc" ? "desc" : "asc";
+    });
+    setPlayers(sorted);
+  };
+  const sortPair = () => {
+    let sorted: Player[] = [];
+    setIsSortedPair((prev) => {
+      sorted = [...players].sort((a, b) => {
+        const pairA = pairs.find(
+          (pair) => pair.player1 === a.id || pair.player2 === a.id
+        );
+        const pairB = pairs.find(
+          (pair) => pair.player1 === b.id || pair.player2 === b.id
+        );
+
+        const hasPairA = pairA ? 1 : 0;
+        const hasPairB = pairB ? 1 : 0;
+
+        if (prev === "asc") {
+          return hasPairB - hasPairA;
+        } else {
+          return hasPairA - hasPairB;
+        }
+      });
+      return prev === "asc" ? "desc" : "asc";
+    });
+    setPlayers(sorted);
+  };
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
-      <Text style={[styles.cellGender, styles.headerText]}>性別</Text>
+      <TouchableOpacity onPress={sortGender} style={[styles.cellGender]}>
+        <Text style={[styles.headerText]}>性別</Text>
+        <AntDesign
+          name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
+          size={16}
+          color="black"
+        />
+      </TouchableOpacity>
       {/* <Text style={[styles.cellRank, styles.headerText]}>ランク</Text> */}
-      <Text style={[styles.cellPair, styles.headerText]}>ペア</Text>
-      <Text style={[styles.cellMatch, styles.headerText]}>試合数</Text>
+      <TouchableOpacity onPress={sortPair} style={[styles.cellPair]}>
+        <Text style={[styles.headerText]}>ペア</Text>
+        <AntDesign
+          name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
+          size={16}
+          color="black"
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={sortMatchCount} style={[styles.cellMatch]}>
+        <Text style={[styles.headerText]}>試合数</Text>
+        <AntDesign
+          name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
+          size={16}
+          color="black"
+        />
+      </TouchableOpacity>
+      <Text style={[styles.removeButton, styles.headerText]}></Text>
     </View>
   );
 
@@ -243,7 +313,7 @@ const PlayerScreen: React.FC = () => {
         />
       </View>
       <Text style={styles.cellName}>{item.name}</Text>
-      <Text style={styles.cellName}>
+      <Text style={styles.cellGender}>
         {item.gender === Gender.男性 ? (
           <Foundation name="male" size={24} color="blue" />
         ) : item.gender === Gender.女性 ? (
@@ -267,17 +337,26 @@ const PlayerScreen: React.FC = () => {
         )}
       </Text>
       <Text style={styles.cellMatch}>{item.matchCount}</Text>
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/player-edit-screen",
-            params: { playerId: item.id },
-          })
-        }
-        style={styles.removeButton}
-      >
-        <AntDesign name="right" size={24} color="black" />
-      </TouchableOpacity>
+      {isEdit ? (
+        <TouchableOpacity
+          onPress={() => removePlayer(item.id)}
+          style={styles.removeButton}
+        >
+          <FontAwesome name="remove" size={24} color="black" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/player-edit-screen",
+              params: { playerId: item.id },
+            })
+          }
+          style={styles.removeButton}
+        >
+          <AntDesign name="right" size={24} color="black" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -387,6 +466,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 14,
   },
   buttonCell: {
     justifyContent: "center",
@@ -407,17 +487,23 @@ const styles = StyleSheet.create({
     flex: 1, // ランクは幅を狭く
     paddingHorizontal: 4,
     fontSize: 16,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   cellPair: {
     flex: 2, // ペアも少し広め
     paddingHorizontal: 4,
     fontSize: 16,
+    justifyContent: "center",
+    flexDirection: "row",
   },
   cellMatch: {
     flex: 1, // 試合数は狭め
     paddingHorizontal: 4,
     textAlign: "center",
     fontSize: 16,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   cellStatus: {
     flex: 1.2, // 状態ボタン用に少し広め

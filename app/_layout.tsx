@@ -15,13 +15,6 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="pair-screen"
-          options={{
-            title: "ペア作成",
-            headerShown: true,
-          }}
-        />
       </Stack>
     </AppProvider>
   );

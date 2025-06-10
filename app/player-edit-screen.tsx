@@ -22,7 +22,7 @@ import {
 } from "react-native";
 
 const PlayerEditScreen: React.FC = () => {
-  const { players, setPlayers, pairs } = useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
 
   // 選択しているレベル
@@ -37,7 +37,7 @@ const PlayerEditScreen: React.FC = () => {
   const id = Number(playerId);
 
   const savePlayerInfo = async (
-    players: { id: number; name: string; rank: Rank }[]
+    players: { id: number; name: string; gender: Gender; rank: Rank }[]
   ) => {
     try {
       await AsyncStorage.setItem("players", JSON.stringify(players));
@@ -102,7 +102,6 @@ const PlayerEditScreen: React.FC = () => {
           style: "cancel",
         },
       ]);
-      console.log("textInputRef", textInputRef);
       // 少し遅らせてフォーカスを戻す（iOS対策）
       setTimeout(() => {
         textInputRef.current?.focus();
@@ -146,6 +145,7 @@ const PlayerEditScreen: React.FC = () => {
         return {
           id: player.id,
           name: player.name,
+          gender: player.gender,
           rank: player.rank,
         };
       })
@@ -202,8 +202,10 @@ const PlayerEditScreen: React.FC = () => {
   const toggleGender = () => {
     const currentIndex = genderOrder.indexOf(player?.gender ?? Gender.未設定);
     const nextGender = genderOrder[(currentIndex + 1) % genderOrder.length];
+
+    let newPlayers: Player[] = [];
     setPlayers((players) => {
-      return players.map((player) => {
+      newPlayers = players.map((player) => {
         if (player.id === id) {
           return {
             ...player,
@@ -212,7 +214,25 @@ const PlayerEditScreen: React.FC = () => {
         }
         return { ...player };
       });
+      return newPlayers;
     });
+
+    savePlayerInfo(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+          gender: player.gender,
+          rank: player.rank,
+        };
+      })
+    );
+  };
+
+  const releasePair = (id: number) => {
+    setPairs((prev) =>
+      prev.filter((pair) => pair.player1 !== id && pair.player2 !== id)
+    );
   };
 
   return (
@@ -299,6 +319,9 @@ const PlayerEditScreen: React.FC = () => {
               <Text style={styles.value}>未設定</Text>
             )}
           </View>
+          <TouchableOpacity onPress={() => releasePair(id)}>
+            <Text style={styles.link}>ペアを解除</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() =>
               router.push({
@@ -307,7 +330,7 @@ const PlayerEditScreen: React.FC = () => {
               })
             }
           >
-            <Text style={styles.link}>編集</Text>
+            <Text style={styles.link}>ペアを選択</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.item}>

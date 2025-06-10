@@ -26,12 +26,24 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="MatchScreen"
+        name="MatchScreen/index"
         options={{
           title: "試合",
           tabBarIcon: () => (
             <MaterialCommunityIcons name="badminton" size={28} color="black" />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="MatchScreen/Match"
+        options={{
+          href: null, // ← これでタブには出ない
+        }}
+      />
+      <Tabs.Screen
+        name="MatchScreen/match"
+        options={{
+          href: null, // ← これでタブには出ない
         }}
       />
     </Tabs>
