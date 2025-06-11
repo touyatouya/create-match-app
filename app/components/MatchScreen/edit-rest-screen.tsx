@@ -1,11 +1,9 @@
 import { AppContext } from "@/context/AppContext";
-import { Pair, Player } from "@/types";
+import { Player } from "@/types";
 import { AntDesign } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -14,35 +12,13 @@ import {
 } from "react-native";
 
 const EditRestScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
-  const [pairPlayer, setPairPlayer] = useState<number>();
-  const [showPairUpdated, setShowPairUpdated] = useState<boolean>(false);
+  const { players, setPlayers } = useContext(AppContext);
 
   const router = useRouter();
 
   const { playerId } = useLocalSearchParams();
 
   const id = Number(playerId);
-
-  useEffect(() => {
-    const pair = pairs.find(
-      (pair) => pair.player1 === id || pair.player2 === id
-    );
-    if (pair != null) {
-      const pairPlayer = pair.player1 === id ? pair.player2 : pair.player1;
-      setPairPlayer(pairPlayer);
-    }
-  }, [id, pairs]);
-
-  const savePairs = async (
-    pairs: { id: number; player1: number; player2: number }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("pairs", JSON.stringify(pairs));
-    } catch (e) {
-      console.error("保存エラー:", e);
-    }
-  };
 
   const togglePlayerRest = (id: number) => {
     setPlayers((prev) => {
@@ -60,55 +36,9 @@ const EditRestScreen: React.FC = () => {
     });
   };
 
-  const createPair = () => {
-    let newPairs: Pair[] = [];
-
-    if (pairPlayer == null)
-      return Alert.alert("ペアを選んでください", "", [
-        {
-          text: "OK",
-          style: "cancel",
-        },
-      ]);
-
-    setPairs((prev) => {
-      const pairIds = prev.map((pair) => pair.id);
-      let newPairId: number;
-      do {
-        newPairId = Math.floor(Math.random() * 10000); // 1〜10000の自然数
-      } while (pairIds.includes(newPairId));
-
-      const newPair: Pair = {
-        id: newPairId,
-        player1: id,
-        player2: pairPlayer,
-      };
-
-      const removeOldPair = prev.filter(
-        (pair) =>
-          pair.player1 !== id &&
-          pair.player1 !== pairPlayer &&
-          pair.player2 !== id &&
-          pair.player2 !== pairPlayer
-      );
-      newPairs = [...removeOldPair, newPair];
-      return newPairs;
-    });
-    savePairs(
-      newPairs.map((pair) => {
-        return { id: pair.id, player1: pair.player1, player2: pair.player2 };
-      })
-    );
-    showSuccessAndGoBack();
-  };
-
   const renderPlayer = ({ item }: { item: Player }) => (
     <TouchableOpacity onPress={() => togglePlayerRest(item.id)}>
-      <View
-        style={
-          item.id === pairPlayer ? styles.joinPlayerItem : styles.restPlayerItem
-        }
-      >
+      <View style={styles.restPlayerItem}>
         <View style={styles.playerInfo}>
           <Text style={styles.playerName}>{item.name}</Text>
         </View>
@@ -121,14 +51,6 @@ const EditRestScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-  const showSuccessAndGoBack = () => {
-    setShowPairUpdated(true); // 一時的な表示フラグON
-
-    setTimeout(() => {
-      setShowPairUpdated(false); // フラグOFF
-      router.back(); // or navigation.goBack()
-    }, 1500); // 1.5秒で戻る
-  };
   return (
     <>
       <Stack.Screen
@@ -159,7 +81,7 @@ const EditRestScreen: React.FC = () => {
       />
       <View style={styles.container}>
         <FlatList
-          data={players.filter((player) => player.id !== id)}
+          data={players.filter((player) => player.isJoin && player.id !== id)}
           renderItem={renderPlayer}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}

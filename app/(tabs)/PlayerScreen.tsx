@@ -1,18 +1,13 @@
 import { AppContext } from "@/context/AppContext";
-import {
-  AntDesign,
-  FontAwesome,
-  Foundation,
-  Ionicons,
-} from "@expo/vector-icons";
+import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
 import {
   Button,
-  FlatList,
   InputAccessoryView,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -20,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { Checkbox } from "react-native-paper";
+import { SwipeListView } from "react-native-swipe-list-view";
 import { Gender, Pair, Player, Rank } from "../../types";
 
 type Sort = "asc" | "desc";
@@ -297,6 +293,14 @@ const PlayerScreen: React.FC = () => {
 
   const renderItem = ({ item }: { item: Player }) => (
     <View style={styles.row}>
+      {isEdit && (
+        <TouchableOpacity
+          onPress={() => removePlayer(item.id)}
+          style={styles.removeButton}
+        >
+          <AntDesign name="minuscircle" size={24} color="red" />
+        </TouchableOpacity>
+      )}
       <View
         style={{
           padding: 0,
@@ -322,7 +326,6 @@ const PlayerScreen: React.FC = () => {
           ""
         )}
       </Text>
-      {/* <Text style={styles.cellRank}>{dispRank(item.rank)}</Text> */}
       <Text style={styles.cellPair}>
         {findPairPlayerId(item.id) && (
           <View style={styles.pairInfo}>
@@ -337,14 +340,7 @@ const PlayerScreen: React.FC = () => {
         )}
       </Text>
       <Text style={styles.cellMatch}>{item.matchCount}</Text>
-      {isEdit ? (
-        <TouchableOpacity
-          onPress={() => removePlayer(item.id)}
-          style={styles.removeButton}
-        >
-          <FontAwesome name="remove" size={24} color="black" />
-        </TouchableOpacity>
-      ) : (
+      {isEdit || (
         <TouchableOpacity
           onPress={() =>
             router.push({
@@ -433,7 +429,7 @@ const PlayerScreen: React.FC = () => {
         <Text style={styles.addButtonText}>全プレイヤーを不参加にする</Text>
       </TouchableOpacity>
       {renderHeader()}
-      <FlatList
+      <SwipeListView
         data={players}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
@@ -443,6 +439,15 @@ const PlayerScreen: React.FC = () => {
             プレイヤーがいません。追加してください。
           </Text>
         }
+        renderHiddenItem={({ item }) => (
+          <View style={styles.rowBack}>
+            <Pressable onPress={() => removePlayer(item.id)}>
+              <Text style={styles.deleteText}>削除</Text>
+            </Pressable>
+          </View>
+        )}
+        rightOpenValue={-75}
+        disableRightSwipe
         style={styles.list}
       />
     </View>
@@ -450,6 +455,25 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  rowBack: {
+    alignItems: "center",
+    backgroundColor: "red",
+    flex: 1,
+    justifyContent: "flex-end",
+    flexDirection: "row",
+    paddingRight: 20,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingHorizontal: 20,
+    marginVertical: 1,
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "bold",
+  },
   clearButton: {
     position: "absolute",
     right: 10,
@@ -471,6 +495,7 @@ const styles = StyleSheet.create({
   },
   // 行全体：横並び
   row: {
+    backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,

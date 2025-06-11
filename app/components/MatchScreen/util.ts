@@ -343,7 +343,8 @@ export const scoreGender = (
   players: Player[],
   genderSetting: GenderPreferenceSetting
 ): number => {
-  if (!genderSetting.enabled) return 0;
+  if (!genderSetting.men && !genderSetting.woman && !genderSetting.mix)
+    return 0;
   const teamAGenders = team.teamA.map(
     (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定
   );

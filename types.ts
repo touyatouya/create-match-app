@@ -14,7 +14,6 @@ export enum Gender {
   未設定 = "未設定",
 }
 export interface GenderPreferenceSetting {
-  enabled: boolean;
   mix: boolean;
   men: boolean;
   woman: boolean;

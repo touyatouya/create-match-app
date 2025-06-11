@@ -12,21 +12,20 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
+// import { Checkbox } from "react-native-paper";
 import { GenderPreferenceSetting } from "../../types";
+import Checkbox from "../components/CheckBox";
 
 const MatchScreen: React.FC = () => {
   const { players, setPlayers, setGameRounds } = useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
-    enabled: false,
     men: false,
     woman: false,
     mix: false,
   });
 
   const [expanded, setExpanded] = useState(false);
-  const [expandedRest, setExpandedRest] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
 
   const navigation = useNavigation();
@@ -42,6 +41,7 @@ const MatchScreen: React.FC = () => {
               return prev.map((player) => {
                 return {
                   ...player,
+                  isRest: false,
                   matchCount: 0,
                 };
               });
@@ -57,10 +57,6 @@ const MatchScreen: React.FC = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded((prev) => !prev);
   };
-  const toggleExpandedRest = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpandedRest((prev) => !prev);
-  };
 
   const nextRestPlayer = players.filter((player) => player.isRest);
 
@@ -68,184 +64,82 @@ const MatchScreen: React.FC = () => {
     <View style={{ flex: 1, padding: 10 }}>
       <View style={styles.item}>
         <TouchableOpacity onPress={toggleExpanded} style={styles.genderEdit}>
-          <Text style={styles.title}>性別設定</Text>
-          <AntDesign name={expanded ? "up" : "down"} size={20} color="black" />
-        </TouchableOpacity>
-        {expanded && (
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.optionRow}
-              onPress={() =>
-                setGenderSetting((prev) => {
-                  return { ...prev, enabled: false };
-                })
-              }
-            >
-              <View style={styles.radioOuter}>
-                {!genderSetting.enabled && <View style={styles.radioInner} />}
-              </View>
-              <Text style={styles.optionText}>性別を考慮しない</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionRow}
-              onPress={() =>
-                setGenderSetting((prev) => {
-                  return { ...prev, enabled: true };
-                })
-              }
-            >
-              <View style={styles.radioOuter}>
-                {genderSetting.enabled && <View style={styles.radioInner} />}
-              </View>
-              <Text style={styles.optionText}>性別を考慮する</Text>
-            </TouchableOpacity>
-            {genderSetting.enabled && (
-              <View>
-                <TouchableOpacity
-                  style={styles.optionRow}
-                  onPress={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, men: !prev.men };
-                    })
-                  }
-                >
-                  <View
-                    style={{
-                      padding: 0,
-                      backgroundColor: genderSetting.men
-                        ? "#007AFF"
-                        : "#f0f0f0",
-                      borderWidth: genderSetting.men ? 0 : 1,
-                      borderColor: genderSetting.men ? "none" : "#f0f0f0",
-                    }}
-                  >
-                    <Checkbox
-                      status={genderSetting.men ? "checked" : "unchecked"}
-                      onPress={() =>
-                        setGenderSetting((prev) => {
-                          return { ...prev, men: !prev.men };
-                        })
-                      }
-                      color="white" // ✅ チェック時の色
-                    />
-                  </View>
-                  <Text style={styles.optionText}>なるべく男子ダブルス</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.optionRow}
-                  onPress={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, woman: !prev.woman };
-                    })
-                  }
-                >
-                  <View
-                    style={{
-                      padding: 0,
-                      backgroundColor: genderSetting.woman
-                        ? "#007AFF"
-                        : "#f0f0f0",
-                      borderWidth: genderSetting.woman ? 0 : 1,
-                      borderColor: genderSetting.woman ? "none" : "#f0f0f0",
-                    }}
-                  >
-                    <Checkbox
-                      status={genderSetting.woman ? "checked" : "unchecked"}
-                      onPress={() =>
-                        setGenderSetting((prev) => {
-                          return { ...prev, woman: !prev.woman };
-                        })
-                      }
-                      color="white" // ✅ チェック時の色
-                    />
-                  </View>
-                  <Text style={styles.optionText}>なるべく女子ダブルス</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.optionRow}
-                  onPress={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, mix: !prev.mix };
-                    })
-                  }
-                >
-                  <View
-                    style={{
-                      padding: 0,
-                      backgroundColor: genderSetting.mix
-                        ? "#007AFF"
-                        : "#f0f0f0",
-                      borderWidth: genderSetting.mix ? 0 : 1,
-                      borderColor: genderSetting.mix ? "none" : "#f0f0f0",
-                    }}
-                  >
-                    <Checkbox
-                      status={genderSetting.mix ? "checked" : "unchecked"}
-                      onPress={() =>
-                        setGenderSetting((prev) => {
-                          return { ...prev, mix: !prev.mix };
-                        })
-                      }
-                      color="white" // ✅ チェック時の色
-                    />
-                  </View>
-                  <Text style={styles.optionText}>
-                    なるべくミックスダブルス
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
-        )}
-      </View>
-      <View style={styles.item}>
-        <TouchableOpacity
-          onPress={toggleExpandedRest}
-          style={styles.genderEdit}
-        >
-          <Text style={styles.title}>休憩設定</Text>
           <AntDesign
-            name={expandedRest ? "up" : "down"}
+            name={expanded ? "down" : "right"}
             size={20}
             color="black"
           />
+          <Text style={styles.title}>詳細設定</Text>
         </TouchableOpacity>
-        {expandedRest && (
+        {expanded && (
           <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.allPlayerButton}
-              onPress={() =>
-                router.push({
-                  pathname: "/components/MatchScreen/edit-rest-screen",
-                })
-              }
-            >
-              <Text style={styles.addButtonText}>
-                次回休憩にするプレイヤー選択
-              </Text>
-            </TouchableOpacity>
-            {nextRestPlayer.length > 0 ? (
-              <>
-                <Text style={styles.title}>次回休憩プレイヤー</Text>
-                <FlatList
-                  data={nextRestPlayer}
-                  keyExtractor={(item, index) => `${item}-${index}`}
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  renderItem={({ item }) => (
-                    <View style={styles.restingPlayerItem}>
-                      <Text key={item.id} style={styles.restingPlayerName}>
-                        {item.name}
-                      </Text>
-                    </View>
-                  )}
-                />
-              </>
-            ) : (
-              <Text style={styles.emptyText}>
-                次回休憩にするプレイヤーはいません
-              </Text>
-            )}
+            <Text style={styles.title}>性別</Text>
+            <View>
+              <Checkbox
+                label="なるべく男子ダブルス"
+                checked={genderSetting.men}
+                onChange={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, men: !prev.men };
+                  })
+                }
+              />
+              <Checkbox
+                label="なるべく女子ダブルス"
+                checked={genderSetting.woman}
+                onChange={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, woman: !prev.woman };
+                  })
+                }
+              />
+              <Checkbox
+                label="なるべくミックスダブルス"
+                checked={genderSetting.mix}
+                onChange={() =>
+                  setGenderSetting((prev) => {
+                    return { ...prev, mix: !prev.mix };
+                  })
+                }
+              />
+            </View>
+            <Text style={styles.title}>休憩</Text>
+            <View>
+              <TouchableOpacity
+                style={styles.allPlayerButton}
+                onPress={() =>
+                  router.push({
+                    pathname: "/components/MatchScreen/edit-rest-screen",
+                  })
+                }
+              >
+                <Text style={styles.addButtonText}>
+                  次回休憩にするプレイヤー選択
+                </Text>
+              </TouchableOpacity>
+              {nextRestPlayer.length > 0 ? (
+                <>
+                  <Text style={styles.title}>次回休憩プレイヤー</Text>
+                  <FlatList
+                    data={nextRestPlayer}
+                    keyExtractor={(item, index) => `${item}-${index}`}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                      <View style={styles.restingPlayerItem}>
+                        <Text key={item.id} style={styles.restingPlayerName}>
+                          {item.name}
+                        </Text>
+                      </View>
+                    )}
+                  />
+                </>
+              ) : (
+                <Text style={styles.emptyText}>
+                  次回休憩にするプレイヤーはいません
+                </Text>
+              )}
+            </View>
           </View>
         )}
       </View>
