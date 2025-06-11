@@ -1,9 +1,11 @@
+import Match from "@/app/components/MatchScreen/match";
 import { AppContext } from "@/context/AppContext";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   Button,
+  FlatList,
   LayoutAnimation,
   StyleSheet,
   Text,
@@ -11,11 +13,10 @@ import {
   View,
 } from "react-native";
 import { Checkbox } from "react-native-paper";
-import { GenderPreferenceSetting } from "../../../types";
-import Match from "./match";
+import { GenderPreferenceSetting } from "../../types";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, setGameRounds } = useContext(AppContext);
+  const { players, setPlayers, setGameRounds } = useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     enabled: false,
@@ -25,6 +26,7 @@ const MatchScreen: React.FC = () => {
   });
 
   const [expanded, setExpanded] = useState(false);
+  const [expandedRest, setExpandedRest] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
 
   const navigation = useNavigation();
@@ -55,6 +57,12 @@ const MatchScreen: React.FC = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded((prev) => !prev);
   };
+  const toggleExpandedRest = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpandedRest((prev) => !prev);
+  };
+
+  const nextRestPlayer = players.filter((player) => player.isRest);
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
@@ -190,6 +198,57 @@ const MatchScreen: React.FC = () => {
           </View>
         )}
       </View>
+      <View style={styles.item}>
+        <TouchableOpacity
+          onPress={toggleExpandedRest}
+          style={styles.genderEdit}
+        >
+          <Text style={styles.title}>休憩設定</Text>
+          <AntDesign
+            name={expandedRest ? "up" : "down"}
+            size={20}
+            color="black"
+          />
+        </TouchableOpacity>
+        {expandedRest && (
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.allPlayerButton}
+              onPress={() =>
+                router.push({
+                  pathname: "/components/MatchScreen/edit-rest-screen",
+                })
+              }
+            >
+              <Text style={styles.addButtonText}>
+                次回休憩にするプレイヤー選択
+              </Text>
+            </TouchableOpacity>
+            {nextRestPlayer.length > 0 ? (
+              <>
+                <Text style={styles.title}>次回休憩プレイヤー</Text>
+                <FlatList
+                  data={nextRestPlayer}
+                  keyExtractor={(item, index) => `${item}-${index}`}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  renderItem={({ item }) => (
+                    <View style={styles.restingPlayerItem}>
+                      <Text key={item.id} style={styles.restingPlayerName}>
+                        {item.name}
+                      </Text>
+                    </View>
+                  )}
+                />
+              </>
+            ) : (
+              <Text style={styles.emptyText}>
+                次回休憩にするプレイヤーはいません
+              </Text>
+            )}
+          </View>
+        )}
+      </View>
       <Match
         swapPlayer={swapPlayer}
         setSwapPlayer={setSwapPlayer}
@@ -200,6 +259,28 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  restPlayers: {
+    flexDirection: "row",
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#999",
+    marginTop: 0,
+  },
+  allPlayerButton: {
+    backgroundColor: "#007BFF",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  addButtonText: {
+    color: "white",
+    marginLeft: 8,
+    fontWeight: "600",
+  },
   selectButton: {
     padding: 16,
     borderWidth: 1,
@@ -211,21 +292,14 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "white",
-    padding: 24,
+    padding: 10,
     borderRadius: 12,
-    width: "80%",
-    elevation: 4,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
+    width: "100%",
   },
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 10,
   },
   radioOuter: {
     width: 20,
@@ -251,7 +325,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: "#ccc",
-    paddingVertical: 16,
+    paddingVertical: 8,
   },
   info: {
     flex: 1,
@@ -271,10 +345,9 @@ const styles = StyleSheet.create({
   genderEdit: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
@@ -381,9 +454,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   restingPlayerItem: {
-    flexDirection: "row",
     alignItems: "baseline",
-    justifyContent: "space-between",
     backgroundColor: "#FFF9E6",
     paddingHorizontal: 12,
     paddingVertical: 8,

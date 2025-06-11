@@ -363,24 +363,33 @@ const PlayerScreen: React.FC = () => {
   const inputAccessoryViewID = "uniqueID";
   const textInputRef = useRef<TextInput>(null);
 
+  const clearInput = () => setNewPlayerName("");
+
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
       <View style={styles.addPlayerContainer}>
-        <TextInput
-          ref={textInputRef}
-          style={styles.input}
-          placeholder="プレイヤー名を入力して新規登録"
-          placeholderTextColor="#999"
-          value={newPlayerName}
-          onChangeText={setNewPlayerName}
-          onSubmitEditing={addPlayer}
-          autoCapitalize="words"
-          inputAccessoryViewID={
-            Platform.OS === "ios" ? inputAccessoryViewID : undefined
-          }
-          returnKeyType="done"
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            ref={textInputRef}
+            style={styles.input}
+            placeholder="プレイヤー名を入力して新規登録"
+            placeholderTextColor="#999"
+            value={newPlayerName}
+            onChangeText={setNewPlayerName}
+            onSubmitEditing={addPlayer}
+            autoCapitalize="words"
+            inputAccessoryViewID={
+              Platform.OS === "ios" ? inputAccessoryViewID : undefined
+            }
+            returnKeyType="done"
+          />
+          {newPlayerName.length > 0 && (
+            <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
+              <AntDesign name="closecircle" size={20} color="#999" />
+            </TouchableOpacity>
+          )}
+        </View>
         {/* iOS限定: キーボード上に完了ボタンを表示 */}
         {Platform.OS === "ios" && (
           <InputAccessoryView nativeID={inputAccessoryViewID}>
@@ -441,6 +450,15 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  clearButton: {
+    position: "absolute",
+    right: 10,
+    top: "50%",
+    transform: [{ translateY: -10 }],
+  },
+  inputContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -558,7 +576,8 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
+    paddingRight: 30,
   },
   addButton: {
     width: 48,

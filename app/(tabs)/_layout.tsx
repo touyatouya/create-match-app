@@ -1,55 +1,41 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import React from "react";
 import CoatIcon from "./../../assets/images/coat.svg";
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: "#007AFF", // アクティブ時の色（青）
+        tabBarInactiveTintColor: "#888", // 非アクティブ時の色（グレー）
+      }}
+    >
       <Tabs.Screen
         name="CoatScreen"
         options={{
           title: "コート",
-          tabBarIcon: () => <CoatIcon width={28} height={28} />,
+          tabBarIcon: ({ color }) => (
+            <CoatIcon width={28} height={28} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="PlayerScreen"
         options={{
           title: "プレイヤー",
-          tabBarIcon: () => (
-            <MaterialCommunityIcons
-              name="human-handsdown"
-              size={28}
-              color="black"
-            />
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="user" size={26} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="MatchScreen/index"
+        name="MatchScreen"
         options={{
           title: "試合",
-          tabBarIcon: () => (
-            <MaterialCommunityIcons name="badminton" size={28} color="black" />
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="badminton" size={28} color={color} />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="MatchScreen/Match"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="MatchScreen/match"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="MatchScreen/util"
-        options={{
-          href: null,
         }}
       />
     </Tabs>

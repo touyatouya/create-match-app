@@ -46,43 +46,7 @@ const PlayerEditScreen: React.FC = () => {
     }
   };
 
-  {
-    /* レベル選択時に発火する関数 */
-  }
-  // const handleSelect = (value: Rank) => {
-  //   setSelected(value);
-  //   let newPlayers: Player[] = [];
-  //   setPlayers((prev) => {
-  //     newPlayers = prev.map((player) => {
-  //       if (player.id === id) {
-  //         return {
-  //           ...player,
-  //           rank: value,
-  //         };
-  //       }
-  //       return { ...player };
-  //     });
-
-  //     return newPlayers;
-  //   });
-  //   savePlayerInfo(
-  //     newPlayers.map((player) => {
-  //       return {
-  //         id: player.id,
-  //         name: player.name,
-  //         rank: player.rank,
-  //       };
-  //     })
-  //   );
-  //   setVisible(false);
-  // };
-
   const player = players.find((player) => player.id === id);
-
-  // useEffect(() => {
-  //   if (player != null) setSelected(player.rank);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   const router = useRouter();
 
@@ -197,19 +161,14 @@ const PlayerEditScreen: React.FC = () => {
     }
   };
 
-  const genderOrder: Gender[] = [Gender.男性, Gender.女性, Gender.未設定];
-
-  const toggleGender = () => {
-    const currentIndex = genderOrder.indexOf(player?.gender ?? Gender.未設定);
-    const nextGender = genderOrder[(currentIndex + 1) % genderOrder.length];
-
+  const setSelectedGender = (gender: Gender) => {
     let newPlayers: Player[] = [];
     setPlayers((players) => {
       newPlayers = players.map((player) => {
         if (player.id === id) {
           return {
             ...player,
-            gender: nextGender,
+            gender: gender,
           };
         }
         return { ...player };
@@ -337,69 +296,62 @@ const PlayerEditScreen: React.FC = () => {
           <Foundation name="male-female" size={24} color="black" />
           <View style={styles.info}>
             <Text style={styles.label}>性別</Text>
-            <TouchableOpacity style={[styles.button]} onPress={toggleGender}>
-              <Text style={styles.value}>
-                {player?.gender ?? Gender.未設定}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.toggleContainer}>
+              {Object.values(Gender).map((gender) => (
+                <TouchableOpacity
+                  key={gender}
+                  style={[
+                    styles.button,
+                    player?.gender === gender && styles.selectedButton,
+                  ]}
+                  onPress={() => setSelectedGender(gender)}
+                >
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      player?.gender === gender && styles.selectedText,
+                    ]}
+                  >
+                    {gender}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
         </View>
-
-        {/* レベル */}
-        {/* <View style={styles.item}>
-          <FontAwesome6 name="ranking-star" size={24} color="black" />
-          <View style={styles.info}>
-            <Text style={styles.label}>レベル</Text>
-            <TouchableOpacity
-              onPress={() => setVisible(true)}
-              style={styles.selectButton}
-            >
-              <Text style={styles.selectButtonText}>{selected}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <Modal
-            animationType="fade"
-            transparent
-            visible={visible}
-            onRequestClose={() => setVisible(false)}
-          >
-            <Pressable
-              style={styles.modalBackground}
-              onPress={() => setVisible(false)}
-            >
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>レベルを選択</Text>
-                {Object.values(Rank).map((option) => (
-                  <TouchableOpacity
-                    key={option}
-                    style={styles.optionRow}
-                    onPress={() => handleSelect(option)}
-                  >
-                    <View style={styles.radioOuter}>
-                      {selected === option && (
-                        <View style={styles.radioInner} />
-                      )}
-                    </View>
-                    <Text style={styles.optionText}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </Pressable>
-          </Modal>
-        </View> */}
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  toggleContainer: {
+    flexDirection: "row",
+    backgroundColor: "#fefefe",
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: "#999",
+    overflow: "hidden",
+    alignSelf: "flex-start",
+  },
+  selectedButton: {
+    backgroundColor: "#cce7ff",
+  },
+  buttonText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  selectedText: {
+    fontWeight: "bold",
+    color: "#1c1c1c",
+  },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
     margin: 5,
     backgroundColor: "#ccc",
+    alignSelf: "flex-start",
   },
   text: {
     color: "black",
