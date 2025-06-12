@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { Pair, Player } from "../types";
 import CompleteToast from "./components/CompleteToast";
+import { findPairPlayerId } from "./components/PlayerScreen/util";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
@@ -81,21 +82,6 @@ const PairScreen: React.FC = () => {
     showSuccessAndGoBack();
   };
 
-  const findPairPlayerId = (id: number) => {
-    let isPlayer1 = false;
-    let isPlayer2 = false;
-    const pair = pairs.find((pair) => {
-      isPlayer1 = pair.player1 === id;
-      isPlayer2 = pair.player2 === id;
-      return isPlayer1 || isPlayer2;
-    });
-
-    if (pair) {
-      if (isPlayer1) return pair.player2;
-      if (isPlayer2) return pair.player1;
-    }
-  };
-
   const renderPlayer = ({ item }: { item: Player }) => (
     <TouchableOpacity onPress={() => selectPlayer(item.id)}>
       <View
@@ -106,18 +92,19 @@ const PairScreen: React.FC = () => {
         <View style={styles.playerInfo}>
           <Text style={styles.playerName}>{item.name}</Text>
         </View>
-        {findPairPlayerId(item.id) && findPairPlayerId(item.id) !== id && (
-          <View style={styles.pairInfo}>
-            <FontAwesome5 name="handshake" size={18} color="black" />
-            <Text style={styles.pairName}>
-              {
-                players.find(
-                  (player) => player.id === findPairPlayerId(item.id)
-                )?.name
-              }
-            </Text>
-          </View>
-        )}
+        {findPairPlayerId(item.id, pairs) &&
+          findPairPlayerId(item.id, pairs) !== id && (
+            <View style={styles.pairInfo}>
+              <FontAwesome5 name="handshake" size={18} color="black" />
+              <Text style={styles.pairName}>
+                {
+                  players.find(
+                    (player) => player.id === findPairPlayerId(item.id, pairs)
+                  )?.name
+                }
+              </Text>
+            </View>
+          )}
         {item.id === pairPlayer && (
           <View style={styles.joinBadge}>
             <Text style={styles.joinText}>選択中</Text>

@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { findPairPlayerId } from "./components/PlayerScreen/util";
 
 const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
@@ -136,21 +137,6 @@ const PlayerEditScreen: React.FC = () => {
 
   const inputAccessoryViewID = "uniqueID2";
 
-  const findPairPlayerId = (id: number) => {
-    let isPlayer1 = false;
-    let isPlayer2 = false;
-    const pair = pairs.find((pair) => {
-      isPlayer1 = pair.player1 === id;
-      isPlayer2 = pair.player2 === id;
-      return isPlayer1 || isPlayer2;
-    });
-
-    if (pair) {
-      if (isPlayer1) return pair.player2;
-      if (isPlayer2) return pair.player1;
-    }
-  };
-
   const setSelectedGender = (gender: Gender) => {
     let newPlayers: Player[] = [];
     setPlayers((players) => {
@@ -257,11 +243,12 @@ const PlayerEditScreen: React.FC = () => {
           />
           <View style={styles.info}>
             <Text style={styles.label}>ペア</Text>
-            {findPairPlayerId(id) ? (
+            {findPairPlayerId(id, pairs) ? (
               <Text style={styles.value}>
                 {
-                  players.find((player) => player.id === findPairPlayerId(id))
-                    ?.name
+                  players.find(
+                    (player) => player.id === findPairPlayerId(id, pairs)
+                  )?.name
                 }
               </Text>
             ) : (

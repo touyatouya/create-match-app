@@ -15,6 +15,7 @@ import {
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Gender, Pair, Player, Rank } from "../../types";
 import Checkbox from "../components/CheckBox";
+import { findPairPlayerId } from "../components/PlayerScreen/util";
 import TextInput from "../components/TextInput";
 
 type Sort = "asc" | "desc";
@@ -173,21 +174,6 @@ const PlayerScreen: React.FC = () => {
     setPlayers(updatedPlayers);
   };
 
-  const findPairPlayerId = (id: number) => {
-    let isPlayer1 = false;
-    let isPlayer2 = false;
-    const pair = pairs.find((pair) => {
-      isPlayer1 = pair.player1 === id;
-      isPlayer2 = pair.player2 === id;
-      return isPlayer1 || isPlayer2;
-    });
-
-    if (pair) {
-      if (isPlayer1) return pair.player2;
-      if (isPlayer2) return pair.player1;
-    }
-  };
-
   const sortMatchCount = () => {
     let sorted: Player[] = [];
     setIsSortedMatchCount((prev) => {
@@ -318,12 +304,12 @@ const PlayerScreen: React.FC = () => {
           )}
         </Text>
         <Text style={styles.cellPair}>
-          {findPairPlayerId(item.id) && (
+          {findPairPlayerId(item.id, pairs) && (
             <View style={styles.pairInfo}>
               <Text style={styles.pairName}>
                 {
                   players.find(
-                    (player) => player.id === findPairPlayerId(item.id)
+                    (player) => player.id === findPairPlayerId(item.id, pairs)
                   )?.name
                 }
               </Text>
