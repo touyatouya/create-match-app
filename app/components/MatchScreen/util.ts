@@ -18,7 +18,9 @@ export const createMatch = (
   pairs: Pair[],
   matches: MatchType[],
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
-  genderSetting: GenderPreferenceSetting
+  genderSetting: GenderPreferenceSetting,
+  // dispRound: number,
+  setDispRound: React.Dispatch<React.SetStateAction<number>>
 ): void => {
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
@@ -71,13 +73,18 @@ export const createMatch = (
 
   if (gameRound == null) return;
 
-  setGameRounds((prev) => [...prev, gameRound]);
+  let prevGameRounds = 0;
+  setGameRounds((prev) => {
+    prevGameRounds = prev.length;
+    return [...prev, gameRound];
+  });
 
   const preMatches: MatchType[] = gameRounds.flatMap(
     (gameRound) => gameRound.matches
   );
   countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
   setSwapPlayer(null);
+  setDispRound(prevGameRounds + 1);
 };
 
 // スコアの高いコート構成を選ぶ関数

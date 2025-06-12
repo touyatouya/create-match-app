@@ -1,10 +1,10 @@
 import { AppContext } from "@/context/AppContext";
+import { savePairs } from "@/utils/saveStorage";
 import {
   AntDesign,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import {
@@ -22,16 +22,6 @@ const PairScreen: React.FC = () => {
   const [pair, setPair] = useState<number[]>([]);
 
   const router = useRouter();
-
-  const savePairs = async (
-    pairs: { id: number; player1: number; player2: number }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("pairs", JSON.stringify(pairs));
-    } catch (e) {
-      console.error("保存エラー:", e);
-    }
-  };
 
   const selectPlayer = (id: number) => {
     setPair((prev) => {

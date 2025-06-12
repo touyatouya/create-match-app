@@ -1,22 +1,21 @@
 import { AppContext } from "@/context/AppContext";
-import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
+import { savePlayerInfo } from "@/utils/saveStorage";
+import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useContext, useEffect, useLayoutEffect } from "react";
 import {
   Button,
-  InputAccessoryView,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Checkbox } from "react-native-paper";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Gender, Pair, Player, Rank } from "../../types";
+import Checkbox from "../components/CheckBox";
+import TextInput from "../components/TextInput";
 
 type Sort = "asc" | "desc";
 
@@ -81,8 +80,8 @@ const PlayerScreen: React.FC = () => {
       headerRight: () =>
         isEdit || (
           <Button
-            title="ペア編集"
-            onPress={() => router.push("/pair-screen")}
+            title="グループ編集"
+            onPress={() => router.push("/components/PlayerScreen/group-screen")}
           />
         ),
       headerLeft: () =>
@@ -93,16 +92,6 @@ const PlayerScreen: React.FC = () => {
         ),
     });
   }, [isEdit, navigation, router]);
-
-  const savePlayerNames = async (
-    players: { id: number; name: string; rank: Rank }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("players", JSON.stringify(players));
-    } catch (e) {
-      console.error("保存エラー:", e);
-    }
-  };
 
   const addPlayer = (): void => {
     if (newPlayerName.trim() === "") return;
@@ -130,7 +119,7 @@ const PlayerScreen: React.FC = () => {
     });
 
     setNewPlayerName("");
-    savePlayerNames(
+    savePlayerInfo(
       newPlayers.map((player) => {
         return {
           id: player.id,
@@ -149,7 +138,7 @@ const PlayerScreen: React.FC = () => {
       return newPlayers;
     });
     setNewPlayerName("");
-    savePlayerNames(
+    savePlayerInfo(
       newPlayers.map((player) => {
         return {
           id: player.id,
@@ -261,6 +250,14 @@ const PlayerScreen: React.FC = () => {
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
+      <Checkbox
+        checked={players.every((player) => player.isJoin)}
+        onChange={
+          players.every((player) => player.isJoin)
+            ? noJoinAllPlayer
+            : joinAllPlayer
+        }
+      />
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
       <TouchableOpacity onPress={sortGender} style={[styles.cellGender]}>
         <Text style={[styles.headerText]}>性別</Text>
@@ -270,7 +267,6 @@ const PlayerScreen: React.FC = () => {
           color="black"
         />
       </TouchableOpacity>
-      {/* <Text style={[styles.cellRank, styles.headerText]}>ランク</Text> */}
       <TouchableOpacity onPress={sortPair} style={[styles.cellPair]}>
         <Text style={[styles.headerText]}>ペア</Text>
         <AntDesign
@@ -301,45 +297,41 @@ const PlayerScreen: React.FC = () => {
           <AntDesign name="minuscircle" size={24} color="red" />
         </TouchableOpacity>
       )}
-      <View
-        style={{
-          padding: 0,
-          backgroundColor: item.isJoin ? "#007AFF" : "#f0f0f0",
-          borderRadius: "50%",
-          borderWidth: item.isJoin ? 0 : 1,
-          borderColor: item.isJoin ? "none" : "#f0f0f0",
-        }}
+      <TouchableOpacity
+        onPress={() => joinPlayer(item.id)}
+        style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
       >
-        <Checkbox
-          status={item.isJoin ? "checked" : "unchecked"}
-          onPress={() => joinPlayer(item.id)}
-          color="white" // ✅ チェック時の色
-        />
-      </View>
-      <Text style={styles.cellName}>{item.name}</Text>
-      <Text style={styles.cellGender}>
-        {item.gender === Gender.男性 ? (
-          <Foundation name="male" size={24} color="blue" />
-        ) : item.gender === Gender.女性 ? (
-          <Foundation name="female" size={24} color="red" />
-        ) : (
-          ""
+        {isEdit || (
+          <Checkbox
+            checked={item.isJoin}
+            onChange={() => joinPlayer(item.id)}
+          />
         )}
-      </Text>
-      <Text style={styles.cellPair}>
-        {findPairPlayerId(item.id) && (
-          <View style={styles.pairInfo}>
-            <Text style={styles.pairName}>
-              {
-                players.find(
-                  (player) => player.id === findPairPlayerId(item.id)
-                )?.name
-              }
-            </Text>
-          </View>
-        )}
-      </Text>
-      <Text style={styles.cellMatch}>{item.matchCount}</Text>
+        <Text style={styles.cellName}>{item.name}</Text>
+        <Text style={styles.cellGender}>
+          {item.gender === Gender.男性 ? (
+            <Foundation name="male" size={24} color="blue" />
+          ) : item.gender === Gender.女性 ? (
+            <Foundation name="female" size={24} color="red" />
+          ) : (
+            ""
+          )}
+        </Text>
+        <Text style={styles.cellPair}>
+          {findPairPlayerId(item.id) && (
+            <View style={styles.pairInfo}>
+              <Text style={styles.pairName}>
+                {
+                  players.find(
+                    (player) => player.id === findPairPlayerId(item.id)
+                  )?.name
+                }
+              </Text>
+            </View>
+          )}
+        </Text>
+        <Text style={styles.cellMatch}>{item.matchCount}</Text>
+      </TouchableOpacity>
       {isEdit || (
         <TouchableOpacity
           onPress={() =>
@@ -356,78 +348,21 @@ const PlayerScreen: React.FC = () => {
     </View>
   );
 
-  const inputAccessoryViewID = "uniqueID";
-  const textInputRef = useRef<TextInput>(null);
-
-  const clearInput = () => setNewPlayerName("");
-
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
       <View style={styles.addPlayerContainer}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            ref={textInputRef}
-            style={styles.input}
-            placeholder="プレイヤー名を入力して新規登録"
-            placeholderTextColor="#999"
-            value={newPlayerName}
-            onChangeText={setNewPlayerName}
-            onSubmitEditing={addPlayer}
-            autoCapitalize="words"
-            inputAccessoryViewID={
-              Platform.OS === "ios" ? inputAccessoryViewID : undefined
-            }
-            returnKeyType="done"
-          />
-          {newPlayerName.length > 0 && (
-            <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
-              <AntDesign name="closecircle" size={20} color="#999" />
-            </TouchableOpacity>
-          )}
-        </View>
-        {/* iOS限定: キーボード上に完了ボタンを表示 */}
-        {Platform.OS === "ios" && (
-          <InputAccessoryView nativeID={inputAccessoryViewID}>
-            <View style={styles.accessory}>
-              <Button
-                title="キャンセル"
-                onPress={() => {
-                  textInputRef.current?.blur(); // キーボードを閉じる
-                }}
-              />
-              <Button
-                title="完了"
-                onPress={() => {
-                  addPlayer();
-                  textInputRef.current?.blur(); // キーボードを閉じる
-                }}
-              />
-            </View>
-          </InputAccessoryView>
-        )}
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            addPlayer();
-            textInputRef.current?.blur(); // キーボードを閉じる
-          }}
-        >
-          <Ionicons name="add" size={24} color="white" />
-        </TouchableOpacity>
+        <TextInput
+          placeholder="プレイヤー名を入力して新規登録"
+          value={newPlayerName}
+          onChangeText={() => setNewPlayerName}
+          onSubmitEditing={addPlayer}
+          clearInput={() => setNewPlayerName("")}
+        />
       </View>
       <Text style={styles.joinedPlayer}>
         参加プレイヤー：{joinedPlayer.length}人
       </Text>
-      <TouchableOpacity style={styles.allPlayerButton} onPress={joinAllPlayer}>
-        <Text style={styles.addButtonText}>全プレイヤーを参加にする</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.allPlayerButton}
-        onPress={noJoinAllPlayer}
-      >
-        <Text style={styles.addButtonText}>全プレイヤーを不参加にする</Text>
-      </TouchableOpacity>
       {renderHeader()}
       <SwipeListView
         data={players}
@@ -446,7 +381,7 @@ const PlayerScreen: React.FC = () => {
             </Pressable>
           </View>
         )}
-        rightOpenValue={-75}
+        rightOpenValue={-65}
         disableRightSwipe
         style={styles.list}
       />
@@ -462,26 +397,13 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     flexDirection: "row",
     paddingRight: 20,
-  },
-  deleteButton: {
-    backgroundColor: "red",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    paddingHorizontal: 20,
-    marginVertical: 1,
+    textAlign: "center",
+    // paddingVertical: 8,
   },
   deleteText: {
     color: "white",
     fontWeight: "bold",
-  },
-  clearButton: {
-    position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -10 }],
-  },
-  inputContainer: {
-    flex: 1,
+    textAlign: "center",
   },
   container: {
     flex: 1,
@@ -510,14 +432,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 14,
-  },
-  buttonCell: {
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    textAlign: "center",
   },
   // それぞれのセル幅（flex値を統一する）
   cellName: {
@@ -548,112 +462,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  cellStatus: {
-    flex: 1.2, // 状態ボタン用に少し広め
-    paddingHorizontal: 4,
-    height: 32,
-    borderRadius: 4,
-  },
-  cellEdit: {
-    flex: 1, // 編集ボタン用
-    paddingHorizontal: 4,
-    height: 32,
-    borderRadius: 4,
-  },
-  accessory: {
-    backgroundColor: "#f2f2f2",
-    padding: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-  },
-  allPlayerButton: {
-    backgroundColor: "#007BFF",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  addButtonText: {
-    color: "white",
-    marginLeft: 8,
-    fontWeight: "600",
-  },
-  cell: {
-    flex: 1,
-    fontSize: 14,
-  },
-  button: {
-    borderRadius: 4,
-    alignItems: "center",
-  },
   addPlayerContainer: {
     flexDirection: "row",
     marginBottom: 16,
   },
-  input: {
-    flex: 1,
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: "#fff",
-    paddingRight: 30,
-  },
-  addButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: "#4CAF50",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    marginLeft: 8,
-  },
   list: {
     flex: 1,
-  },
-  joinPlayerItem: {
-    flexDirection: "row",
-    backgroundColor: "hsl(50.96234309623431, 100%, 53.13725490196079%)",
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 4,
-    paddingRight: 4,
-    borderRadius: 8,
-    marginBottom: 8,
-    alignItems: "center",
-    justifyContent: "space-between",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  restPlayerItem: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 4,
-    paddingRight: 4,
-    borderRadius: 8,
-    marginBottom: 8,
-    alignItems: "center",
-    justifyContent: "space-between",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  playerName: {
-    flex: 3,
-    fontSize: 18,
-    fontWeight: "500",
   },
   pairInfo: {
     flexDirection: "row",
@@ -667,46 +481,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     fontSize: 16,
     fontWeight: "500",
-  },
-  matchCountBadge: {
-    backgroundColor: "black",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 5,
-  },
-  joinBadge: {
-    flexDirection: "row",
-    backgroundColor: "black",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 5,
-  },
-  restBadge: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    borderColor: "black",
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 5,
-  },
-  matchCountText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  restText: {
-    color: "black",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  joinText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   removeButton: {
     display: "flex",

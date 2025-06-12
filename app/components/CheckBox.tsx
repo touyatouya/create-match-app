@@ -1,65 +1,52 @@
-// CustomCheckbox.tsx
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-type Props = {
-  label: string;
+interface CheckboxProps {
+  label?: string;
   checked: boolean;
   onChange: () => void;
-};
+}
 
-const Checkbox: React.FC<Props> = ({ label, checked, onChange }) => {
-  return (
-    <Pressable style={styles.container} onPress={onChange}>
-      <Text style={styles.label}>{label}</Text>
-      <View
-        style={[styles.toggle, checked ? styles.toggleOn : styles.toggleOff]}
-      >
-        <View
-          style={[
-            styles.circle,
-            checked ? styles.circleRight : styles.circleLeft,
-          ]}
-        />
-      </View>
-    </Pressable>
-  );
-};
+const Checkbox: React.FC<CheckboxProps> = ({
+  label = "",
+  checked,
+  onChange,
+}) => (
+  <TouchableOpacity onPress={onChange} style={styles.checkboxContainer}>
+    <View style={[styles.checkbox, checked && styles.checked]}>
+      {checked && <Text style={styles.checkmark}>✓</Text>}
+    </View>
+    {label !== "" && <Text style={styles.label}>{label}</Text>}
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
   container: {
+    padding: 20,
+  },
+  checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: 8,
+    marginVertical: 8,
   },
-  toggle: {
-    width: 50,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: "center",
-    marginRight: 10,
-    paddingHorizontal: 3,
-  },
-  toggleOn: {
-    backgroundColor: "#007AFF",
-  },
-  toggleOff: {
-    backgroundColor: "#ccc",
-  },
-  circle: {
+  checkbox: {
     width: 24,
     height: 24,
-    borderRadius: 12,
-    backgroundColor: "white",
-    position: "absolute",
-    top: 3,
+    borderWidth: 2,
+    borderColor: "#007AFF",
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
   },
-  circleLeft: {
-    left: 3,
+  checked: {
+    backgroundColor: "#007AFF",
   },
-  circleRight: {
-    right: 3,
+  checkmark: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    lineHeight: 20,
   },
   label: {
     fontSize: 16,

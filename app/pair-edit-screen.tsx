@@ -1,6 +1,6 @@
 import { AppContext } from "@/context/AppContext";
-import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { savePairs } from "@/utils/saveStorage";
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 import { Pair, Player } from "../types";
+import CompleteToast from "./components/CompleteToast";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
@@ -33,16 +34,6 @@ const PairScreen: React.FC = () => {
       setPairPlayer(pairPlayer);
     }
   }, [id, pairs]);
-
-  const savePairs = async (
-    pairs: { id: number; player1: number; player2: number }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("pairs", JSON.stringify(pairs));
-    } catch (e) {
-      console.error("保存エラー:", e);
-    }
-  };
 
   const selectPlayer = (id: number) => {
     setPairPlayer(id);
@@ -172,14 +163,7 @@ const PairScreen: React.FC = () => {
           ),
         }}
       />
-      {showPairUpdated && (
-        <View style={styles.overlay}>
-          <View style={styles.centerToast}>
-            <Ionicons name="checkmark-circle" size={40} color="#4CAF50" />
-            <Text style={styles.toastText}>ペアを変更しました</Text>
-          </View>
-        </View>
-      )}
+      <CompleteToast isOpen={showPairUpdated} message="ペアを変更しました" />
       <View style={styles.container}>
         <FlatList
           data={players.filter((player) => player.id !== id)}

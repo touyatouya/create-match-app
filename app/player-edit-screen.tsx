@@ -1,12 +1,12 @@
 import { AppContext } from "@/context/AppContext";
-import { Gender, Player, Rank } from "@/types";
+import { Gender, Player } from "@/types";
+import { savePlayerInfo } from "@/utils/saveStorage";
 import {
   AntDesign,
   FontAwesome5,
   Foundation,
   Ionicons,
 } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
@@ -35,16 +35,6 @@ const PlayerEditScreen: React.FC = () => {
   const { playerId } = useLocalSearchParams();
 
   const id = Number(playerId);
-
-  const savePlayerInfo = async (
-    players: { id: number; name: string; gender: Gender; rank: Rank }[]
-  ) => {
-    try {
-      await AsyncStorage.setItem("players", JSON.stringify(players));
-    } catch (e) {
-      console.error("保存エラー:", e);
-    }
-  };
 
   const player = players.find((player) => player.id === id);
 

@@ -1,5 +1,5 @@
 import { AppContext } from "@/context/AppContext";
-import { Foundation, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import React, { useContext, useLayoutEffect } from "react";
 import {
@@ -17,6 +17,7 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
+import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
 
 type SectionDataItem = MatchType | Player;
@@ -42,6 +43,8 @@ const Match: React.FC<MatchProps> = ({
     useContext(AppContext);
 
   const navigation = useNavigation();
+
+  const [dispRound, setDispRound] = React.useState<number>(0);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -87,10 +90,6 @@ const Match: React.FC<MatchProps> = ({
     });
   };
 
-  const getGender = (id: number) => {
-    return players.find((player) => player.id === id)?.gender;
-  };
-
   const renderMatch = ({ item, index }: { item: MatchType; index: number }) => (
     <View style={styles.matchCard}>
       <Text style={styles.courtName}>{index + 1}コート</Text>
@@ -98,68 +97,38 @@ const Match: React.FC<MatchProps> = ({
       <View style={styles.teams}>
         {/* チーム1 */}
         <View style={styles.team}>
-          {item.teamA.map((playerId) => (
-            <TouchableOpacity
-              key={playerId}
-              style={
-                swapPlayer === playerId
-                  ? styles.swapPlayerButton
-                  : styles.playerButton
-              }
-              onPress={() => {
-                const partnerId = item.teamA.find((id) => id !== playerId);
-                swapPlayer !== partnerId && selectSwapPlayer(playerId);
-              }}
-            >
-              <View style={styles.playerInfo}>
-                <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
-                <Text style={styles.playerGender}>
-                  {getGender(playerId) === Gender.男性 ? (
-                    <Foundation name="male" size={24} color="blue" />
-                  ) : getGender(playerId) === Gender.女性 ? (
-                    <Foundation name="female" size={24} color="red" />
-                  ) : (
-                    ""
-                  )}
-                </Text>
-              </View>
-              <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
-            </TouchableOpacity>
-          ))}
+          {item.teamA.map((playerId) => {
+            const partnerId = item.teamA.find((id) => id !== playerId);
+            return (
+              <MatchPlayer
+                key={playerId}
+                swapPlayer={swapPlayer}
+                playerId={playerId}
+                selectSwapPlayer={selectSwapPlayer}
+                partnerId={partnerId}
+                isEdit={dispRound === gameRounds.length}
+              />
+            );
+          })}
         </View>
 
         <Text style={styles.vsText}>VS</Text>
 
         {/* チーム2 */}
         <View style={styles.team}>
-          {item.teamB.map((playerId) => (
-            <TouchableOpacity
-              key={playerId}
-              style={
-                swapPlayer === playerId
-                  ? styles.swapPlayerButton
-                  : styles.playerButton
-              }
-              onPress={() => {
-                const partnerId = item.teamB.find((id) => id !== playerId);
-                swapPlayer !== partnerId && selectSwapPlayer(playerId);
-              }}
-            >
-              <View style={styles.playerInfo}>
-                <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
-                <Text style={styles.playerGender}>
-                  {getGender(playerId) === Gender.男性 ? (
-                    <Foundation name="male" size={24} color="blue" />
-                  ) : getGender(playerId) === Gender.女性 ? (
-                    <Foundation name="female" size={24} color="red" />
-                  ) : (
-                    ""
-                  )}
-                </Text>
-              </View>
-              <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
-            </TouchableOpacity>
-          ))}
+          {item.teamB.map((playerId) => {
+            const partnerId = item.teamB.find((id) => id !== playerId);
+            return (
+              <MatchPlayer
+                key={playerId}
+                swapPlayer={swapPlayer}
+                playerId={playerId}
+                selectSwapPlayer={selectSwapPlayer}
+                partnerId={partnerId}
+                isEdit={dispRound === gameRounds.length}
+              />
+            );
+          })}
         </View>
       </View>
     </View>
@@ -170,7 +139,7 @@ const Match: React.FC<MatchProps> = ({
   );
 
   const playablePlayers = players.filter((player) => {
-    return gameRounds[gameRounds.length - 1]?.matches.some((match) => {
+    return gameRounds[dispRound - 1]?.matches.some((match) => {
       return (
         match.teamA.some((playerId) => playerId === player.id) ||
         match.teamB.some((playerId) => playerId === player.id)
@@ -345,41 +314,53 @@ const Match: React.FC<MatchProps> = ({
     countMatch([...matches], players, setPlayers);
   };
 
-  const getPlayerName = (id: number) => {
-    return players.find((player) => player.id === id)?.name;
+  const restPlayerInfo = ({ item }: { item: Player }) => {
+    return (
+      <>
+        <Text style={styles.restingPlayerName}>{item.name}</Text>
+        <Text style={styles.playerGender}>
+          {item.gender === Gender.男性 ? (
+            <Foundation name="male" size={24} color="blue" />
+          ) : item.gender === Gender.女性 ? (
+            <Foundation name="female" size={24} color="red" />
+          ) : (
+            ""
+          )}
+        </Text>
+      </>
+    );
   };
 
   const renderRestingPlayer = ({ item }: { item: Player }) => (
-    <TouchableOpacity
-      style={
-        swapPlayer === item.id
-          ? styles.restingSwapPlayerItem
-          : styles.restingPlayerItem
-      }
-      onPress={() => {
-        (swapPlayer == null ||
-          swapPlayer === item.id ||
-          !restPlayers.some((restPlayer) => restPlayer.id === swapPlayer)) &&
-          selectSwapPlayer(item.id);
-      }}
-    >
-      <Text style={styles.restingPlayerName}>{item.name}</Text>
-      <Text style={styles.playerGender}>
-        {item.gender === Gender.男性 ? (
-          <Foundation name="male" size={24} color="blue" />
-        ) : item.gender === Gender.女性 ? (
-          <Foundation name="female" size={24} color="red" />
-        ) : (
-          ""
-        )}
-      </Text>
-    </TouchableOpacity>
+    <>
+      {dispRound === gameRounds.length ? (
+        <TouchableOpacity
+          style={
+            swapPlayer === item.id
+              ? styles.restingSwapPlayerItem
+              : styles.restingPlayerItem
+          }
+          onPress={() => {
+            (swapPlayer == null ||
+              swapPlayer === item.id ||
+              !restPlayers.some(
+                (restPlayer) => restPlayer.id === swapPlayer
+              )) &&
+              selectSwapPlayer(item.id);
+          }}
+        >
+          {restPlayerInfo({ item })}
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.restingPlayerItem}>{restPlayerInfo({ item })}</View>
+      )}
+    </>
   );
 
   const sections: Section[] = [
     {
       title: "",
-      data: gameRounds[gameRounds.length - 1]?.matches,
+      data: gameRounds[dispRound - 1]?.matches,
       type: "match",
     },
     {
@@ -403,15 +384,26 @@ const Match: React.FC<MatchProps> = ({
             pairs,
             matches,
             setSwapPlayer,
-            genderSetting
+            genderSetting,
+            setDispRound
           )
         }
       >
         <Ionicons name="refresh" size={20} color="white" />
         <Text style={styles.generateButtonText}>新しい組み合わせを生成</Text>
       </TouchableOpacity>
-
-      {gameRounds[gameRounds.length - 1] != null && (
+      {gameRounds[dispRound - 2] != null && (
+        <TouchableOpacity onPress={() => setDispRound((prev) => prev - 1)}>
+          <AntDesign name="left" size={20} color="black" />
+        </TouchableOpacity>
+      )}
+      {dispRound >= 1 && <Text>{dispRound}巡目</Text>}
+      {gameRounds[dispRound] != null && (
+        <TouchableOpacity onPress={() => setDispRound((prev) => prev + 1)}>
+          <AntDesign name="right" size={20} color="black" />
+        </TouchableOpacity>
+      )}
+      {gameRounds[dispRound - 1] != null && (
         <SectionList
           sections={sections}
           keyExtractor={(item, index) => item.id.toString() + index}

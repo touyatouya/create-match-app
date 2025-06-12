@@ -14,7 +14,7 @@ import {
 } from "react-native";
 // import { Checkbox } from "react-native-paper";
 import { GenderPreferenceSetting } from "../../types";
-import Checkbox from "../components/CheckBox";
+import Toggle from "../components/Toggle";
 
 const MatchScreen: React.FC = () => {
   const { players, setPlayers, setGameRounds } = useContext(AppContext);
@@ -75,7 +75,7 @@ const MatchScreen: React.FC = () => {
           <View style={styles.modalContent}>
             <Text style={styles.title}>性別</Text>
             <View>
-              <Checkbox
+              <Toggle
                 label="なるべく男子ダブルス"
                 checked={genderSetting.men}
                 onChange={() =>
@@ -84,7 +84,7 @@ const MatchScreen: React.FC = () => {
                   })
                 }
               />
-              <Checkbox
+              <Toggle
                 label="なるべく女子ダブルス"
                 checked={genderSetting.woman}
                 onChange={() =>
@@ -93,7 +93,7 @@ const MatchScreen: React.FC = () => {
                   })
                 }
               />
-              <Checkbox
+              <Toggle
                 label="なるべくミックスダブルス"
                 checked={genderSetting.mix}
                 onChange={() =>

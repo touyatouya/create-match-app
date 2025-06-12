@@ -8,6 +8,12 @@ export interface Player {
   rank: Rank;
 }
 
+export interface Group {
+  id: number;
+  name: string;
+  players: number[];
+}
+
 export enum Gender {
   男性 = "男性",
   女性 = "女性",
