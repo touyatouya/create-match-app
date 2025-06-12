@@ -3,9 +3,10 @@ import { savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import {
   Button,
+  FlatList,
   Pressable,
   StyleSheet,
   Text,
@@ -13,7 +14,7 @@ import {
   View,
 } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { Gender, Pair, Player, Rank } from "../../types";
+import { Gender, Group, Pair, Player, Rank } from "../../types";
 import Checkbox from "../components/CheckBox";
 import { findPairPlayerId } from "../components/PlayerScreen/util";
 import TextInput from "../components/TextInput";
@@ -21,7 +22,8 @@ import TextInput from "../components/TextInput";
 type Sort = "asc" | "desc";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs, groups } =
+    useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
@@ -334,6 +336,27 @@ const PlayerScreen: React.FC = () => {
     </View>
   );
 
+  const [filterGroups, setFilterGroups] = useState<Group[]>([]);
+
+  const filteredPlayer = players.filter((player) => {
+    if (filterGroups.length === 0) return true;
+    return filterGroups
+      .flatMap((filterGroup) => filterGroup.players)
+      .includes(player.id);
+  });
+
+  const selectFilterGroup = (id: number) => {
+    setFilterGroups((prev) => {
+      if (prev.some((filterGroup) => filterGroup.id === id)) {
+        return prev.filter((filterGroup) => filterGroup.id !== id);
+      } else {
+        const selectedGroup = groups.find((group) => group.id === id);
+        if (selectedGroup == null) return prev;
+        else return [...prev, selectedGroup];
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
@@ -346,12 +369,35 @@ const PlayerScreen: React.FC = () => {
           clearInput={() => setNewPlayerName("")}
         />
       </View>
+      <View>
+        <FlatList
+          data={groups}
+          keyExtractor={(item, index) => `${item}-${index}`}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={{ flex: 1, flexDirection: "row" }}
+              onPress={() => selectFilterGroup(item.id)}
+            >
+              <View style={styles.restingPlayerItem}>
+                <Text key={item.id} style={styles.restingPlayerName}>
+                  {item.name}
+                </Text>
+              </View>
+              {filterGroups.some(
+                (filterGroup) => filterGroup.id === item.id
+              ) && <AntDesign name="closecircleo" size={24} color="black" />}
+            </TouchableOpacity>
+          )}
+        />
+      </View>
       <Text style={styles.joinedPlayer}>
         参加プレイヤー：{joinedPlayer.length}人
       </Text>
       {renderHeader()}
       <SwipeListView
-        data={players}
+        data={filteredPlayer}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
@@ -376,6 +422,24 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  restingPlayerItem: {
+    alignItems: "baseline",
+    backgroundColor: "#FFF9E6",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    // borderColor: "#FFE8B2",
+    flex: 1,
+  },
+  restingPlayerName: {
+    marginLeft: 6,
+    fontSize: 24,
+    color: "#664500",
+    marginRight: 5,
+  },
   rowBack: {
     alignItems: "center",
     backgroundColor: "red",
