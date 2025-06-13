@@ -1,12 +1,10 @@
 import Match from "@/app/components/MatchScreen/match";
 import { AppContext } from "@/context/AppContext";
-import { AntDesign } from "@expo/vector-icons";
 import { router, useNavigation } from "expo-router";
 import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   Button,
   FlatList,
-  LayoutAnimation,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -14,6 +12,7 @@ import {
 } from "react-native";
 // import { Checkbox } from "react-native-paper";
 import { GenderPreferenceSetting } from "../../types";
+import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
 
 const MatchScreen: React.FC = () => {
@@ -53,24 +52,12 @@ const MatchScreen: React.FC = () => {
     });
   }, [navigation, setGameRounds, setPlayers]);
 
-  const toggleExpanded = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded((prev) => !prev);
-  };
-
   const nextRestPlayer = players.filter((player) => player.isRest);
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
       <View style={styles.item}>
-        <TouchableOpacity onPress={toggleExpanded} style={styles.genderEdit}>
-          <AntDesign
-            name={expanded ? "down" : "right"}
-            size={20}
-            color="black"
-          />
-          <Text style={styles.title}>詳細設定</Text>
-        </TouchableOpacity>
+        <Disclosure isOpen={expanded} setIsOpen={setExpanded} />
         {expanded && (
           <View style={styles.modalContent}>
             <Text style={styles.title}>性別</Text>
@@ -235,10 +222,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
-  },
-  genderEdit: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   title: {
     fontSize: 18,
