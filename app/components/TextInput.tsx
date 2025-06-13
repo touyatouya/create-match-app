@@ -1,90 +1,121 @@
-import { AntDesign, Ionicons } from "@expo/vector-icons";
-import { useRef } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import {
   Button,
   InputAccessoryView,
   Platform,
   StyleSheet,
+  Text,
   TextInput as TextInputOrigin,
   TouchableOpacity,
   View,
 } from "react-native";
+import uuid from "react-native-uuid";
 
 interface TextInputProps {
   value: string;
-  onChangeText: () => void;
+  onChangeText: (text: string) => void;
   onSubmitEditing: () => void;
   clearInput: () => void;
   placeholder?: string;
+  isError?: boolean;
+  errorMessage?: string;
+  autoFocus?: boolean;
 }
 
-const TextInput: React.FC<TextInputProps> = ({
-  value,
-  onChangeText,
-  onSubmitEditing,
-  clearInput,
-  placeholder,
-}) => {
-  const inputAccessoryViewID = "uniqueID";
-  const textInputRef = useRef<TextInputOrigin>(null);
-
-  return (
-    <>
-      <View style={styles.inputContainer}>
-        <TextInputOrigin
-          ref={textInputRef}
-          style={styles.input}
-          placeholder={placeholder}
-          placeholderTextColor="#999"
-          value={value}
-          onChangeText={onChangeText}
-          onSubmitEditing={onSubmitEditing}
-          autoCapitalize="words"
-          inputAccessoryViewID={
-            Platform.OS === "ios" ? inputAccessoryViewID : undefined
-          }
-          returnKeyType="done"
-        />
-        {value.length > 0 && (
-          <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
-            <AntDesign name="closecircle" size={20} color="#999" />
-          </TouchableOpacity>
-        )}
-      </View>
-      {/* iOS限定: キーボード上に完了ボタンを表示 */}
-      {Platform.OS === "ios" && (
-        <InputAccessoryView nativeID={inputAccessoryViewID}>
-          <View style={styles.accessory}>
-            <Button
-              title="キャンセル"
-              onPress={() => {
-                textInputRef.current?.blur(); // キーボードを閉じる
-              }}
-            />
-            <Button
-              title="完了"
-              onPress={() => {
-                onSubmitEditing();
-                textInputRef.current?.blur(); // キーボードを閉じる
-              }}
-            />
-          </View>
-        </InputAccessoryView>
-      )}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          onSubmitEditing();
-          textInputRef.current?.blur(); // キーボードを閉じる
-        }}
-      >
-        <Ionicons name="add" size={24} color="white" />
-      </TouchableOpacity>
-    </>
-  );
+type Ref = {
+  blur: () => void;
+  focus: () => void;
 };
 
+const TextInput = forwardRef<Ref, TextInputProps>(
+  (
+    {
+      value,
+      onChangeText,
+      onSubmitEditing,
+      clearInput,
+      placeholder,
+      isError = false,
+      errorMessage = "",
+      autoFocus = false,
+    },
+    ref
+  ) => {
+    const inputAccessoryViewID = uuid.v4();
+    const inputRef = useRef<TextInputOrigin>(null);
+
+    // 外から ref.current?.blur() を使えるようにする
+    useImperativeHandle(ref, () => ({
+      blur: () => inputRef.current?.blur(),
+      focus: () => inputRef.current?.focus(),
+    }));
+
+    return (
+      <>
+        <View style={styles.inputContainer}>
+          <View style={styles.inputWrapper}>
+            <TextInputOrigin
+              ref={inputRef}
+              style={isError ? styles.inputError : styles.input}
+              placeholder={placeholder}
+              placeholderTextColor="#999"
+              value={value}
+              onChangeText={onChangeText}
+              onSubmitEditing={onSubmitEditing}
+              autoCapitalize="words"
+              inputAccessoryViewID={
+                Platform.OS === "ios" ? inputAccessoryViewID : undefined
+              }
+              returnKeyType="done"
+              autoFocus={autoFocus}
+            />
+            {value.length > 0 && (
+              <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
+                <AntDesign name="closecircle" size={20} color="#999" />
+              </TouchableOpacity>
+            )}
+          </View>
+          {isError && <Text style={styles.validationText}>{errorMessage}</Text>}
+        </View>
+        {/* iOS限定: キーボード上に完了ボタンを表示 */}
+        {Platform.OS === "ios" && (
+          <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <View style={styles.accessory}>
+              <Button
+                title="キャンセル"
+                onPress={() => {
+                  inputRef.current?.blur(); // キーボードを閉じる
+                }}
+              />
+              <Button
+                title="完了"
+                onPress={() => {
+                  onSubmitEditing();
+                  inputRef.current?.blur(); // キーボードを閉じる
+                }}
+              />
+            </View>
+          </InputAccessoryView>
+        )}
+      </>
+    );
+  }
+);
+
+TextInput.displayName = "TextInput"; // これを追加
+
 const styles = StyleSheet.create({
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  validationText: {
+    color: "red",
+    fontSize: 14,
+    marginTop: 4,
+    marginLeft: 4,
+  },
   clearButton: {
     position: "absolute",
     right: 10,
@@ -92,7 +123,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -10 }],
   },
   inputContainer: {
-    flex: 1,
+    marginBottom: 8,
   },
   accessory: {
     backgroundColor: "#f2f2f2",
@@ -112,14 +143,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingRight: 30,
   },
-  addButton: {
-    width: 48,
+  inputError: {
+    flex: 1,
     height: 48,
-    backgroundColor: "#4CAF50",
-    justifyContent: "center",
-    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "red",
     borderRadius: 8,
-    marginLeft: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#fff",
+    paddingRight: 30,
   },
 });
 

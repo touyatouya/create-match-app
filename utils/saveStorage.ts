@@ -1,9 +1,7 @@
-import { Gender, Group, Rank } from "@/types";
+import { Gender, Group, Pair, Rank } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const savePairs = async (
-  pairs: { id: number; player1: number; player2: number }[]
-) => {
+export const savePairs = async (pairs: Pair[]) => {
   try {
     await AsyncStorage.setItem("pairs", JSON.stringify(pairs));
   } catch (e) {

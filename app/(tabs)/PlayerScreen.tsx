@@ -1,5 +1,5 @@
 import { AppContext } from "@/context/AppContext";
-import { savePlayerInfo } from "@/utils/saveStorage";
+import { saveGroups, savePairs, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
@@ -14,22 +14,22 @@ import {
   View,
 } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { Gender, Group, Pair, Player, Rank } from "../../types";
+import { Gender, Group, Pair, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
+import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 import { findPairPlayerId } from "../components/PlayerScreen/util";
-import TextInput from "../components/TextInput";
 
 type Sort = "asc" | "desc";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs, groups } =
+  const { players, setPlayers, pairs, setPairs, groups, setGroups } =
     useContext(AppContext);
-  const [newPlayerName, setNewPlayerName] = React.useState("");
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
     React.useState<Sort | null>(null);
   const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
   const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,6 +70,23 @@ const PlayerScreen: React.FC = () => {
         }
         setPairs(pairs);
       }
+
+      const groupsData = await AsyncStorage.getItem("groups");
+      let groupsLength: number = 0;
+      if (groupsData) groupsLength = JSON.parse(groupsData).length;
+
+      if (groupsData && groupsLength > 0) {
+        const parsedGroups = JSON.parse(groupsData);
+        let groups: Group[] = [];
+        for (let i = 0; i < parsedGroups.length; i++) {
+          groups.push({
+            id: parsedGroups[i].id,
+            name: parsedGroups[i].name,
+            players: parsedGroups[i].players,
+          });
+        }
+        setGroups(groups);
+      }
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,10 +99,11 @@ const PlayerScreen: React.FC = () => {
     navigation.setOptions({
       headerRight: () =>
         isEdit || (
-          <Button
-            title="グループ編集"
-            onPress={() => router.push("/components/PlayerScreen/group-screen")}
-          />
+          <TouchableOpacity onPress={() => setAddModalVisible(true)}>
+            <View style={{ marginRight: 16 }}>
+              <AntDesign name="plus" size={24} color="#007BFF" />
+            </View>
+          </TouchableOpacity>
         ),
       headerLeft: () =>
         isEdit ? (
@@ -96,51 +114,9 @@ const PlayerScreen: React.FC = () => {
     });
   }, [isEdit, navigation, router]);
 
-  const addPlayer = (): void => {
-    if (newPlayerName.trim() === "") return;
-    let newPlayers: Player[] = [];
-
-    setPlayers((prev) => {
-      const playerIds = prev.map((player) => player.id);
-      let newPlayerId: number;
-      do {
-        newPlayerId = Math.floor(Math.random() * 10000); // 0〜10000の自然数
-      } while (playerIds.includes(newPlayerId));
-
-      const newPlayer: Player = {
-        id: newPlayerId,
-        name: newPlayerName,
-        gender: Gender.未設定,
-        matchCount: 0,
-        isJoin: true,
-        isRest: false,
-        rank: Rank.未設定,
-      };
-
-      newPlayers = [...prev, newPlayer];
-      return newPlayers;
-    });
-
-    setNewPlayerName("");
-    savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          gender: player.gender,
-          rank: player.rank,
-        };
-      })
-    );
-  };
-
   const removePlayer = (id: number): void => {
-    let newPlayers: Player[] = [];
-    setPlayers((prev) => {
-      newPlayers = prev.filter((player) => player.id !== id);
-      return newPlayers;
-    });
-    setNewPlayerName("");
+    const newPlayers = players.filter((player) => player.id !== id);
+    setPlayers(newPlayers);
     savePlayerInfo(
       newPlayers.map((player) => {
         return {
@@ -151,6 +127,29 @@ const PlayerScreen: React.FC = () => {
         };
       })
     );
+
+    const pairPlayers = pairs.flatMap((pair) => [pair.player1, pair.player2]);
+    if (pairPlayers.includes(id)) {
+      const newPairs = pairs.filter(
+        (pair) => pair.player1 !== id && pair.player2 !== id
+      );
+      setPairs(newPairs);
+      savePairs(newPairs);
+    }
+
+    const groupPlayers = groups.flatMap((group) => [...group.players]);
+    if (groupPlayers.includes(id)) {
+      const newGroups = groups
+        .map((group) => {
+          return {
+            ...group,
+            players: group.players.filter((player) => player !== id),
+          };
+        })
+        .filter((group) => group.players.length > 0);
+      setGroups(newGroups);
+      saveGroups(newGroups);
+    }
   };
 
   const joinPlayer = (id: number): void => {
@@ -164,7 +163,14 @@ const PlayerScreen: React.FC = () => {
 
   const joinAllPlayer = () => {
     const updatedPlayers = players.map((player) => {
-      return { ...player, isJoin: true };
+      if (
+        filteredPlayers
+          .flatMap((filteredPlayer) => filteredPlayer.id)
+          .includes(player.id)
+      ) {
+        return { ...player, isJoin: true };
+      }
+      return { ...player };
     });
     setPlayers(updatedPlayers);
   };
@@ -177,17 +183,15 @@ const PlayerScreen: React.FC = () => {
   };
 
   const sortMatchCount = () => {
-    let sorted: Player[] = [];
-    setIsSortedMatchCount((prev) => {
-      sorted = [...players].sort((a, b) => {
-        if (prev === "asc") {
-          return b.matchCount - a.matchCount;
-        } else {
-          return a.matchCount - b.matchCount;
-        }
-      });
-      return prev === "asc" ? "desc" : "asc";
+    const nextSortOrder = isSortedMatchCount === "asc" ? "desc" : "asc";
+
+    const sorted = [...players].sort((a, b) => {
+      return nextSortOrder === "asc"
+        ? a.matchCount - b.matchCount
+        : b.matchCount - a.matchCount;
     });
+
+    setIsSortedMatchCount(nextSortOrder);
     setPlayers(sorted);
   };
 
@@ -198,50 +202,51 @@ const PlayerScreen: React.FC = () => {
   };
 
   const sortGender = () => {
-    let sorted: Player[] = [];
-    setIsSortedGender((prev) => {
-      sorted = [...players].sort((a, b) => {
-        if (prev === "asc") {
-          return genderOrder[b.gender] - genderOrder[a.gender];
-        } else {
-          return genderOrder[a.gender] - genderOrder[b.gender];
-        }
-      });
-      return prev === "asc" ? "desc" : "asc";
+    const nextSortOrder = isSortedGender === "asc" ? "desc" : "asc";
+
+    const sorted = [...players].sort((a, b) => {
+      return nextSortOrder === "asc"
+        ? genderOrder[a.gender] - genderOrder[b.gender]
+        : genderOrder[b.gender] - genderOrder[a.gender];
     });
+
+    setIsSortedGender(nextSortOrder);
     setPlayers(sorted);
   };
+
   const sortPair = () => {
-    let sorted: Player[] = [];
-    setIsSortedPair((prev) => {
-      sorted = [...players].sort((a, b) => {
-        const pairA = pairs.find(
-          (pair) => pair.player1 === a.id || pair.player2 === a.id
-        );
-        const pairB = pairs.find(
-          (pair) => pair.player1 === b.id || pair.player2 === b.id
-        );
+    const nextSortOrder = isSortedPair === "asc" ? "desc" : "asc";
+    const sorted = [...players].sort((a, b) => {
+      const pairA = pairs.find(
+        (pair) => pair.player1 === a.id || pair.player2 === a.id
+      );
+      const pairB = pairs.find(
+        (pair) => pair.player1 === b.id || pair.player2 === b.id
+      );
 
-        const hasPairA = pairA ? 1 : 0;
-        const hasPairB = pairB ? 1 : 0;
+      const hasPairA = pairA ? 1 : 0;
+      const hasPairB = pairB ? 1 : 0;
 
-        if (prev === "asc") {
-          return hasPairB - hasPairA;
-        } else {
-          return hasPairA - hasPairB;
-        }
-      });
-      return prev === "asc" ? "desc" : "asc";
+      if (isSortedPair === "asc") {
+        return hasPairB - hasPairA;
+      } else {
+        return hasPairA - hasPairB;
+      }
     });
+
+    setIsSortedPair(nextSortOrder);
     setPlayers(sorted);
   };
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
       <Checkbox
-        checked={players.every((player) => player.isJoin)}
+        checked={
+          filteredPlayers.length > 0 &&
+          filteredPlayers.every((player) => player.isJoin)
+        }
         onChange={
-          players.every((player) => player.isJoin)
+          filteredPlayers.every((player) => player.isJoin)
             ? noJoinAllPlayer
             : joinAllPlayer
         }
@@ -338,7 +343,7 @@ const PlayerScreen: React.FC = () => {
 
   const [filterGroups, setFilterGroups] = useState<Group[]>([]);
 
-  const filteredPlayer = players.filter((player) => {
+  const filteredPlayers = players.filter((player) => {
     if (filterGroups.length === 0) return true;
     return filterGroups
       .flatMap((filterGroup) => filterGroup.players)
@@ -357,18 +362,34 @@ const PlayerScreen: React.FC = () => {
     });
   };
 
+  // const clearStorage = async () => {
+  //   try {
+  //     await AsyncStorage.clear();
+  //     Alert.alert("ローカルストレージがクリアされました");
+  //   } catch (e) {
+  //     Alert.alert("エラー", "ローカルストレージの削除に失敗しました");
+  //   }
+  // };
+
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
-      <View style={styles.addPlayerContainer}>
-        <TextInput
-          placeholder="プレイヤー名を入力して新規登録"
-          value={newPlayerName}
-          onChangeText={() => setNewPlayerName}
-          onSubmitEditing={addPlayer}
-          clearInput={() => setNewPlayerName("")}
-        />
-      </View>
+      <AddPlayerModal
+        isOpen={isAddModalVisible}
+        onClose={() => setAddModalVisible(false)}
+      />
+      <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: "/components/PlayerScreen/group-screen",
+          })
+        }
+        style={{ alignItems: "flex-end", marginBottom: 8 }}
+      >
+        <Text style={{ color: "rgb(0, 122, 255)", fontSize: 18 }}>
+          グループ一覧
+        </Text>
+      </TouchableOpacity>
       <View>
         <FlatList
           data={groups}
@@ -380,14 +401,21 @@ const PlayerScreen: React.FC = () => {
               style={{ flex: 1, flexDirection: "row" }}
               onPress={() => selectFilterGroup(item.id)}
             >
-              <View style={styles.restingPlayerItem}>
+              <View
+                style={
+                  filterGroups.some((filterGroup) => filterGroup.id === item.id)
+                    ? styles.selectedFilterItem
+                    : styles.filterItem
+                }
+              >
                 <Text key={item.id} style={styles.restingPlayerName}>
                   {item.name}
                 </Text>
+
+                {filterGroups.some(
+                  (filterGroup) => filterGroup.id === item.id
+                ) && <AntDesign name="closecircle" size={16} color="black" />}
               </View>
-              {filterGroups.some(
-                (filterGroup) => filterGroup.id === item.id
-              ) && <AntDesign name="closecircleo" size={24} color="black" />}
             </TouchableOpacity>
           )}
         />
@@ -397,7 +425,7 @@ const PlayerScreen: React.FC = () => {
       </Text>
       {renderHeader()}
       <SwipeListView
-        data={filteredPlayer}
+        data={filteredPlayers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
@@ -422,21 +450,45 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  restingPlayerItem: {
-    alignItems: "baseline",
+  addButton: {
+    width: 48,
+    height: 48,
+    backgroundColor: "#4CAF50",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  filterItem: {
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#FFF9E6",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
+    borderStyle: "dashed",
     borderColor: "#e0e0e0",
-    // borderColor: "#FFE8B2",
+    flexDirection: "row",
+    flex: 1,
+  },
+  selectedFilterItem: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#b2cfee",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: "#007BFF",
+    flexDirection: "row",
     flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,
-    fontSize: 24,
+    fontSize: 16,
     color: "#664500",
     marginRight: 5,
   },

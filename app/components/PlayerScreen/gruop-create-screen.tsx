@@ -3,8 +3,8 @@ import { Group, Player } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { saveGroups } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { Stack, useRouter } from "expo-router";
+import React, { useContext, useRef, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -17,8 +17,8 @@ import CompleteToast from "../CompleteToast";
 import TextInput from "../TextInput";
 import Toggle from "../Toggle";
 
-const EditGroupScreen: React.FC = () => {
-  const { players, groups, setGroups } = useContext(AppContext);
+const CreateGroupScreen: React.FC = () => {
+  const { players, setGroups } = useContext(AppContext);
 
   const [group, setGroup] = useState<number[]>([]);
   const [showGroupCreated, setShowGroupCreated] = useState<boolean>(false);
@@ -27,19 +27,6 @@ const EditGroupScreen: React.FC = () => {
   const [noMemberSelected, setNoMemberSelected] = useState(false);
 
   const router = useRouter();
-
-  const { gropuId } = useLocalSearchParams();
-  const id = Number(gropuId);
-
-  const targetGroup = groups.find((group) => group.id === id);
-
-  useEffect(() => {
-    if (targetGroup != null) {
-      setGroup(targetGroup.players);
-      setGroupName(targetGroup.name);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const selectPlayer = (id: number) => {
     setGroup((prev) => {
@@ -108,7 +95,7 @@ const EditGroupScreen: React.FC = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "グループ編集",
+          title: "グループ作成",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -133,7 +120,7 @@ const EditGroupScreen: React.FC = () => {
       />
       <CompleteToast
         isOpen={showGroupCreated}
-        message="グループを更新しました"
+        message="グループを作成しました"
       />
       <View style={styles.container}>
         <View style={{ marginBottom: 8 }}>
@@ -172,7 +159,7 @@ const EditGroupScreen: React.FC = () => {
           />
         </View>
         <TouchableOpacity style={styles.button} onPress={createGroup}>
-          <Text style={styles.buttonText}>グループを更新</Text>
+          <Text style={styles.buttonText}>グループを作成</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -246,4 +233,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditGroupScreen;
+export default CreateGroupScreen;

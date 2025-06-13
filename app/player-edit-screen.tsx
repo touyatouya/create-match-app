@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import GenderToggle from "./components/GenderToggle";
 import { findPairPlayerId } from "./components/PlayerScreen/util";
 
 const PlayerEditScreen: React.FC = () => {
@@ -273,27 +274,10 @@ const PlayerEditScreen: React.FC = () => {
           <Foundation name="male-female" size={24} color="black" />
           <View style={styles.info}>
             <Text style={styles.label}>性別</Text>
-            <View style={styles.toggleContainer}>
-              {Object.values(Gender).map((gender) => (
-                <TouchableOpacity
-                  key={gender}
-                  style={[
-                    styles.button,
-                    player?.gender === gender && styles.selectedButton,
-                  ]}
-                  onPress={() => setSelectedGender(gender)}
-                >
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      player?.gender === gender && styles.selectedText,
-                    ]}
-                  >
-                    {gender}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            <GenderToggle
+              value={player?.gender as Gender}
+              setGender={setSelectedGender}
+            />
           </View>
         </View>
       </View>
