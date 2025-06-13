@@ -9,9 +9,14 @@ import {
 interface DisclosureProps {
   isOpen: boolean;
   setIsOpen: (value: React.SetStateAction<boolean>) => void;
+  label: string;
 }
 
-const Disclosure: React.FC<DisclosureProps> = ({ isOpen, setIsOpen }) => {
+const Disclosure: React.FC<DisclosureProps> = ({
+  isOpen,
+  setIsOpen,
+  label,
+}) => {
   const toggleExpanded = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setIsOpen((prev) => !prev);
@@ -20,7 +25,7 @@ const Disclosure: React.FC<DisclosureProps> = ({ isOpen, setIsOpen }) => {
   return (
     <TouchableOpacity onPress={toggleExpanded} style={styles.genderEdit}>
       <AntDesign name={isOpen ? "down" : "right"} size={20} color="black" />
-      <Text style={styles.title}>詳細設定</Text>
+      <Text style={styles.title}>{label}</Text>
     </TouchableOpacity>
   );
 };

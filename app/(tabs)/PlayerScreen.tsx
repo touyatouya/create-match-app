@@ -16,6 +16,7 @@ import {
 import { SwipeListView } from "react-native-swipe-list-view";
 import { Gender, Group, Pair, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
+import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 import { findPairPlayerId } from "../components/PlayerScreen/util";
 
@@ -30,6 +31,7 @@ const PlayerScreen: React.FC = () => {
   const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
   const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -378,51 +380,63 @@ const PlayerScreen: React.FC = () => {
         isOpen={isAddModalVisible}
         onClose={() => setAddModalVisible(false)}
       />
-      <TouchableOpacity
-        onPress={() =>
-          router.push({
-            pathname: "/components/PlayerScreen/group-screen",
-          })
-        }
-        style={{ alignItems: "flex-end", marginBottom: 8 }}
-      >
-        <Text style={{ color: "rgb(0, 122, 255)", fontSize: 18 }}>
-          グループ一覧
-        </Text>
-      </TouchableOpacity>
-      <View>
-        <FlatList
-          data={groups}
-          keyExtractor={(item, index) => `${item}-${index}`}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={{ flex: 1, flexDirection: "row" }}
-              onPress={() => selectFilterGroup(item.id)}
-            >
-              <View
-                style={
-                  filterGroups.some((filterGroup) => filterGroup.id === item.id)
-                    ? styles.selectedFilterItem
-                    : styles.filterItem
-                }
-              >
-                <Text key={item.id} style={styles.restingPlayerName}>
-                  {item.name}
-                </Text>
-
-                {filterGroups.some(
-                  (filterGroup) => filterGroup.id === item.id
-                ) && <AntDesign name="closecircle" size={16} color="black" />}
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+      <Text style={styles.joinedPlayer}>
+        組み合わせに参加させるプレイヤーを選択してください。
+      </Text>
       <Text style={styles.joinedPlayer}>
         参加プレイヤー：{joinedPlayer.length}人
       </Text>
+      <Disclosure isOpen={expanded} setIsOpen={setExpanded} label="絞り込み" />
+      {expanded && (
+        <>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/components/PlayerScreen/group-screen",
+              })
+            }
+            style={{ alignItems: "flex-end", marginBottom: 8 }}
+          >
+            <Text style={{ color: "rgb(0, 122, 255)", fontSize: 18 }}>
+              グループ一覧
+            </Text>
+          </TouchableOpacity>
+          <View>
+            <FlatList
+              data={groups}
+              keyExtractor={(item, index) => `${item}-${index}`}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{ flex: 1, flexDirection: "row" }}
+                  onPress={() => selectFilterGroup(item.id)}
+                >
+                  <View
+                    style={
+                      filterGroups.some(
+                        (filterGroup) => filterGroup.id === item.id
+                      )
+                        ? styles.selectedFilterItem
+                        : styles.filterItem
+                    }
+                  >
+                    <Text key={item.id} style={styles.restingPlayerName}>
+                      {item.name}
+                    </Text>
+
+                    {filterGroups.some(
+                      (filterGroup) => filterGroup.id === item.id
+                    ) && (
+                      <AntDesign name="closecircle" size={16} color="black" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </>
+      )}
       {renderHeader()}
       <SwipeListView
         data={filteredPlayers}

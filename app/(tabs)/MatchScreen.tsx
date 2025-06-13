@@ -57,7 +57,11 @@ const MatchScreen: React.FC = () => {
   return (
     <View style={{ flex: 1, padding: 10 }}>
       <View style={styles.item}>
-        <Disclosure isOpen={expanded} setIsOpen={setExpanded} />
+        <Disclosure
+          isOpen={expanded}
+          setIsOpen={setExpanded}
+          label="詳細設定"
+        />
         {expanded && (
           <View style={styles.modalContent}>
             <Text style={styles.title}>性別</Text>
