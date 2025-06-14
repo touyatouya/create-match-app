@@ -398,7 +398,7 @@ const PlayerScreen: React.FC = () => {
             style={{ alignItems: "flex-end", marginBottom: 8 }}
           >
             <Text style={{ color: "rgb(0, 122, 255)", fontSize: 18 }}>
-              グループ一覧
+              絞り込みグループ一覧
             </Text>
           </TouchableOpacity>
           <View>
