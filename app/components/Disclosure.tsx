@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 interface DisclosureProps {
   isOpen: boolean;
@@ -24,7 +25,11 @@ const Disclosure: React.FC<DisclosureProps> = ({
 
   return (
     <TouchableOpacity onPress={toggleExpanded} style={styles.genderEdit}>
-      <AntDesign name={isOpen ? "down" : "right"} size={20} color="black" />
+      <AntDesign
+        name={isOpen ? "down" : "right"}
+        size={20}
+        color={Colors.normalIcon}
+      />
       <Text style={styles.title}>{label}</Text>
     </TouchableOpacity>
   );
@@ -40,6 +45,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
 });

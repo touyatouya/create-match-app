@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 // import { Checkbox } from "react-native-paper";
+import Colors from "@/constants/color";
 import { GenderPreferenceSetting } from "../../types";
 import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
@@ -149,34 +150,30 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: "#999",
+    color: Colors.emptyText,
     marginTop: 0,
   },
   allPlayerButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 10,
+    borderColor: Colors.secondary,
+    borderWidth: 1,
   },
   addButtonText: {
-    color: "white",
+    color: Colors.secondary,
     marginLeft: 8,
     fontWeight: "600",
-  },
-  selectButton: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
   },
   selectButtonText: {
     fontSize: 16,
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 10,
     borderRadius: 12,
     width: "100%",
@@ -186,22 +183,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#007AFF",
-  },
   optionText: {
     fontSize: 16,
   },
@@ -209,7 +190,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
     paddingVertical: 8,
   },
   info: {
@@ -230,10 +211,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   generateButton: {
-    backgroundColor: "#6200EE",
+    backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -242,17 +223,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   generateButtonText: {
-    color: "white",
+    color: Colors.whiteText,
     marginLeft: 8,
     fontWeight: "600",
     fontSize: 16,
   },
   matchCard: {
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     borderRadius: 8,
     padding: 8,
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -262,7 +243,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 6,
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   teams: {
     flexDirection: "row",
@@ -277,18 +258,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 10,
     borderRadius: 6,
     marginBottom: 0,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: Colors.borderline,
   },
   swapPlayerButton: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 10,
     borderRadius: 6,
     marginBottom: 0,
@@ -303,7 +284,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: 24,
-    color: "#333",
+    color: Colors.sectionTitie,
     fontWeight: "500",
   },
   playerGender: {
@@ -312,7 +293,7 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#FF6B6B",
+    color: Colors.remove,
     marginHorizontal: 6,
   },
   restingHeader: {
@@ -328,7 +309,7 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   restingCount: {
     fontSize: 20,
@@ -336,34 +317,19 @@ const styles = StyleSheet.create({
   },
   restingPlayerItem: {
     alignItems: "baseline",
-    backgroundColor: "#FFF9E6",
+    backgroundColor: Colors.restPlayerBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
-    // borderColor: "#FFE8B2",
-    flex: 1,
-  },
-  restingSwapPlayerItem: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    backgroundColor: "#FFF9E6",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#cc7838",
-    // borderColor: "#FFE8B2",
+    borderColor: Colors.borderline,
     flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,
     fontSize: 24,
-    color: "#664500",
+    color: Colors.restPlayerName,
     marginRight: 5,
   },
 });

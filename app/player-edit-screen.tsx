@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
@@ -185,12 +186,12 @@ const PlayerEditScreen: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <AntDesign name="left" size={24} color="rgb(0, 122, 255)" />
+              <AntDesign name="left" size={24} color={Colors.link} />
               <Text
                 style={{
                   marginLeft: 6,
                   fontSize: 16,
-                  color: "rgb(0, 122, 255)",
+                  color: Colors.link,
                 }}
               >
                 プレイヤー
@@ -204,7 +205,7 @@ const PlayerEditScreen: React.FC = () => {
           <Ionicons
             name="person-outline"
             size={24}
-            color="black"
+            color={Colors.normalIcon}
             style={styles.icon}
           />
           <View style={styles.info}>
@@ -239,7 +240,7 @@ const PlayerEditScreen: React.FC = () => {
           <FontAwesome5
             name="handshake"
             size={20}
-            color="black"
+            color={Colors.normalIcon}
             style={styles.icon}
           />
           <View style={styles.info}>
@@ -271,7 +272,7 @@ const PlayerEditScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.item}>
-          <Foundation name="male-female" size={24} color="black" />
+          <Foundation name="male-female" size={24} color={Colors.normalIcon} />
           <View style={styles.info}>
             <Text style={styles.label}>性別</Text>
             <GenderToggle
@@ -288,57 +289,27 @@ const PlayerEditScreen: React.FC = () => {
 const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: "row",
-    backgroundColor: "#fefefe",
+    backgroundColor: Colors.background,
     borderRadius: 32,
     borderWidth: 1,
-    borderColor: "#999",
+    borderColor: Colors.toggleBorder,
     overflow: "hidden",
     alignSelf: "flex-start",
   },
-  selectedButton: {
-    backgroundColor: "#cce7ff",
-  },
   buttonText: {
     fontSize: 16,
-    color: "#333",
-  },
-  selectedText: {
-    fontWeight: "bold",
-    color: "#1c1c1c",
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    margin: 5,
-    backgroundColor: "#ccc",
-    alignSelf: "flex-start",
+    color: Colors.sectionTitie,
   },
   text: {
-    color: "black",
+    color: Colors.blackText,
     fontSize: 16,
     fontWeight: "600",
-  },
-  // container: {
-  //   padding: 24,
-  // },
-  selectButton: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
   },
   selectButtonText: {
     fontSize: 16,
   },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 24,
     borderRadius: 12,
     width: "80%",
@@ -355,38 +326,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 24,
   },
-  radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#007AFF",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#007AFF",
-  },
   optionText: {
     fontSize: 16,
   },
   accessory: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: Colors.accessoryBackground,
     padding: 8,
     flexDirection: "row",
     justifyContent: "space-between",
-
-    // alignItems: "flex-end",
     borderTopWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.accessoryborderColor,
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     paddingHorizontal: 16,
   },
   addPlayerContainer: {
@@ -402,14 +354,14 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
   },
   backText: {
     fontSize: 16,
-    color: "#007AFF",
+    color: Colors.link,
   },
   headerTitle: {
     fontSize: 18,
@@ -419,7 +371,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
     paddingVertical: 32,
   },
   icon: {
@@ -438,7 +390,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   link: {
-    color: "#007AFF",
+    color: Colors.link,
     fontSize: 14,
   },
 });

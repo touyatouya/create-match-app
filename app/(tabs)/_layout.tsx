@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
@@ -7,8 +8,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#007AFF", // アクティブ時の色（青）
-        tabBarInactiveTintColor: "#888", // 非アクティブ時の色（グレー）
+        tabBarActiveTintColor: Colors.whiteText, // アクティブ時の色（青）
+        tabBarInactiveTintColor: Colors.muted, // 非アクティブ時の色（グレー）
+        tabBarStyle: {
+          backgroundColor: Colors.primary, // フッターの背景色
+        },
+        headerStyle: {
+          backgroundColor: Colors.primary,
+        },
+        headerTintColor: Colors.whiteText,
       }}
     >
       <Tabs.Screen

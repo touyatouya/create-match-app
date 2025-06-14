@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AntDesign } from "@expo/vector-icons";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import {
@@ -59,7 +60,7 @@ const TextInput = forwardRef<Ref, TextInputProps>(
               ref={inputRef}
               style={isError ? styles.inputError : styles.input}
               placeholder={placeholder}
-              placeholderTextColor="#999"
+              placeholderTextColor={Colors.emptyText}
               value={value}
               onChangeText={onChangeText}
               onSubmitEditing={onSubmitEditing}
@@ -72,7 +73,11 @@ const TextInput = forwardRef<Ref, TextInputProps>(
             />
             {value.length > 0 && (
               <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
-                <AntDesign name="closecircle" size={20} color="#999" />
+                <AntDesign
+                  name="closecircle"
+                  size={20}
+                  color={Colors.emptyText}
+                />
               </TouchableOpacity>
             )}
           </View>
@@ -126,21 +131,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   accessory: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: Colors.accessoryBackground,
     padding: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
   },
   input: {
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
     paddingRight: 30,
   },
   inputError: {
@@ -150,7 +155,7 @@ const styles = StyleSheet.create({
     borderColor: "red",
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
     paddingRight: 30,
   },
 });

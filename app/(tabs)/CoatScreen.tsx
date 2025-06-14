@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
@@ -29,11 +30,11 @@ const CoatScreen: React.FC = () => {
         <Text style={styles.count}>{courts.length}コート</Text>
       </View>
       <TouchableOpacity style={styles.addButton} onPress={addCourt}>
-        <Feather name="plus-circle" size={24} color="white" />
+        <Feather name="plus-circle" size={24} color={Colors.whiteText} />
         <Text style={styles.addButtonText}>コートを追加</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton} onPress={removeCourt}>
-        <Feather name="plus-circle" size={24} color="white" />
+        <Feather name="plus-circle" size={24} color={Colors.whiteText} />
         <Text style={styles.addButtonText}>コートを削除</Text>
       </TouchableOpacity>
     </View>
@@ -42,7 +43,6 @@ const CoatScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f8f9fa",
     padding: 16,
     borderRadius: 8,
     flex: 1,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   courtItem: {
     flexDirection: "column", // View 用
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: "#f0f0f0",
+    color: Colors.emptyText,
     marginTop: 20,
   },
   list: {
@@ -81,10 +81,11 @@ const styles = StyleSheet.create({
   },
   count: {
     fontSize: 16,
-    color: "#666",
+    color: Colors.blackText,
   },
   addButton: {
-    backgroundColor: "#007BFF",
+    // backgroundColor: Colors.accent,
+    backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     borderColor: "red",
   },
   addButtonText: {
-    color: "white",
+    color: Colors.whiteText,
     marginLeft: 8,
     fontWeight: "600",
   },

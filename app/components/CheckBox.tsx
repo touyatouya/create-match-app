@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -33,14 +34,16 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderWidth: 2,
-    borderColor: "#007AFF",
+    // backgroundColor: Colors.accent,
+    backgroundColor: Colors.primary,
     borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
   },
   checked: {
-    backgroundColor: "#007AFF",
+    // backgroundColor: Colors.accent,
+    backgroundColor: Colors.primary,
   },
   checkmark: {
     color: "white",

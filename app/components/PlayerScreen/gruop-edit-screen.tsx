@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Group, Player } from "@/types";
 import { generateUniqId } from "@/utils/createId";
@@ -117,12 +118,12 @@ const EditGroupScreen: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <AntDesign name="left" size={24} color="rgb(0, 122, 255)" />
+              <AntDesign name="left" size={24} color={Colors.link} />
               <Text
                 style={{
                   marginLeft: 6,
                   fontSize: 16,
-                  color: "rgb(0, 122, 255)",
+                  color: Colors.link,
                 }}
               >
                 グループ設定
@@ -183,7 +184,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f8f9fa",
   },
   listContainer: {
     flex: 12,
@@ -192,10 +192,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
     paddingRight: 30,
   },
   clearButton: {
@@ -216,11 +216,11 @@ const styles = StyleSheet.create({
     // fontWeight: "bold",
   },
   row: {
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: Colors.borderline,
     paddingVertical: 8,
   },
   list: {
@@ -228,11 +228,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: "#999",
+    color: Colors.emptyText,
     marginTop: 20,
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: Colors.primary,
     paddingVertical: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   buttonText: {
-    color: "white",
+    color: Colors.whiteText,
     fontSize: 16,
     fontWeight: "bold",
   },

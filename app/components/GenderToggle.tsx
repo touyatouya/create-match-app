@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { Gender } from "@/types";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -29,31 +30,31 @@ const GenderToggle: React.FC<GenderToggleType> = ({ value, setGender }) => {
 const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: "row",
-    backgroundColor: "#fefefe",
+    backgroundColor: Colors.toggleBackground,
     borderRadius: 32,
     borderWidth: 1,
-    borderColor: "#999",
+    borderColor: Colors.borderline,
     overflow: "hidden",
     alignSelf: "flex-start",
   },
   selectedButton: {
-    backgroundColor: "#cce7ff",
+    backgroundColor: Colors.thirdry,
   },
   buttonText: {
     fontSize: 16,
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
     margin: 5,
-    backgroundColor: "#ccc",
+    backgroundColor: Colors.muted,
     alignSelf: "flex-start",
   },
   selectedText: {
     fontWeight: "bold",
-    color: "#1c1c1c",
+    color: Colors.blackText,
   },
 });
 

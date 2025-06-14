@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { saveGroups, savePairs, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
@@ -103,7 +104,7 @@ const PlayerScreen: React.FC = () => {
         isEdit || (
           <TouchableOpacity onPress={() => setAddModalVisible(true)}>
             <View style={{ marginRight: 16 }}>
-              <AntDesign name="plus" size={24} color="#007BFF" />
+              <AntDesign name="plus" size={24} color={Colors.whiteText} />
             </View>
           </TouchableOpacity>
         ),
@@ -259,7 +260,7 @@ const PlayerScreen: React.FC = () => {
         <AntDesign
           name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
           size={16}
-          color="black"
+          color={Colors.normalIcon}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={sortPair} style={[styles.cellPair]}>
@@ -267,7 +268,7 @@ const PlayerScreen: React.FC = () => {
         <AntDesign
           name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
           size={16}
-          color="black"
+          color={Colors.normalIcon}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={sortMatchCount} style={[styles.cellMatch]}>
@@ -275,7 +276,7 @@ const PlayerScreen: React.FC = () => {
         <AntDesign
           name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
           size={16}
-          color="black"
+          color={Colors.normalIcon}
         />
       </TouchableOpacity>
       <Text style={[styles.removeButton, styles.headerText]}></Text>
@@ -305,9 +306,9 @@ const PlayerScreen: React.FC = () => {
         <Text style={styles.cellName}>{item.name}</Text>
         <Text style={styles.cellGender}>
           {item.gender === Gender.男性 ? (
-            <Foundation name="male" size={24} color="blue" />
+            <Foundation name="male" size={24} color={Colors.men} />
           ) : item.gender === Gender.女性 ? (
-            <Foundation name="female" size={24} color="red" />
+            <Foundation name="female" size={24} color={Colors.women} />
           ) : (
             ""
           )}
@@ -337,7 +338,7 @@ const PlayerScreen: React.FC = () => {
           }
           style={styles.removeButton}
         >
-          <AntDesign name="right" size={24} color="black" />
+          <AntDesign name="right" size={24} color={Colors.normalIcon} />
         </TouchableOpacity>
       )}
     </View>
@@ -397,7 +398,7 @@ const PlayerScreen: React.FC = () => {
             }
             style={{ alignItems: "flex-end", marginBottom: 8 }}
           >
-            <Text style={{ color: "rgb(0, 122, 255)", fontSize: 18 }}>
+            <Text style={{ color: Colors.link, fontSize: 18 }}>
               絞り込みグループ一覧
             </Text>
           </TouchableOpacity>
@@ -428,7 +429,11 @@ const PlayerScreen: React.FC = () => {
                     {filterGroups.some(
                       (filterGroup) => filterGroup.id === item.id
                     ) && (
-                      <AntDesign name="closecircle" size={16} color="black" />
+                      <AntDesign
+                        name="closecircle"
+                        size={16}
+                        color={Colors.normalIcon}
+                      />
                     )}
                   </View>
                 </TouchableOpacity>
@@ -464,46 +469,37 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  addButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: "#4CAF50",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    marginLeft: 8,
-  },
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFF9E6",
+    backgroundColor: Colors.muted,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: "#e0e0e0",
+    borderColor: Colors.thirdry,
     flexDirection: "row",
     flex: 1,
   },
   selectedFilterItem: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#b2cfee",
+    backgroundColor: Colors.thirdry,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: "#007BFF",
+    borderColor: Colors.secondary,
     flexDirection: "row",
     flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,
     fontSize: 16,
-    color: "#664500",
+    color: Colors.restPlayerName,
     marginRight: 5,
   },
   rowBack: {
@@ -517,13 +513,13 @@ const styles = StyleSheet.create({
     // paddingVertical: 8,
   },
   deleteText: {
-    color: "white",
+    color: Colors.whiteText,
     fontWeight: "bold",
     textAlign: "center",
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.background,
     padding: 16,
   },
   title: {
@@ -533,15 +529,15 @@ const styles = StyleSheet.create({
   },
   // 行全体：横並び
   row: {
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    borderBottomColor: Colors.borderline,
     paddingVertical: 8,
   },
   headerRow: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: Colors.playerTabelHeader,
   },
   // 共通セル
   headerText: {
@@ -603,7 +599,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: "#999",
+    color: Colors.emptyText,
     marginTop: 20,
   },
   joinedPlayer: {

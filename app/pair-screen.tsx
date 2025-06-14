@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { savePairs } from "@/utils/saveStorage";
 import {
@@ -149,7 +150,7 @@ const PairScreen: React.FC = () => {
         onPress={() => removePair(item.id)}
         style={styles.removeButton}
       >
-        <Ionicons name="close-circle" size={24} color="#FF6B6B" />
+        <Ionicons name="close-circle" size={24} color={Colors.remove} />
       </TouchableOpacity>
     </View>
   );
@@ -168,12 +169,12 @@ const PairScreen: React.FC = () => {
                 alignItems: "center",
               }}
             >
-              <AntDesign name="left" size={24} color="rgb(0, 122, 255)" />
+              <AntDesign name="left" size={24} color={Colors.link} />
               <Text
                 style={{
                   marginLeft: 6,
                   fontSize: 16,
-                  color: "rgb(0, 122, 255)",
+                  color: Colors.link,
                 }}
               >
                 プレイヤー
@@ -204,7 +205,7 @@ const PairScreen: React.FC = () => {
                     <MaterialCommunityIcons
                       name="human-male-male"
                       size={24}
-                      color="black"
+                      color={Colors.normalIcon}
                     />
                     <Text style={styles.restingSectionTitle}>ペア一覧</Text>
                   </View>
@@ -217,7 +218,7 @@ const PairScreen: React.FC = () => {
                     <MaterialCommunityIcons
                       name="human-male"
                       size={24}
-                      color="black"
+                      color={Colors.normalIcon}
                     />
                     <Text style={styles.restingSectionTitle}>
                       ペア未設定プレイヤー
@@ -259,32 +260,14 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   restingCount: {
     fontSize: 20,
     fontWeight: "600",
   },
-  pairItem: {
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#FFF9E6",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "#FFE8B2",
-    flex: 1,
-  },
-  pairPlayerName: {
-    marginLeft: 6,
-    fontSize: 24,
-    color: "#664500",
-    marginRight: 5,
-  },
   allPlayerButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -293,13 +276,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   addButtonText: {
-    color: "white",
+    color: Colors.whiteText,
     marginLeft: 8,
     fontWeight: "600",
   },
   table: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
   },
   row: {
     flexDirection: "row",
@@ -308,13 +291,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
     textAlign: "center",
   },
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f8f9fa",
   },
   header: {
     flexDirection: "row",
@@ -325,11 +307,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
-  },
-  count: {
-    fontSize: 16,
-    color: "#666",
+    color: Colors.sectionTitie,
   },
   addPlayerContainer: {
     flexDirection: "row",
@@ -339,32 +317,23 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: Colors.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: "white",
-  },
-  addButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: "#4CAF50",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-    marginLeft: 8,
+    backgroundColor: Colors.background,
   },
   list: {
     flex: 1,
   },
   joinPlayerItem: {
     flexDirection: "row",
-    backgroundColor: "hsl(50.96234309623431, 100%, 53.13725490196079%)",
+    backgroundColor: Colors.cardBackGround,
     padding: 14,
     borderRadius: 8,
     marginBottom: 8,
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#000",
+    shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -372,8 +341,7 @@ const styles = StyleSheet.create({
   },
   restPlayerItem: {
     flexDirection: "row",
-    backgroundColor: "white",
-    // backgroundColor: "#ccc4c4",
+    backgroundColor: Colors.background,
     paddingTop: 14,
     paddingBottom: 14,
     paddingLeft: 4,
@@ -382,7 +350,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#000",
+    shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -402,20 +370,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: 8,
   },
-  restingBadge: {
-    backgroundColor: "#FFD166",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
-  },
-  restingText: {
-    color: "#664500",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   matchCountBadge: {
-    backgroundColor: "black",
+    backgroundColor: Colors.badgeBackground,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -424,7 +380,7 @@ const styles = StyleSheet.create({
   joinBadge: {
     // flex: 1,
     flexDirection: "row",
-    backgroundColor: "black",
+    backgroundColor: Colors.badgeBackground,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -433,17 +389,7 @@ const styles = StyleSheet.create({
   allJoinBadge: {
     // flex: 1,
     flexDirection: "row",
-    backgroundColor: "white",
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 10,
-  },
-  restBadge: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    borderColor: "black",
+    backgroundColor: Colors.background,
     borderWidth: 1,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -451,17 +397,17 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   matchCountText: {
-    color: "white",
+    color: Colors.whiteText,
     fontSize: 14,
     fontWeight: "bold",
   },
   restText: {
-    color: "black",
+    color: Colors.blackText,
     fontSize: 18,
     fontWeight: "bold",
   },
   joinText: {
-    color: "white",
+    color: Colors.whiteText,
     fontSize: 18,
     fontWeight: "bold",
   },
@@ -471,7 +417,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: "#999",
+    color: Colors.emptyText,
     marginTop: 20,
   },
   joinedPlayer: {

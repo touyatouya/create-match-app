@@ -1,4 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 interface FilterProps {
   data: any[];
@@ -26,24 +27,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: Colors.sectionTitie,
   },
   restingPlayerItem: {
     alignItems: "baseline",
-    backgroundColor: "#FFF9E6",
+    backgroundColor: Colors.restPlayerBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
-    // borderColor: "#FFE8B2",
+    borderColor: Colors.restPlayerBorder,
     flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,
     fontSize: 24,
-    color: "#664500",
+    color: Colors.restPlayerName,
     marginRight: 5,
   },
 });

@@ -1,3 +1,4 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Gender } from "@/types";
 import { Foundation, Ionicons } from "@expo/vector-icons";
@@ -35,9 +36,9 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
         <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
         <Text style={styles.playerGender}>
           {getGender(playerId) === Gender.男性 ? (
-            <Foundation name="male" size={24} color="blue" />
+            <Foundation name="male" size={24} color={Colors.men} />
           ) : getGender(playerId) === Gender.女性 ? (
-            <Foundation name="female" size={24} color="red" />
+            <Foundation name="female" size={24} color={Colors.women} />
           ) : (
             ""
           )}
@@ -62,7 +63,11 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
         >
           {playerInfo()}
           {isEdit && (
-            <Ionicons name="swap-horizontal" size={18} color="#007BFF" />
+            <Ionicons
+              name="swap-horizontal"
+              size={18}
+              color={Colors.secondary}
+            />
           )}
         </TouchableOpacity>
       ) : (
@@ -78,37 +83,37 @@ const styles = StyleSheet.create({
   selectButton: {
     padding: 16,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
     borderRadius: 8,
   },
   item: {
     flexDirection: "column",
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#ccc",
+    borderColor: Colors.borderline,
     paddingVertical: 16,
   },
   playerButton: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 10,
     borderRadius: 6,
     marginBottom: 0,
     borderWidth: 1,
-    borderColor: "#e0e0e0",
+    borderColor: Colors.borderline,
   },
   swapPlayerButton: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.background,
     padding: 10,
     borderRadius: 6,
     marginBottom: 0,
     borderWidth: 1,
-    borderColor: "#cc7838",
+    borderColor: Colors.swapBorder,
   },
   playerInfo: {
     flex: 1,
@@ -118,7 +123,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: 24,
-    color: "#333",
+    color: Colors.sectionTitie,
     fontWeight: "500",
   },
   playerGender: {
@@ -127,7 +132,7 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#FF6B6B",
+    color: Colors.remove,
     marginHorizontal: 6,
   },
 });

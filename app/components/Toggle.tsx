@@ -1,4 +1,5 @@
 // CustomCheckbox.tsx
+import Colors from "@/constants/color";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -42,16 +43,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   toggleOn: {
-    backgroundColor: "#007AFF",
+    backgroundColor: Colors.secondary,
   },
   toggleOff: {
-    backgroundColor: "#ccc",
+    backgroundColor: Colors.muted,
   },
   circle: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "white",
+    backgroundColor: Colors.toggleCircle,
     position: "absolute",
     top: 3,
   },
