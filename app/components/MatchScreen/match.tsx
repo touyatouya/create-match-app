@@ -54,6 +54,7 @@ const Match: React.FC<MatchProps> = ({
           title="リセット"
           onPress={() => {
             setGameRounds([]);
+            setDispRound(0);
             setPlayers((prev) => {
               return prev.map((player) => {
                 return {
@@ -314,11 +315,19 @@ const Match: React.FC<MatchProps> = ({
     );
     countMatch([...matches], players, setPlayers);
   };
-
+  //restingSwapPlayerName
   const restPlayerInfo = ({ item }: { item: Player }) => {
     return (
       <>
-        <Text style={styles.restingPlayerName}>{item.name}</Text>
+        <Text
+          style={
+            swapPlayer === item.id
+              ? styles.restingSwapPlayerName
+              : styles.restingPlayerName
+          }
+        >
+          {item.name}
+        </Text>
         <Text style={styles.playerGender}>
           {item.gender === Gender.男性 ? (
             <Foundation name="male" size={24} color={Colors.men} />
@@ -393,17 +402,38 @@ const Match: React.FC<MatchProps> = ({
         <Ionicons name="refresh" size={20} color={Colors.whiteText} />
         <Text style={styles.generateButtonText}>新しい組み合わせを生成</Text>
       </TouchableOpacity>
-      {gameRounds[dispRound - 2] != null && (
-        <TouchableOpacity onPress={() => setDispRound((prev) => prev - 1)}>
-          <AntDesign name="left" size={20} color={Colors.normalIcon} />
-        </TouchableOpacity>
-      )}
-      {dispRound >= 1 && <Text>{dispRound}巡目</Text>}
-      {gameRounds[dispRound] != null && (
-        <TouchableOpacity onPress={() => setDispRound((prev) => prev + 1)}>
-          <AntDesign name="right" size={20} color={Colors.normalIcon} />
-        </TouchableOpacity>
-      )}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {gameRounds[dispRound - 2] != null ? (
+          <TouchableOpacity onPress={() => setDispRound((prev) => prev - 1)}>
+            <AntDesign name="left" size={20} color={Colors.normalIcon} />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 20 }}></View>
+        )}
+        {dispRound >= 1 && (
+          <Text
+            style={{
+              fontSize: 20,
+              marginHorizontal: 8,
+            }}
+          >
+            {dispRound}巡目
+          </Text>
+        )}
+        {gameRounds[dispRound] != null ? (
+          <TouchableOpacity onPress={() => setDispRound((prev) => prev + 1)}>
+            <AntDesign name="right" size={20} color={Colors.normalIcon} />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 20 }}></View>
+        )}
+      </View>
       {gameRounds[dispRound - 1] != null && (
         <SectionList
           sections={sections}
@@ -425,7 +455,7 @@ const Match: React.FC<MatchProps> = ({
               return (
                 <View style={styles.restingHeader}>
                   <View style={styles.restingTitle}>
-                    <Ionicons name="cafe" size={24} color={Colors.restIcon} />
+                    <Ionicons name="cafe" size={24} color={Colors.secondary} />
                     <Text style={styles.restingSectionTitle}>
                       休憩中のプレイヤー
                     </Text>
@@ -562,7 +592,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: 24,
-    color: Colors.sectionTitie,
+    color: Colors.blackText,
     fontWeight: "500",
   },
   playerGender: {
@@ -597,32 +627,38 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    backgroundColor: Colors.restPlayerBackground,
+    backgroundColor: Colors.filterItemBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: Colors.restPlayerBorder,
+    borderColor: Colors.borderline,
     flex: 1,
   },
   restingSwapPlayerItem: {
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    backgroundColor: Colors.restPlayerBackground,
+    backgroundColor: Colors.thirdry,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: Colors.swapBorder,
+    borderColor: Colors.secondary,
     flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,
     fontSize: 24,
-    color: Colors.restPlayerName,
+    color: Colors.filterItemName,
+    marginRight: 5,
+  },
+  restingSwapPlayerName: {
+    marginLeft: 6,
+    fontSize: 24,
+    color: Colors.blackText,
     marginRight: 5,
   },
 });

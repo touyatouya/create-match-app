@@ -86,12 +86,20 @@ const PairScreen: React.FC = () => {
   const renderPlayer = ({ item }: { item: Player }) => (
     <TouchableOpacity onPress={() => selectPlayer(item.id)}>
       <View
-        style={
-          item.id === pairPlayer ? styles.joinPlayerItem : styles.restPlayerItem
-        }
+        style={[
+          styles.playerItem,
+          item.id === pairPlayer && styles.selectedPlayerItem,
+        ]}
       >
         <View style={styles.playerInfo}>
-          <Text style={styles.playerName}>{item.name}</Text>
+          <Text
+            style={[
+              styles.playerName,
+              item.id === pairPlayer && styles.selectedPlayerName,
+            ]}
+          >
+            {item.name}
+          </Text>
         </View>
         {findPairPlayerId(item.id, pairs) &&
           findPairPlayerId(item.id, pairs) !== id && (
@@ -252,10 +260,8 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  joinPlayerItem: {
+  playerItem: {
     flexDirection: "row",
-    backgroundColor: Colors.cardBackGround,
-    padding: 14,
     borderRadius: 8,
     marginBottom: 8,
     alignItems: "center",
@@ -265,23 +271,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-  },
-  restPlayerItem: {
-    flexDirection: "row",
     backgroundColor: Colors.background,
     paddingTop: 14,
     paddingBottom: 14,
     paddingLeft: 4,
     paddingRight: 4,
-    borderRadius: 8,
-    marginBottom: 8,
-    alignItems: "center",
-    justifyContent: "space-between",
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+  },
+  selectedPlayerItem: {
+    backgroundColor: Colors.secondary,
+    paddingBottom: 14,
+    paddingLeft: 14,
+    paddingRight: 14,
   },
   playerInfo: {
     flex: 1,
@@ -291,6 +291,9 @@ const styles = StyleSheet.create({
   playerName: {
     fontSize: 24,
     fontWeight: "500",
+  },
+  selectedPlayerName: {
+    color: Colors.whiteText,
   },
   playerStats: {
     flexDirection: "row",

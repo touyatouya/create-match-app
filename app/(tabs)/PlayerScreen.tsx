@@ -1,6 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import { saveGroups, savePairs, savePlayerInfo } from "@/utils/saveStorage";
+import { saveFilters, savePairs, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { Gender, Group, Pair, Player } from "../../types";
+import { Filter, Gender, Pair, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
@@ -24,7 +24,7 @@ import { findPairPlayerId } from "../components/PlayerScreen/util";
 type Sort = "asc" | "desc";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs, groups, setGroups } =
+  const { players, setPlayers, pairs, setPairs, filters, setFilters } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
@@ -74,21 +74,21 @@ const PlayerScreen: React.FC = () => {
         setPairs(pairs);
       }
 
-      const groupsData = await AsyncStorage.getItem("groups");
-      let groupsLength: number = 0;
-      if (groupsData) groupsLength = JSON.parse(groupsData).length;
+      const filtersData = await AsyncStorage.getItem("filters");
+      let filtersLength: number = 0;
+      if (filtersData) filtersLength = JSON.parse(filtersData).length;
 
-      if (groupsData && groupsLength > 0) {
-        const parsedGroups = JSON.parse(groupsData);
-        let groups: Group[] = [];
-        for (let i = 0; i < parsedGroups.length; i++) {
-          groups.push({
-            id: parsedGroups[i].id,
-            name: parsedGroups[i].name,
-            players: parsedGroups[i].players,
+      if (filtersData && filtersLength > 0) {
+        const parsedFilters = JSON.parse(filtersData);
+        let filters: Filter[] = [];
+        for (let i = 0; i < parsedFilters.length; i++) {
+          filters.push({
+            id: parsedFilters[i].id,
+            name: parsedFilters[i].name,
+            players: parsedFilters[i].players,
           });
         }
-        setGroups(groups);
+        setFilters(filters);
       }
     };
     loadData();
@@ -140,18 +140,18 @@ const PlayerScreen: React.FC = () => {
       savePairs(newPairs);
     }
 
-    const groupPlayers = groups.flatMap((group) => [...group.players]);
-    if (groupPlayers.includes(id)) {
-      const newGroups = groups
-        .map((group) => {
+    const filterPlayers = filters.flatMap((filter) => [...filter.players]);
+    if (filterPlayers.includes(id)) {
+      const newFilters = filters
+        .map((filter) => {
           return {
-            ...group,
-            players: group.players.filter((player) => player !== id),
+            ...filter,
+            players: filter.players.filter((player) => player !== id),
           };
         })
-        .filter((group) => group.players.length > 0);
-      setGroups(newGroups);
-      saveGroups(newGroups);
+        .filter((filter) => filter.players.length > 0);
+      setFilters(newFilters);
+      saveFilters(newFilters);
     }
   };
 
@@ -344,23 +344,21 @@ const PlayerScreen: React.FC = () => {
     </View>
   );
 
-  const [filterGroups, setFilterGroups] = useState<Group[]>([]);
+  const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
 
   const filteredPlayers = players.filter((player) => {
-    if (filterGroups.length === 0) return true;
-    return filterGroups
-      .flatMap((filterGroup) => filterGroup.players)
-      .includes(player.id);
+    if (filteredFilters.length === 0) return true;
+    return filteredFilters.flatMap((item) => item.players).includes(player.id);
   });
 
-  const selectFilterGroup = (id: number) => {
-    setFilterGroups((prev) => {
-      if (prev.some((filterGroup) => filterGroup.id === id)) {
-        return prev.filter((filterGroup) => filterGroup.id !== id);
+  const selectFilter = (id: number) => {
+    setFilteredFilters((prev) => {
+      if (prev.some((item) => item.id === id)) {
+        return prev.filter((item) => item.id !== id);
       } else {
-        const selectedGroup = groups.find((group) => group.id === id);
-        if (selectedGroup == null) return prev;
-        else return [...prev, selectedGroup];
+        const selectedFilter = filters.find((filter) => filter.id === id);
+        if (selectedFilter == null) return prev;
+        else return [...prev, selectedFilter];
       }
     });
   };
@@ -382,7 +380,7 @@ const PlayerScreen: React.FC = () => {
         onClose={() => setAddModalVisible(false)}
       />
       <Text style={styles.joinedPlayer}>
-        組み合わせに参加させるプレイヤーを選択してください。
+        参加プレイヤーを選択してください。
       </Text>
       <Text style={styles.joinedPlayer}>
         参加プレイヤー：{joinedPlayer.length}人
@@ -393,46 +391,55 @@ const PlayerScreen: React.FC = () => {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/components/PlayerScreen/group-screen",
+                pathname: "/components/PlayerScreen/filter-screen",
               })
             }
             style={{ alignItems: "flex-end", marginBottom: 8 }}
           >
             <Text style={{ color: Colors.link, fontSize: 18 }}>
-              絞り込みグループ一覧
+              フィルター一覧
             </Text>
           </TouchableOpacity>
           <View>
             <FlatList
-              data={groups}
+              data={filters}
               keyExtractor={(item, index) => `${item}-${index}`}
               horizontal
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={{ flex: 1, flexDirection: "row" }}
-                  onPress={() => selectFilterGroup(item.id)}
+                  onPress={() => selectFilter(item.id)}
                 >
                   <View
                     style={
-                      filterGroups.some(
-                        (filterGroup) => filterGroup.id === item.id
+                      filteredFilters.some(
+                        (filterFilter) => filterFilter.id === item.id
                       )
                         ? styles.selectedFilterItem
                         : styles.filterItem
                     }
                   >
-                    <Text key={item.id} style={styles.restingPlayerName}>
+                    <Text
+                      key={item.id}
+                      style={
+                        filteredFilters.some(
+                          (filterFilter) => filterFilter.id === item.id
+                        )
+                          ? styles.selectedFilterItemName
+                          : styles.filterItemName
+                      }
+                    >
                       {item.name}
                     </Text>
 
-                    {filterGroups.some(
-                      (filterGroup) => filterGroup.id === item.id
+                    {filteredFilters.some(
+                      (filterFilter) => filterFilter.id === item.id
                     ) && (
                       <AntDesign
                         name="closecircle"
                         size={16}
-                        color={Colors.normalIcon}
+                        color={Colors.whiteIcon}
                       />
                     )}
                   </View>
@@ -472,21 +479,21 @@ const styles = StyleSheet.create({
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.muted,
+    backgroundColor: Colors.filterItemBg,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: Colors.thirdry,
+    borderColor: Colors.secondary,
     flexDirection: "row",
     flex: 1,
   },
   selectedFilterItem: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.thirdry,
+    backgroundColor: Colors.secondary,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
@@ -496,10 +503,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flex: 1,
   },
-  restingPlayerName: {
+  filterItemName: {
     marginLeft: 6,
     fontSize: 16,
-    color: Colors.restPlayerName,
+    color: Colors.filterItemName,
+    marginRight: 5,
+  },
+  selectedFilterItemName: {
+    marginLeft: 6,
+    fontSize: 16,
+    color: Colors.whiteText,
     marginRight: 5,
   },
   rowBack: {

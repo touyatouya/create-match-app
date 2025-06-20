@@ -108,12 +108,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.thirdry,
     padding: 10,
     borderRadius: 6,
     marginBottom: 0,
     borderWidth: 1,
-    borderColor: Colors.swapBorder,
+    borderColor: Colors.secondary,
   },
   playerInfo: {
     flex: 1,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: 24,
-    color: Colors.sectionTitie,
+    color: Colors.blackText,
     fontWeight: "500",
   },
   playerGender: {

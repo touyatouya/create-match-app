@@ -8,7 +8,7 @@ export interface Player {
   rank: Rank;
 }
 
-export interface Group {
+export interface Filter {
   id: number;
   name: string;
   players: number[];

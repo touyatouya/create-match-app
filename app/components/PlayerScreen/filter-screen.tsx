@@ -1,6 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import { saveGroups } from "@/utils/saveStorage";
+import { saveFilters } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useContext } from "react";
@@ -12,34 +12,34 @@ import {
   View,
 } from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
-import { Group } from "../../../types";
+import { Filter } from "../../../types";
 
-const GroupScreen: React.FC = () => {
-  const { groups, setGroups } = useContext(AppContext);
+const FilterScreen: React.FC = () => {
+  const { filters, setFilters } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
 
   const router = useRouter();
 
-  const renderGroup = ({ item }: { item: Group }) => (
+  const renderFilter = ({ item }: { item: Filter }) => (
     <TouchableOpacity
       onPress={() =>
         isEdit ||
         router.push({
-          pathname: "/components/PlayerScreen/gruop-edit-screen",
-          params: { gropuId: item.id },
+          pathname: "/components/PlayerScreen/filter-edit-screen",
+          params: { filterId: item.id },
         })
       }
       style={[styles.row, isEdit && { justifyContent: "flex-start" }]}
     >
       {isEdit && (
         <TouchableOpacity
-          onPress={() => removeGroup(item.id)}
+          onPress={() => removeFilter(item.id)}
           style={styles.removeButton}
         >
           <AntDesign name="minuscircle" size={24} color="red" />
         </TouchableOpacity>
       )}
-      <Text style={styles.groupText}>{item.name}</Text>
+      <Text style={styles.filterText}>{item.name}</Text>
       {isEdit || (
         <View style={styles.removeButton}>
           <AntDesign name="right" size={24} color={Colors.normalIcon} />
@@ -48,14 +48,14 @@ const GroupScreen: React.FC = () => {
     </TouchableOpacity>
   );
 
-  const removeGroup = (id: number) => {
-    let newGroups: Group[] = [];
-    setGroups((prev) => {
-      newGroups = prev.filter((group) => group.id !== id);
-      return newGroups;
+  const removeFilter = (id: number) => {
+    let newFilters: Filter[] = [];
+    setFilters((prev) => {
+      newFilters = prev.filter((filter) => filter.id !== id);
+      return newFilters;
     });
 
-    saveGroups(newGroups);
+    saveFilters(newFilters);
   };
 
   return (
@@ -63,7 +63,7 @@ const GroupScreen: React.FC = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "グループ一覧",
+          title: "フィルター一覧",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -133,24 +133,26 @@ const GroupScreen: React.FC = () => {
         <TouchableOpacity
           onPress={() =>
             router.push({
-              pathname: "/components/PlayerScreen/gruop-create-screen",
+              pathname: "/components/PlayerScreen/filter-create-screen",
             })
           }
           style={{ alignItems: "flex-end" }}
         >
-          <Text style={{ color: Colors.link, fontSize: 16 }}>グループ作成</Text>
+          <Text style={{ color: Colors.link, fontSize: 16 }}>
+            フィルター作成
+          </Text>
         </TouchableOpacity>
         <SwipeListView
-          data={groups}
-          renderItem={renderGroup}
+          data={filters}
+          renderItem={renderFilter}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>グループがありません。</Text>
+            <Text style={styles.emptyText}>フィルターがありません。</Text>
           }
           renderHiddenItem={({ item }) => (
             <View style={styles.rowBack}>
-              <Pressable onPress={() => removeGroup(item.id)}>
+              <Pressable onPress={() => removeFilter(item.id)}>
                 <Text style={styles.deleteText}>削除</Text>
               </Pressable>
             </View>
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  groupText: {
+  filterText: {
     fontSize: 16,
   },
   rowBack: {
@@ -419,4 +421,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupScreen;
+export default FilterScreen;

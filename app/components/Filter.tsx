@@ -13,8 +13,8 @@ const Filter: React.FC<FilterProps> = ({ data }) => {
       horizontal
       showsHorizontalScrollIndicator={false}
       renderItem={({ item }) => (
-        <View style={styles.restingPlayerItem}>
-          <Text key={item.id} style={styles.restingPlayerName}>
+        <View style={styles.filterItem}>
+          <Text key={item.id} style={styles.filterItemName}>
             {item.name}
           </Text>
         </View>
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.sectionTitie,
   },
-  restingPlayerItem: {
+  filterItem: {
     alignItems: "baseline",
     backgroundColor: Colors.restPlayerBackground,
     paddingHorizontal: 12,
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.restPlayerBorder,
     flex: 1,
   },
-  restingPlayerName: {
+  filterItemName: {
     marginLeft: 6,
     fontSize: 24,
     color: Colors.restPlayerName,

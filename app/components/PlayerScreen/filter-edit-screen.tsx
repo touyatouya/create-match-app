@@ -1,8 +1,7 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import { Group, Player } from "@/types";
-import { generateUniqId } from "@/utils/createId";
-import { saveGroups } from "@/utils/saveStorage";
+import { Filter, Player } from "@/types";
+import { saveFilters } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -16,91 +15,104 @@ import {
 } from "react-native";
 import CompleteToast from "../CompleteToast";
 import TextInput from "../TextInput";
-import Toggle from "../Toggle";
 
-const EditGroupScreen: React.FC = () => {
-  const { players, groups, setGroups } = useContext(AppContext);
+const EditFilterScreen: React.FC = () => {
+  const { players, filters, setFilters } = useContext(AppContext);
 
-  const [group, setGroup] = useState<number[]>([]);
-  const [showGroupCreated, setShowGroupCreated] = useState<boolean>(false);
-  const [groupName, setGroupName] = React.useState("");
-  const [groupNameError, setGroupNameError] = useState(false);
+  const [filter, setFilter] = useState<number[]>([]);
+  const [showFilterCreated, setShowFilterCreated] = useState<boolean>(false);
+  const [filterName, setFilterName] = React.useState("");
+  const [filterNameError, setFilterNameError] = useState(false);
   const [noMemberSelected, setNoMemberSelected] = useState(false);
 
   const router = useRouter();
 
-  const { gropuId } = useLocalSearchParams();
-  const id = Number(gropuId);
+  const { filterId } = useLocalSearchParams();
+  const id = Number(filterId);
 
-  const targetGroup = groups.find((group) => group.id === id);
+  const targetFilter = filters.find((filter) => filter.id === id);
 
   useEffect(() => {
-    if (targetGroup != null) {
-      setGroup(targetGroup.players);
-      setGroupName(targetGroup.name);
+    if (targetFilter != null) {
+      setFilter(targetFilter.players);
+      setFilterName(targetFilter.name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const selectPlayer = (id: number) => {
-    setGroup((prev) => {
-      let newGroup = [];
+    setFilter((prev) => {
+      let newFilter = [];
       const isSelected = prev.some((playerId) => playerId === id);
       if (isSelected) {
-        newGroup = prev.filter((playerId) => playerId !== id);
+        newFilter = prev.filter((playerId) => playerId !== id);
       } else {
-        newGroup = [...prev, id];
+        newFilter = [...prev, id];
       }
-      return newGroup;
+      return newFilter;
     });
   };
 
-  const createGroup = () => {
-    const isGroupNameEmpty = groupName.trim() === "";
-    const isGroupEmpty = group.length === 0;
+  const updateFilter = () => {
+    const isFilterNameEmpty = filterName.trim() === "";
+    const isFilterEmpty = filter.length === 0;
 
-    setGroupNameError(isGroupNameEmpty);
-    setNoMemberSelected(isGroupEmpty);
+    setFilterNameError(isFilterNameEmpty);
+    setNoMemberSelected(isFilterEmpty);
 
-    if (isGroupNameEmpty || isGroupEmpty) return;
+    if (isFilterNameEmpty || isFilterEmpty) return;
 
-    let newGroups: Group[] = [];
-    setGroups((prev) => {
-      const ids = prev.flatMap((item) => item.id);
-      const id = generateUniqId(ids);
-      const newGroup = { id: id, name: groupName, players: group };
-      newGroups = [...prev, newGroup];
-      return newGroups;
+    const newFilters: Filter[] = filters.map((item) => {
+      if (item.id === id) {
+        return {
+          id: id,
+          name: filterName,
+          players: filter,
+        };
+      }
+      return { ...item };
     });
-    saveGroups(newGroups);
+    setFilters(newFilters);
+    saveFilters(newFilters);
     showSuccessAndGoBack();
   };
 
   const renderPlayer = ({ item }: { item: Player }) => (
-    <View style={styles.row}>
-      <TouchableOpacity
-        onPress={() => selectPlayer(item.id)}
-        style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+    <TouchableOpacity
+      onPress={() => selectPlayer(item.id)}
+      style={[
+        styles.playerItem,
+        filter.some((playerId) => playerId === item.id) &&
+          styles.selectedPlayerItem,
+      ]}
+    >
+      <Text
+        style={[
+          styles.playerName,
+          filter.some((playerId) => playerId === item.id) &&
+            styles.selectedPlayerName,
+        ]}
       >
-        <Text style={styles.cellName}>{item.name}</Text>
-        <Toggle
-          checked={group.some((playerId) => playerId === item.id)}
-          onChange={() => selectPlayer(item.id)}
-        />
-      </TouchableOpacity>
-    </View>
+        {item.name}
+      </Text>
+      {filter.some((playerId) => playerId === item.id) && (
+        <View style={styles.selectedBadge}>
+          <Text style={styles.selectedText}>選択中</Text>
+        </View>
+      )}
+    </TouchableOpacity>
   );
 
   const showSuccessAndGoBack = () => {
-    setShowGroupCreated(true); // 一時的な表示フラグON
+    setShowFilterCreated(true); // 一時的な表示フラグON
 
     setTimeout(() => {
-      setShowGroupCreated(false); // フラグOFF
+      setShowFilterCreated(false); // フラグOFF
       router.back(); // or navigation.goBack()
     }, 1500); // 1.5秒で戻る
   };
 
-  const clearInput = () => setGroupName("");
+  const clearInput = () => setFilterName("");
 
   const textInputRef = useRef<TextInputOrigin>(null);
 
@@ -109,7 +121,7 @@ const EditGroupScreen: React.FC = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "グループ編集",
+          title: "フィルター編集",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -126,30 +138,30 @@ const EditGroupScreen: React.FC = () => {
                   color: Colors.link,
                 }}
               >
-                グループ設定
+                フィルター設定
               </Text>
             </TouchableOpacity>
           ),
         }}
       />
       <CompleteToast
-        isOpen={showGroupCreated}
-        message="グループを更新しました"
+        isOpen={showFilterCreated}
+        message="フィルターを更新しました"
       />
       <View style={styles.container}>
         <View style={{ marginBottom: 8 }}>
           <TextInput
             ref={textInputRef}
-            placeholder="グループ名を入力"
-            value={groupName}
+            placeholder="フィルター名を入力"
+            value={filterName}
             onChangeText={(text) => {
-              setGroupName(text);
-              setGroupNameError(false);
+              setFilterName(text);
+              setFilterNameError(false);
             }}
-            onSubmitEditing={() => setGroupName}
+            onSubmitEditing={() => setFilterName}
             clearInput={clearInput}
-            isError={groupNameError}
-            errorMessage="グループ名を入力してください。"
+            isError={filterNameError}
+            errorMessage="フィルター名を入力してください。"
           />
         </View>
         <Text>メンバー選択</Text>
@@ -171,10 +183,10 @@ const EditGroupScreen: React.FC = () => {
             }
             style={styles.list}
           />
+          <TouchableOpacity style={styles.button} onPress={updateFilter}>
+            <Text style={styles.buttonText}>フィルターを更新</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.button} onPress={createGroup}>
-          <Text style={styles.buttonText}>グループを更新</Text>
-        </TouchableOpacity>
       </View>
     </>
   );
@@ -198,30 +210,55 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     paddingRight: 30,
   },
-  clearButton: {
-    position: "absolute",
-    right: 10,
-    top: "50%",
-    transform: [{ translateY: -10 }],
-  },
   validationText: {
     color: "red",
     marginVertical: 8,
     fontSize: 14,
   },
-  cellName: {
-    flex: 2, // 名前は横幅を広めに取る
+  playerName: {
+    flex: 2,
     paddingHorizontal: 4,
-    fontSize: 20,
-    // fontWeight: "bold",
+    fontSize: 24,
   },
-  row: {
+  selectedPlayerName: {
+    color: Colors.whiteText,
+  },
+  playerItem: {
     backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderline,
-    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 8,
+    justifyContent: "space-between",
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 4,
+    paddingRight: 4,
+  },
+  selectedPlayerItem: {
+    backgroundColor: Colors.secondary,
+    paddingLeft: 14,
+    paddingRight: 14,
+  },
+  selectedBadge: {
+    flexDirection: "row",
+    backgroundColor: Colors.badgeBackground,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 10,
+  },
+  selectedText: {
+    color: Colors.badgeText,
+    fontSize: 18,
+    fontWeight: "bold",
   },
   list: {
     flex: 1,
@@ -233,7 +270,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.primary,
-    paddingVertical: 12,
+    minHeight: 44,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
@@ -246,4 +283,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditGroupScreen;
+export default EditFilterScreen;

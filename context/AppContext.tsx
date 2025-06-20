@@ -1,4 +1,4 @@
-import { Court, GameRound, Group, Pair, Player } from "@/types";
+import { Court, Filter, GameRound, Pair, Player } from "@/types";
 import React, { createContext, ReactNode } from "react";
 
 type AppContextType = {
@@ -10,8 +10,8 @@ type AppContextType = {
   setGameRounds: React.Dispatch<React.SetStateAction<GameRound[]>>;
   pairs: Pair[];
   setPairs: React.Dispatch<React.SetStateAction<Pair[]>>;
-  groups: Group[];
-  setGroups: React.Dispatch<React.SetStateAction<Group[]>>;
+  filters: Filter[];
+  setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -23,8 +23,8 @@ export const AppContext = createContext<AppContextType>({
   setGameRounds: () => {},
   pairs: [],
   setPairs: () => {},
-  groups: [],
-  setGroups: () => {},
+  filters: [],
+  setFilters: () => {},
 });
 
 type AppContextProps = {
@@ -36,7 +36,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [courts, setCourts] = React.useState<Court[]>([{ id: 0 }]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
-  const [groups, setGroups] = React.useState<Group[]>([]);
+  const [filters, setFilters] = React.useState<Filter[]>([]);
 
   return (
     <AppContext.Provider
@@ -49,8 +49,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setGameRounds,
         pairs,
         setPairs,
-        groups,
-        setGroups,
+        filters,
+        setFilters,
       }}
     >
       {children}

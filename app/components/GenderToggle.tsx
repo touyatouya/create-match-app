@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   selectedButton: {
-    backgroundColor: Colors.thirdry,
+    backgroundColor: Colors.secondary,
   },
   buttonText: {
     fontSize: 16,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     fontWeight: "bold",
-    color: Colors.blackText,
+    color: Colors.whiteText,
   },
 });
 
