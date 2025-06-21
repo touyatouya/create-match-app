@@ -256,20 +256,26 @@ const PlayerEditScreen: React.FC = () => {
             ) : (
               <Text style={styles.value}>未設定</Text>
             )}
+            <View style={styles.buttonArea}>
+              <TouchableOpacity
+                style={styles.resetPairButton}
+                onPress={() => releasePair(id)}
+              >
+                <Text style={styles.resetPairButtonText}>ペアを解除</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/pair-edit-screen",
+                    params: { playerId: id },
+                  })
+                }
+                style={styles.selectPairButton}
+              >
+                <Text style={styles.selectPairButtonText}>ペアを選択</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <TouchableOpacity onPress={() => releasePair(id)}>
-            <Text style={styles.link}>ペアを解除</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/pair-edit-screen",
-                params: { playerId: id },
-              })
-            }
-          >
-            <Text style={styles.link}>ペアを選択</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.item}>
           <Foundation name="male-female" size={24} color={Colors.normalIcon} />
@@ -287,6 +293,38 @@ const PlayerEditScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  buttonArea: {
+    marginTop: 8,
+    flexDirection: "row",
+    columnGap: 16,
+  },
+  resetPairButton: {
+    flex: 1,
+    borderColor: Colors.primary,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    minHeight: 44,
+  },
+  selectPairButton: {
+    flex: 1,
+    backgroundColor: Colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    minHeight: 44,
+  },
+  resetPairButtonText: {
+    color: Colors.primary,
+    fontWeight: "600",
+  },
+  selectPairButtonText: {
+    color: Colors.whiteText,
+    fontWeight: "600",
+  },
   toggleContainer: {
     flexDirection: "row",
     backgroundColor: Colors.background,

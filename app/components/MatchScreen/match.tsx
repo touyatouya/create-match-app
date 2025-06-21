@@ -540,6 +540,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 10,
+    minHeight: 44,
   },
   generateButtonText: {
     color: Colors.whiteText,

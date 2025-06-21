@@ -38,17 +38,20 @@ const EditRestScreen: React.FC = () => {
   };
 
   const renderPlayer = ({ item }: { item: Player }) => (
-    <TouchableOpacity onPress={() => togglePlayerRest(item.id)}>
-      <View style={styles.restPlayerItem}>
-        <View style={styles.playerInfo}>
-          <Text style={styles.playerName}>{item.name}</Text>
+    <TouchableOpacity
+      onPress={() => togglePlayerRest(item.id)}
+      style={[styles.playerItem, item.isRest && styles.selectedPlayerItem]}
+    >
+      <Text
+        style={[styles.playerName, item.isRest && styles.selectedPlayerName]}
+      >
+        {item.name}
+      </Text>
+      {item.isRest && (
+        <View style={styles.joinBadge}>
+          <Text style={styles.joinText}>休憩中</Text>
         </View>
-        {item.isRest && (
-          <View style={styles.joinBadge}>
-            <Text style={styles.joinText}>休憩中</Text>
-          </View>
-        )}
-      </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -57,24 +60,25 @@ const EditRestScreen: React.FC = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "ペア設定",
+          title: "休憩設定",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
+                justifyContent: "flex-start",
               }}
             >
               <AntDesign name="left" size={24} color={Colors.link} />
               <Text
                 style={{
-                  marginLeft: 6,
+                  marginLeft: 3,
                   fontSize: 16,
                   color: Colors.link,
                 }}
               >
-                プレイヤー設定
+                試合
               </Text>
             </TouchableOpacity>
           ),
@@ -187,7 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: "row",
@@ -230,22 +233,42 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  restPlayerItem: {
+  playerItem: {
+    backgroundColor: Colors.background,
     flexDirection: "row",
-    backgroundColor: Colors.editRestBackground,
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 4,
-    paddingRight: 4,
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderline,
     borderRadius: 8,
     marginBottom: 8,
-    alignItems: "center",
     justifyContent: "space-between",
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    paddingTop: 14,
+    paddingBottom: 14,
+    paddingLeft: 4,
+    paddingRight: 4,
+  },
+  selectedPlayerItem: {
+    backgroundColor: Colors.secondary,
+    paddingLeft: 14,
+    paddingRight: 14,
+  },
+  selectedBadge: {
+    flexDirection: "row",
+    backgroundColor: Colors.badgeBackground,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 10,
+  },
+  selectedText: {
+    color: Colors.badgeText,
+    fontSize: 18,
+    fontWeight: "bold",
   },
   playerInfo: {
     flex: 1,
@@ -253,8 +276,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   playerName: {
+    flex: 2,
+    paddingHorizontal: 4,
     fontSize: 24,
-    fontWeight: "500",
+  },
+  selectedPlayerName: {
+    color: Colors.whiteText,
   },
   playerStats: {
     flexDirection: "row",

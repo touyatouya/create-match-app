@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 10,
+    minHeight: 44,
   },
   addButtonText: {
     color: Colors.whiteText,
@@ -240,7 +241,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: Colors.background,
   },
   header: {
     flexDirection: "row",

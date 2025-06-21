@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
     color: Colors.blackText,
   },
   addButton: {
-    // backgroundColor: Colors.accent,
     backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
@@ -92,12 +91,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 16,
-  },
-  trashIcon: {
-    padding: 2,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: "red",
+    minHeight: 44,
   },
   addButtonText: {
     color: Colors.whiteText,
