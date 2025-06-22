@@ -383,9 +383,15 @@ const PlayerScreen: React.FC = () => {
         <Text style={styles.description}>参加プレイヤーを選択してください</Text>
         <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
       </View>
-      <Disclosure isOpen={expanded} setIsOpen={setExpanded} label="絞り込み" />
+      <View style={{ marginBottom: expanded ? 8 : 16 }}>
+        <Disclosure
+          isOpen={expanded}
+          setIsOpen={setExpanded}
+          label="絞り込み"
+        />
+      </View>
       {expanded && (
-        <>
+        <View style={{ marginBottom: 16 }}>
           <TouchableOpacity
             onPress={() =>
               router.push({
@@ -406,7 +412,7 @@ const PlayerScreen: React.FC = () => {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={{ flex: 1, flexDirection: "row" }}
+                  style={{ flex: 1, flexDirection: "row", marginRight: 8 }}
                   onPress={() => selectFilter(item.id)}
                 >
                   <View
@@ -445,7 +451,7 @@ const PlayerScreen: React.FC = () => {
               )}
             />
           </View>
-        </>
+        </View>
       )}
       {renderHeader()}
       <SwipeListView
@@ -477,7 +483,7 @@ const styles = StyleSheet.create({
   joinedPlayerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 16,
     alignItems: "center",
   },
   filterItem: {
@@ -487,7 +493,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    marginRight: 8,
     borderWidth: 1,
     borderStyle: "dashed",
     borderColor: Colors.secondary,
@@ -501,7 +506,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    marginRight: 8,
     borderWidth: 1,
     borderColor: Colors.secondary,
     flexDirection: "row",
