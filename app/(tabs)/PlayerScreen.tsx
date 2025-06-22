@@ -288,7 +288,7 @@ const PlayerScreen: React.FC = () => {
       {isEdit && (
         <TouchableOpacity
           onPress={() => removePlayer(item.id)}
-          style={styles.removeButton}
+          style={styles.removeIcon}
         >
           <AntDesign name="minuscircle" size={24} color="red" />
         </TouchableOpacity>
@@ -613,6 +613,11 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     display: "flex",
+  },
+  removeIcon: {
+    display: "flex",
+    marginVertical: 8,
+    marginRight: 12,
   },
   emptyText: {
     textAlign: "center",

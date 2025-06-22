@@ -22,9 +22,6 @@ const Checkbox: React.FC<CheckboxProps> = ({
 );
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
