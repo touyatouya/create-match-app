@@ -67,24 +67,38 @@ const MatchScreen: React.FC = () => {
           <View style={styles.modalContent}>
             <Text style={styles.title}>性別</Text>
             <View>
-              <Toggle
-                label="なるべく男子ダブルス"
-                checked={genderSetting.men}
-                onChange={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, men: !prev.men };
-                  })
-                }
-              />
-              <Toggle
-                label="なるべく女子ダブルス"
-                checked={genderSetting.woman}
-                onChange={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, woman: !prev.woman };
-                  })
-                }
-              />
+              <View
+                style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.borderline,
+                }}
+              >
+                <Toggle
+                  label="なるべく男子ダブルス"
+                  checked={genderSetting.men}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, men: !prev.men };
+                    })
+                  }
+                />
+              </View>
+              <View
+                style={{
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.borderline,
+                }}
+              >
+                <Toggle
+                  label="なるべく女子ダブルス"
+                  checked={genderSetting.woman}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, woman: !prev.woman };
+                    })
+                  }
+                />
+              </View>
               <Toggle
                 label="なるべくミックスダブルス"
                 checked={genderSetting.mix}

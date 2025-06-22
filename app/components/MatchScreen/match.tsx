@@ -463,7 +463,7 @@ const Match: React.FC<MatchProps> = ({
               return (
                 <View style={styles.restingHeader}>
                   <View style={styles.restingTitle}>
-                    <Ionicons name="cafe" size={24} color={Colors.secondary} />
+                    <Ionicons name="cafe" size={24} color={Colors.restIcon} />
                     <Text style={styles.restingSectionTitle}>
                       休憩中のプレイヤー
                     </Text>
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    backgroundColor: Colors.filterItemBg,
+    backgroundColor: Colors.restPlayerBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
