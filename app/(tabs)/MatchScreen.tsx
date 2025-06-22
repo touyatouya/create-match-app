@@ -53,7 +53,9 @@ const MatchScreen: React.FC = () => {
     });
   }, [navigation, setGameRounds, setPlayers]);
 
-  const nextRestPlayer = players.filter((player) => player.isRest);
+  const nextRestPlayer = players.filter(
+    (player) => player.isJoin && player.isRest
+  );
 
   return (
     <View style={{ flex: 1, padding: 10 }}>
