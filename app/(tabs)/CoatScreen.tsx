@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     color: Colors.sectionTitie,
   },
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   count: {
-    fontSize: 16,
+    fontSize: 20,
     color: Colors.blackText,
   },
   addButton: {

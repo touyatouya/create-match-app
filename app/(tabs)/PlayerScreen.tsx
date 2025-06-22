@@ -104,7 +104,7 @@ const PlayerScreen: React.FC = () => {
         isEdit || (
           <TouchableOpacity onPress={() => setAddModalVisible(true)}>
             <View style={{ marginRight: 16 }}>
-              <AntDesign name="plus" size={24} color={Colors.whiteText} />
+              <AntDesign name="plus" size={24} color={Colors.link} />
             </View>
           </TouchableOpacity>
         ),
@@ -379,12 +379,10 @@ const PlayerScreen: React.FC = () => {
         isOpen={isAddModalVisible}
         onClose={() => setAddModalVisible(false)}
       />
-      <Text style={styles.joinedPlayer}>
-        参加プレイヤーを選択してください。
-      </Text>
-      <Text style={styles.joinedPlayer}>
-        参加プレイヤー：{joinedPlayer.length}人
-      </Text>
+      <View style={styles.joinedPlayerRow}>
+        <Text style={styles.description}>参加プレイヤーを選択してください</Text>
+        <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
+      </View>
       <Disclosure isOpen={expanded} setIsOpen={setExpanded} label="絞り込み" />
       {expanded && (
         <>
@@ -476,6 +474,12 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  joinedPlayerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    alignItems: "center",
+  },
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
@@ -617,6 +621,13 @@ const styles = StyleSheet.create({
   },
   joinedPlayer: {
     marginBottom: 6,
+    fontSize: 20,
+    fontWeight: 500,
+  },
+  description: {
+    marginBottom: 6,
+    fontSize: 20,
+    fontWeight: 500,
   },
 });
 

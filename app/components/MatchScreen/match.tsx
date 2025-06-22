@@ -54,21 +54,29 @@ const Match: React.FC<MatchProps> = ({
           title="リセット"
           onPress={() => {
             setGameRounds([]);
-            setDispRound(0);
-            setPlayers((prev) => {
-              return prev.map((player) => {
-                return {
-                  ...player,
-                  matchCount: 0,
-                };
-              });
-            });
+            setPlayers((prev) =>
+              prev.map((player) => ({
+                ...player,
+                matchCount: 0,
+              }))
+            );
             setSwapPlayer(null);
+            setDispRound(0);
           }}
         />
       ),
     });
-  }, [navigation, setGameRounds, setPlayers, setSwapPlayer]);
+  }, [
+    navigation,
+    gameRounds,
+    setGameRounds,
+    players,
+    setPlayers,
+    swapPlayer,
+    setSwapPlayer,
+    dispRound,
+    setDispRound,
+  ]);
 
   const selectSwapPlayer = (id: number) => {
     setSwapPlayer((prev) => {
@@ -416,7 +424,7 @@ const Match: React.FC<MatchProps> = ({
         ) : (
           <View style={{ width: 20 }}></View>
         )}
-        {dispRound >= 1 && (
+        {dispRound > 0 && (
           <Text
             style={{
               fontSize: 20,

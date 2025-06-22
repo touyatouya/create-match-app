@@ -260,6 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     marginVertical: 12,
+    minHeight: 44,
   },
   buttonText: {
     color: Colors.whiteText,
