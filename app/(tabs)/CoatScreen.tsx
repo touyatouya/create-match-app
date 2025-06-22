@@ -34,7 +34,7 @@ const CoatScreen: React.FC = () => {
         <Text style={styles.addButtonText}>コートを追加</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.addButton} onPress={removeCourt}>
-        <Feather name="plus-circle" size={24} color={Colors.whiteText} />
+        <Feather name="minus-circle" size={24} color={Colors.whiteText} />
         <Text style={styles.addButtonText}>コートを削除</Text>
       </TouchableOpacity>
     </View>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 16,
+    marginBottom: 8,
     minHeight: 44,
   },
   addButtonText: {
