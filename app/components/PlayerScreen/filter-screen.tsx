@@ -21,31 +21,33 @@ const FilterScreen: React.FC = () => {
   const router = useRouter();
 
   const renderFilter = ({ item }: { item: Filter }) => (
-    <TouchableOpacity
-      onPress={() =>
-        isEdit ||
-        router.push({
-          pathname: "/components/PlayerScreen/filter-edit-screen",
-          params: { filterId: item.id },
-        })
-      }
-      style={[styles.row, isEdit && { justifyContent: "flex-start" }]}
-    >
-      {isEdit && (
-        <TouchableOpacity
-          onPress={() => removeFilter(item.id)}
-          style={styles.removeButton}
-        >
-          <AntDesign name="minuscircle" size={24} color="red" />
-        </TouchableOpacity>
-      )}
-      <Text style={styles.filterText}>{item.name}</Text>
-      {isEdit || (
-        <View style={styles.removeButton}>
-          <AntDesign name="right" size={24} color={Colors.normalIcon} />
-        </View>
-      )}
-    </TouchableOpacity>
+    <View style={styles.row}>
+      <TouchableOpacity
+        onPress={() =>
+          isEdit ||
+          router.push({
+            pathname: "/components/PlayerScreen/filter-edit-screen",
+            params: { filterId: item.id },
+          })
+        }
+        style={[styles.filterItem, isEdit && { justifyContent: "flex-start" }]}
+      >
+        {isEdit && (
+          <TouchableOpacity
+            onPress={() => removeFilter(item.id)}
+            style={styles.removeButton}
+          >
+            <AntDesign name="minuscircle" size={24} color="red" />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.filterText}>{item.name}</Text>
+        {isEdit || (
+          <View style={styles.removeButton}>
+            <AntDesign name="right" size={24} color={Colors.normalIcon} />
+          </View>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 
   const removeFilter = (id: number) => {
@@ -167,6 +169,12 @@ const FilterScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  filterItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flex: 1,
+  },
   deleteText: {
     color: Colors.whiteText,
     fontWeight: "bold",
@@ -287,6 +295,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    backgroundColor: Colors.background,
     padding: 16,
   },
   header: {
@@ -409,7 +418,7 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     padding: 4,
-    display: "flex",
+    // display: "flex",
   },
   emptyText: {
     textAlign: "center",
