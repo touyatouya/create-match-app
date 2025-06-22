@@ -1,7 +1,7 @@
 // CustomCheckbox.tsx
 import Colors from "@/constants/color";
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   label?: string;
@@ -11,7 +11,7 @@ type Props = {
 
 const Toggle: React.FC<Props> = ({ label = "", checked, onChange }) => {
   return (
-    <Pressable style={styles.container} onPress={onChange}>
+    <TouchableOpacity style={styles.container} onPress={onChange}>
       <Text style={styles.label}>{label}</Text>
       <View
         style={[styles.toggle, checked ? styles.toggleOn : styles.toggleOff]}
@@ -23,7 +23,7 @@ const Toggle: React.FC<Props> = ({ label = "", checked, onChange }) => {
           ]}
         />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
