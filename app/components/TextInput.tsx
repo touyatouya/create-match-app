@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import {
@@ -58,7 +59,7 @@ const TextInput = forwardRef<Ref, TextInputProps>(
           <View style={styles.inputWrapper}>
             <TextInputOrigin
               ref={inputRef}
-              style={isError ? styles.inputError : styles.input}
+              style={[styles.input, isError && styles.inputError]}
               placeholder={placeholder}
               placeholderTextColor={Colors.emptyText}
               value={value}
@@ -123,9 +124,12 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     position: "absolute",
-    right: 10,
+    right: 5,
     top: "50%",
-    transform: [{ translateY: -10 }],
+    transform: [{ translateY: -20 }],
+    ...globalStyles.touch,
+    alignItems: "center",
+    justifyContent: "center",
   },
   inputContainer: {
     marginBottom: 8,
@@ -147,16 +151,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: Colors.background,
     paddingRight: 30,
+    ...globalStyles.touch,
   },
   inputError: {
-    flex: 1,
-    height: 48,
-    borderWidth: 1,
     borderColor: "red",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: Colors.background,
-    paddingRight: 30,
   },
 });
 

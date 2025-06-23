@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import React, { useContext, useLayoutEffect } from "react";
@@ -353,11 +354,10 @@ const Match: React.FC<MatchProps> = ({
     <>
       {dispRound === gameRounds.length ? (
         <TouchableOpacity
-          style={
-            swapPlayer === item.id
-              ? styles.restingSwapPlayerItem
-              : styles.restingPlayerItem
-          }
+          style={[
+            styles.restingPlayerItem,
+            swapPlayer === item.id && styles.restingSwapPlayerItem,
+          ]}
           onPress={() => {
             (swapPlayer == null ||
               swapPlayer === item.id ||
@@ -548,7 +548,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginBottom: 10,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   generateButtonText: {
     color: Colors.whiteText,
@@ -644,19 +644,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.borderline,
     flex: 1,
+    ...globalStyles.touch,
   },
   restingSwapPlayerItem: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
     backgroundColor: Colors.thirdry,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 8,
-    borderWidth: 1,
     borderColor: Colors.secondary,
-    flex: 1,
   },
   restingPlayerName: {
     marginLeft: 6,

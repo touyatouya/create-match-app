@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { Filter, Player } from "@/types";
 import { saveFilters } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
@@ -127,6 +128,8 @@ const EditFilterScreen: React.FC = () => {
               onPress={() => router.back()}
               style={{
                 flexDirection: "row",
+                ...globalStyles.touch,
+                justifyContent: "center",
                 alignItems: "center",
               }}
             >
@@ -241,6 +244,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     paddingLeft: 4,
     paddingRight: 4,
+    ...globalStyles.touch,
   },
   selectedPlayerItem: {
     backgroundColor: Colors.secondary,
@@ -270,7 +274,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.primary,
-    minHeight: 44,
+    ...globalStyles.touch,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,

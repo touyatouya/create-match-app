@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 8,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   addButtonText: {
     color: Colors.whiteText,

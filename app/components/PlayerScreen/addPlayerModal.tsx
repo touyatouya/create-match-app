@@ -15,6 +15,7 @@ import {
 
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
@@ -86,16 +87,17 @@ const AddPlayerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   resetInput();
                   onClose();
                 }}
+                style={styles.headerButton}
               >
-                <Text style={styles.headerButton}>キャンセル</Text>
+                <Text style={styles.headerButtonText}>キャンセル</Text>
               </TouchableOpacity>
               <View style={styles.modalTitleWrapper}>
                 <Text style={styles.title}>新規プレイヤー追加</Text>
               </View>
-              <TouchableOpacity onPress={addPlayer}>
+              <TouchableOpacity onPress={addPlayer} style={styles.headerButton}>
                 <Text
                   style={[
-                    styles.headerButton,
+                    styles.headerButtonText,
                     name.trim() === "" && { color: Colors.muted },
                   ]}
                 >
@@ -151,6 +153,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerButton: {
+    ...globalStyles.touch,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerButtonText: {
     fontSize: 16,
     color: Colors.link,
   },

@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { globalStyles } from "../styles/global";
 import { Pair, Player } from "../types";
 import CompleteToast from "./components/CompleteToast";
 import { findPairPlayerId } from "./components/PlayerScreen/util";
@@ -228,7 +229,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 10,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   addButtonText: {
     color: Colors.whiteText,

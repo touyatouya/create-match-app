@@ -1,12 +1,12 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { saveFilters, savePairs, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
 import {
-  Button,
   FlatList,
   Pressable,
   StyleSheet,
@@ -102,17 +102,58 @@ const PlayerScreen: React.FC = () => {
     navigation.setOptions({
       headerRight: () =>
         isEdit || (
-          <TouchableOpacity onPress={() => setAddModalVisible(true)}>
-            <View style={{ marginRight: 16 }}>
+          <TouchableOpacity
+            onPress={() => setAddModalVisible(true)}
+            style={{
+              ...globalStyles.touch,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ marginRight: 8 }}>
               <AntDesign name="plus" size={24} color={Colors.link} />
             </View>
           </TouchableOpacity>
         ),
       headerLeft: () =>
         isEdit ? (
-          <Button title="完了" onPress={() => setIsEdit(false)} />
+          <TouchableOpacity
+            onPress={() => setIsEdit(false)}
+            style={{
+              ...globalStyles.touch,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                marginLeft: 6,
+                fontSize: 18,
+                color: Colors.link,
+              }}
+            >
+              完了
+            </Text>
+          </TouchableOpacity>
         ) : (
-          <Button title="編集" onPress={() => setIsEdit(true)} />
+          <TouchableOpacity
+            onPress={() => setIsEdit(true)}
+            style={{
+              ...globalStyles.touch,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                marginLeft: 6,
+                fontSize: 18,
+                color: Colors.link,
+              }}
+            >
+              編集
+            </Text>
+          </TouchableOpacity>
         ),
     });
   }, [isEdit, navigation, router]);
@@ -255,7 +296,17 @@ const PlayerScreen: React.FC = () => {
         }
       />
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
-      <TouchableOpacity onPress={sortGender} style={[styles.cellGender]}>
+      <TouchableOpacity
+        onPress={sortGender}
+        style={[
+          styles.cellGender,
+          {
+            ...globalStyles.touch,
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        ]}
+      >
         <Text style={[styles.headerText]}>性別</Text>
         <AntDesign
           name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
@@ -263,7 +314,17 @@ const PlayerScreen: React.FC = () => {
           color={Colors.normalIcon}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={sortPair} style={[styles.cellPair]}>
+      <TouchableOpacity
+        onPress={sortPair}
+        style={[
+          styles.cellPair,
+          {
+            ...globalStyles.touch,
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        ]}
+      >
         <Text style={[styles.headerText]}>ペア</Text>
         <AntDesign
           name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
@@ -271,7 +332,17 @@ const PlayerScreen: React.FC = () => {
           color={Colors.normalIcon}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={sortMatchCount} style={[styles.cellMatch]}>
+      <TouchableOpacity
+        onPress={sortMatchCount}
+        style={[
+          styles.cellMatch,
+          {
+            ...globalStyles.touch,
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        ]}
+      >
         <Text style={[styles.headerText]}>試合数</Text>
         <AntDesign
           name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
@@ -288,14 +359,26 @@ const PlayerScreen: React.FC = () => {
       {isEdit && (
         <TouchableOpacity
           onPress={() => removePlayer(item.id)}
-          style={styles.removeIcon}
+          style={[
+            styles.removeIcon,
+            {
+              ...globalStyles.touch,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
         >
           <AntDesign name="minuscircle" size={24} color="red" />
         </TouchableOpacity>
       )}
       <TouchableOpacity
         onPress={() => joinPlayer(item.id)}
-        style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          alignItems: "center",
+          ...globalStyles.touch,
+        }}
       >
         {isEdit || (
           <Checkbox
@@ -398,7 +481,11 @@ const PlayerScreen: React.FC = () => {
                 pathname: "/components/PlayerScreen/filter-screen",
               })
             }
-            style={{ alignItems: "flex-end", marginBottom: 8 }}
+            style={{
+              alignItems: "flex-end",
+              marginBottom: 8,
+              ...globalStyles.touch,
+            }}
           >
             <Text style={{ color: Colors.link, fontSize: 18 }}>
               フィルター一覧
@@ -412,7 +499,12 @@ const PlayerScreen: React.FC = () => {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={{ flex: 1, flexDirection: "row", marginRight: 8 }}
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    marginRight: 8,
+                    ...globalStyles.touch,
+                  }}
                   onPress={() => selectFilter(item.id)}
                 >
                   <View
@@ -617,11 +709,13 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    ...globalStyles.touch,
   },
   removeIcon: {
     display: "flex",
     marginVertical: 8,
-    marginRight: 12,
   },
   emptyText: {
     textAlign: "center",

@@ -1,5 +1,6 @@
 // CustomCheckbox.tsx
 import Colors from "@/constants/color";
+import { globalStyles } from "@/styles/global";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 8,
+    ...globalStyles.touch,
   },
   toggle: {
     width: 50,

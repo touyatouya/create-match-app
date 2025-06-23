@@ -1,3 +1,4 @@
+import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
 import {
   LayoutAnimation,
@@ -41,6 +42,7 @@ const styles = StyleSheet.create({
   genderEdit: {
     flexDirection: "row",
     alignItems: "center",
+    ...globalStyles.touch,
   },
   title: {
     fontSize: 18,

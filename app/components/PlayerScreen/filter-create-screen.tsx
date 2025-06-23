@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { Filter, Player } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { saveFilters } from "@/utils/saveStorage";
@@ -112,6 +113,8 @@ const CreateFilterScreen: React.FC = () => {
               onPress={() => router.back()}
               style={{
                 flexDirection: "row",
+                ...globalStyles.touch,
+                justifyContent: "center",
                 alignItems: "center",
               }}
             >
@@ -226,6 +229,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     paddingLeft: 4,
     paddingRight: 4,
+    ...globalStyles.touch,
   },
   selectedPlayerItem: {
     backgroundColor: Colors.secondary,
@@ -260,7 +264,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     marginVertical: 12,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   buttonText: {
     color: Colors.whiteText,

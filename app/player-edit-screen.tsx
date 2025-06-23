@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import {
@@ -306,7 +307,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   selectPairButton: {
     flex: 1,
@@ -315,7 +316,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    minHeight: 44,
+    ...globalStyles.touch,
   },
   resetPairButtonText: {
     color: Colors.primary,

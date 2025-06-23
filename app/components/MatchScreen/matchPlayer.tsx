@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { Gender } from "@/types";
 import { Foundation, Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
@@ -52,11 +53,10 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
       {isEdit ? (
         <TouchableOpacity
           key={playerId}
-          style={
-            isEdit && swapPlayer === playerId
-              ? styles.swapPlayerButton
-              : styles.playerButton
-          }
+          style={[
+            styles.playerButton,
+            isEdit && swapPlayer === playerId && styles.swapPlayerButton,
+          ]}
           onPress={() => {
             isEdit && swapPlayer !== partnerId && selectSwapPlayer(playerId);
           }}
@@ -103,16 +103,10 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     borderWidth: 1,
     borderColor: Colors.borderline,
+    ...globalStyles.touch,
   },
   swapPlayerButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     backgroundColor: Colors.thirdry,
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 0,
-    borderWidth: 1,
     borderColor: Colors.secondary,
   },
   playerInfo: {

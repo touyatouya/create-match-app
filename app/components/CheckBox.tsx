@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { globalStyles } from "@/styles/global";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -25,7 +26,9 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     marginVertical: 8,
+    ...globalStyles.touch,
   },
   checkbox: {
     width: 24,

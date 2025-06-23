@@ -1,5 +1,6 @@
 import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { saveFilters } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
@@ -72,13 +73,14 @@ const FilterScreen: React.FC = () => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
+                ...globalStyles.touch,
               }}
             >
               <AntDesign name="left" size={24} color={Colors.link} />
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 16,
+                  fontSize: 18,
                   color: Colors.link,
                 }}
               >
@@ -92,14 +94,15 @@ const FilterScreen: React.FC = () => {
                 <TouchableOpacity
                   onPress={() => setIsEdit(true)}
                   style={{
-                    flexDirection: "row",
                     alignItems: "center",
+                    justifyContent: "center",
+                    ...globalStyles.touch,
                   }}
                 >
                   <Text
                     style={{
                       marginLeft: 6,
-                      fontSize: 16,
+                      fontSize: 18,
                       color: Colors.link,
                     }}
                   >
@@ -112,14 +115,15 @@ const FilterScreen: React.FC = () => {
                 <TouchableOpacity
                   onPress={() => setIsEdit(false)}
                   style={{
-                    flexDirection: "row",
                     alignItems: "center",
+                    justifyContent: "center",
+                    ...globalStyles.touch,
                   }}
                 >
                   <Text
                     style={{
                       marginLeft: 6,
-                      fontSize: 16,
+                      fontSize: 18,
                       color: Colors.link,
                     }}
                   >
@@ -138,7 +142,11 @@ const FilterScreen: React.FC = () => {
               pathname: "/components/PlayerScreen/filter-create-screen",
             })
           }
-          style={{ alignItems: "flex-end" }}
+          style={{
+            alignItems: "flex-end",
+            ...globalStyles.touch,
+            justifyContent: "center",
+          }}
         >
           <Text style={{ color: Colors.link, fontSize: 16 }}>
             フィルター作成
@@ -174,6 +182,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     flex: 1,
+    ...globalStyles.touch,
   },
   deleteText: {
     color: Colors.whiteText,

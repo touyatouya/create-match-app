@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { globalStyles } from "@/styles/global";
 import { Gender } from "@/types";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -51,6 +52,9 @@ const styles = StyleSheet.create({
     margin: 5,
     backgroundColor: Colors.muted,
     alignSelf: "flex-start",
+    ...globalStyles.touch,
+    justifyContent: "center",
+    alignItems: "center",
   },
   selectedText: {
     fontWeight: "bold",

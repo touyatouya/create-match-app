@@ -3,7 +3,6 @@ import { AppContext } from "@/context/AppContext";
 import { router, useNavigation } from "expo-router";
 import React, { useContext, useLayoutEffect, useState } from "react";
 import {
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 // import { Checkbox } from "react-native-paper";
 import Colors from "@/constants/color";
+import { globalStyles } from "@/styles/global";
 import { GenderPreferenceSetting } from "../../types";
 import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
@@ -33,8 +33,7 @@ const MatchScreen: React.FC = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          title="リセット"
+        <TouchableOpacity
           onPress={() => {
             setGameRounds([]);
             setPlayers((prev) => {
@@ -48,7 +47,22 @@ const MatchScreen: React.FC = () => {
             });
             setSwapPlayer(null);
           }}
-        />
+          style={{
+            ...globalStyles.touch,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: 8,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              color: Colors.link,
+            }}
+          >
+            リセット
+          </Text>
+        </TouchableOpacity>
       ),
     });
   }, [navigation, setGameRounds, setPlayers]);
@@ -179,6 +193,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderColor: Colors.secondary,
     borderWidth: 1,
+    ...globalStyles.touch,
   },
   addButtonText: {
     color: Colors.secondary,
