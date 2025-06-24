@@ -12,6 +12,8 @@ type AppContextType = {
   setPairs: React.Dispatch<React.SetStateAction<Pair[]>>;
   filters: Filter[];
   setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -25,6 +27,8 @@ export const AppContext = createContext<AppContextType>({
   setPairs: () => {},
   filters: [],
   setFilters: () => {},
+  isLoading: false,
+  setIsLoading: () => {},
 });
 
 type AppContextProps = {
@@ -37,6 +41,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
   const [filters, setFilters] = React.useState<Filter[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   return (
     <AppContext.Provider
@@ -51,6 +56,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setPairs,
         filters,
         setFilters,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}

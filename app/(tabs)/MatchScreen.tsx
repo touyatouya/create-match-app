@@ -17,7 +17,8 @@ import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
 
 const MatchScreen: React.FC = () => {
-  const { players, setPlayers, setGameRounds } = useContext(AppContext);
+  const { players, setPlayers, setGameRounds, isLoading } =
+    useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     men: false,
@@ -35,17 +36,19 @@ const MatchScreen: React.FC = () => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            setGameRounds([]);
-            setPlayers((prev) => {
-              return prev.map((player) => {
-                return {
-                  ...player,
-                  isRest: false,
-                  matchCount: 0,
-                };
+            if (!isLoading) {
+              setGameRounds([]);
+              setPlayers((prev) => {
+                return prev.map((player) => {
+                  return {
+                    ...player,
+                    isRest: false,
+                    matchCount: 0,
+                  };
+                });
               });
-            });
-            setSwapPlayer(null);
+              setSwapPlayer(null);
+            }
           }}
           style={{
             ...globalStyles.touch,
@@ -57,7 +60,7 @@ const MatchScreen: React.FC = () => {
           <Text
             style={{
               fontSize: 18,
-              color: Colors.link,
+              color: isLoading ? Colors.muted : Colors.link,
             }}
           >
             リセット
@@ -65,7 +68,7 @@ const MatchScreen: React.FC = () => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, setGameRounds, setPlayers]);
+  }, [navigation, setGameRounds, setPlayers, isLoading]);
 
   const nextRestPlayer = players.filter(
     (player) => player.isJoin && player.isRest
@@ -190,7 +193,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 8,
     borderColor: Colors.secondary,
     borderWidth: 1,
     ...globalStyles.touch,
@@ -222,7 +225,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.borderline,
-    paddingVertical: 8,
   },
   info: {
     flex: 1,
@@ -243,6 +245,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: Colors.sectionTitie,
+    marginBottom: 8,
   },
   generateButton: {
     backgroundColor: Colors.primary,

@@ -19,18 +19,20 @@ export const createMatch = (
   matches: MatchType[],
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
-  // dispRound: number,
-  setDispRound: React.Dispatch<React.SetStateAction<number>>
+  setDispRound: React.Dispatch<React.SetStateAction<number>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ): void => {
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
     .sort((a, b) => a.matchCount - b.matchCount);
 
-  if (sortedPlayer.length < courts.length * 4)
+  if (sortedPlayer.length < courts.length * 4) {
+    setIsLoading(false);
     return Alert.alert(
       "試合を作成できません",
       "コート数に対する人数が足りません。\nコート数を減らすか、人数を増やしてください。"
     );
+  }
 
   let separatedPlayers: Player[][] = [];
   let matchCountSeparete_i = 0;
@@ -73,9 +75,8 @@ export const createMatch = (
 
   if (gameRound == null) return;
 
-  let prevGameRounds = 0;
+  let prevGameRounds = gameRounds.length;
   setGameRounds((prev) => {
-    prevGameRounds = prev.length;
     return [...prev, gameRound];
   });
 

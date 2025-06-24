@@ -466,7 +466,7 @@ const PlayerScreen: React.FC = () => {
         <Text style={styles.description}>参加プレイヤーを選択してください</Text>
         <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
       </View>
-      <View style={{ marginBottom: expanded ? 8 : 16 }}>
+      <View style={{ marginBottom: 8 }}>
         <Disclosure
           isOpen={expanded}
           setIsOpen={setExpanded}
@@ -484,6 +484,7 @@ const PlayerScreen: React.FC = () => {
             style={{
               alignItems: "flex-end",
               marginBottom: 8,
+              justifyContent: "center",
               ...globalStyles.touch,
             }}
           >
@@ -575,8 +576,7 @@ const styles = StyleSheet.create({
   joinedPlayerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 16,
-    alignItems: "center",
+    marginBottom: 8,
   },
   filterItem: {
     alignItems: "center",
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Colors.borderline,
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   headerRow: {
     backgroundColor: Colors.playerTabelHeader,
@@ -723,12 +723,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   joinedPlayer: {
-    marginBottom: 6,
     fontSize: 20,
     fontWeight: 500,
   },
   description: {
-    marginBottom: 6,
     fontSize: 20,
     fontWeight: 500,
   },
