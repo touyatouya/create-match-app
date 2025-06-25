@@ -25,9 +25,14 @@ import GenderToggle from "../GenderToggle";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
 }
 
-const AddPlayerModal: React.FC<Props> = ({ isOpen, onClose }) => {
+const AddPlayerModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  setDefaultOrderPlayers,
+}) => {
   const { players, setPlayers } = useContext(AppContext);
 
   const [name, setName] = useState("");
@@ -53,6 +58,7 @@ const AddPlayerModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
     const newPlayers = [...players, newPlayer];
     setPlayers(newPlayers);
+    setDefaultOrderPlayers(newPlayers);
     resetInput();
 
     savePlayerInfo(

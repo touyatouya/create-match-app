@@ -182,6 +182,10 @@ const PlayerScreen: React.FC = () => {
       })
     );
 
+    setDefaultOrderPlayers((prev) => {
+      return prev.filter((player) => player.id !== id);
+    });
+
     const pairPlayers = pairs.flatMap((pair) => [pair.player1, pair.player2]);
     if (pairPlayers.includes(id)) {
       const newPairs = pairs.filter(
@@ -391,12 +395,10 @@ const PlayerScreen: React.FC = () => {
         <TouchableOpacity
           onPress={() => removePlayer(item.id)}
           style={[
-            styles.removeIcon,
             {
               ...globalStyles.touch,
               alignItems: "center",
               justifyContent: "center",
-              flex: 1,
             },
           ]}
         >
@@ -471,7 +473,9 @@ const PlayerScreen: React.FC = () => {
           {item.matchCount}
         </Text>
       </TouchableOpacity>
-      {isEdit || (
+      {isEdit ? (
+        <View style={styles.removeButton}></View>
+      ) : (
         <TouchableOpacity
           onPress={() =>
             router.push({
@@ -498,7 +502,7 @@ const PlayerScreen: React.FC = () => {
     return filteredFilters.flatMap((item) => item.players).includes(player.id);
   });
 
-  const noJoinedPlayers = filteredPlayers.filter((player) => !player.isJoin);
+  // const noJoinedPlayers = filteredPlayers.filter((player) => !player.isJoin);
 
   const selectFilter = (id: number) => {
     setFilteredFilters((prev) => {
@@ -521,20 +525,40 @@ const PlayerScreen: React.FC = () => {
   //   }
   // };
 
-  const dispPlayers = [...joinedPlayer, ...noJoinedPlayers];
+  // const dispPlayers = [...joinedPlayer, ...noJoinedPlayers];
 
-  const sections: Section[] = [
-    {
-      title: "参加プレイヤー",
-      data: joinedPlayer,
-      type: "joinedPlayer",
-    },
-    {
-      title: "未参加プレイヤー",
-      data: noJoinedPlayers,
-      type: "noJoinedPlayer",
-    },
-  ];
+  // const sections: Section[] = [
+  //   {
+  //     title: "参加プレイヤー",
+  //     data: joinedPlayer,
+  //     type: "joinedPlayer",
+  //   },
+  //   {
+  //     title: "未参加プレイヤー",
+  //     data: noJoinedPlayers,
+  //     type: "noJoinedPlayer",
+  //   },
+  // ];
+
+  const resetOrder = () => {
+    const playerWithIndex = players.map((player) => {
+      return {
+        ...player,
+        defaultIndex: defaultOrderPlayers.findIndex(
+          (defaultOrdepplayer) => defaultOrdepplayer.id === player.id
+        ),
+      };
+    });
+
+    const defaultPlayers = playerWithIndex.sort(
+      (a, b) => a.defaultIndex - b.defaultIndex
+    );
+
+    const newPlayers = defaultPlayers.map(
+      ({ defaultIndex, ...player }) => player
+    );
+    setPlayers(newPlayers);
+  };
 
   return (
     <View style={styles.container}>
@@ -542,6 +566,7 @@ const PlayerScreen: React.FC = () => {
       <AddPlayerModal
         isOpen={isAddModalVisible}
         onClose={() => setAddModalVisible(false)}
+        setDefaultOrderPlayers={setDefaultOrderPlayers}
       />
       <View style={styles.joinedPlayerRow}>
         <Text style={styles.description}>参加プレイヤーを選択してください</Text>
@@ -631,10 +656,7 @@ const PlayerScreen: React.FC = () => {
         <TouchableOpacity style={styles.Button} onPress={sortJoin}>
           <Text style={styles.ButtonText}>参加プレイヤーを上へ</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.Button}
-          onPress={() => setPlayers(defaultOrderPlayers)}
-        >
+        <TouchableOpacity style={styles.Button} onPress={resetOrder}>
           <Text style={styles.ButtonText}>並び順リセット</Text>
         </TouchableOpacity>
       </View>
@@ -751,15 +773,6 @@ const styles = StyleSheet.create({
     color: Colors.whiteText,
     marginRight: 5,
   },
-  rowBack: {
-    alignItems: "center",
-    // backgroundColor: "red",
-    flex: 1,
-    justifyContent: "flex-end",
-    flexDirection: "row",
-    paddingRight: 20,
-    textAlign: "center",
-  },
   deleteText: {
     color: Colors.whiteText,
     fontWeight: "bold",
@@ -788,9 +801,29 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  rowBack: {
+    backgroundColor: "red",
+    flexDirection: "row",
+    alignItems: "center",
+    // borderBottomWidth: 1,
+    // borderBottomColor: Colors.borderline,
+    marginVertical: 4,
+    // paddingVertical: 4,
+    // borderWidth: 1,
+    borderRadius: 8,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
     elevation: 2,
+    flex: 1,
+    paddingRight: 20,
+    textAlign: "center",
+    justifyContent: "flex-end",
   },
   headerRow: {
     backgroundColor: Colors.playerTabelHeader,
@@ -855,10 +888,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     ...globalStyles.touch,
-  },
-  removeIcon: {
-    display: "flex",
-    marginVertical: 8,
   },
   emptyText: {
     textAlign: "center",
