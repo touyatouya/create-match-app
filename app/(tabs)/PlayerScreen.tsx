@@ -35,12 +35,13 @@ const PlayerScreen: React.FC = () => {
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
     React.useState<Sort | null>(null);
-  const [isSortedJoin, setIsSortedJoin] = React.useState<Sort | null>(null);
+  // const [isSortedJoin, setIsSortedJoin] = React.useState<Sort | null>(null);
   const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
   const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [joinedPlayer, setJoinedPlayer] = useState<Player[]>([]);
+  const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
+  // const [joinedPlayer, setJoinedPlayer] = useState<Player[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -63,6 +64,7 @@ const PlayerScreen: React.FC = () => {
           });
         }
         setPlayers(players);
+        setDefaultOrderPlayers(players);
       }
 
       const pairsData = await AsyncStorage.getItem("pairs");
@@ -210,20 +212,20 @@ const PlayerScreen: React.FC = () => {
     );
     setPlayers(updatedPlayers);
 
-    setJoinedPlayer((prev) => {
-      const newJoinedPlayer = players.find((player) => player.id === id);
-      if (
-        prev.filter((player) => player.id === id).length === 0 &&
-        newJoinedPlayer != null
-      ) {
-        return [...prev, { ...newJoinedPlayer, isJoin: true }];
-      } else {
-        return prev.filter((player) => player.id !== id);
-      }
-    });
+    // setJoinedPlayer((prev) => {
+    //   const newJoinedPlayer = players.find((player) => player.id === id);
+    //   if (
+    //     prev.filter((player) => player.id === id).length === 0 &&
+    //     newJoinedPlayer != null
+    //   ) {
+    //     return [...prev, { ...newJoinedPlayer, isJoin: true }];
+    //   } else {
+    //     return prev.filter((player) => player.id !== id);
+    //   }
+    // });
   };
 
-  // const joinedPlayer = players.filter((player) => player.isJoin);
+  const joinedPlayer = players.filter((player) => player.isJoin);
 
   const joinAllPlayer = () => {
     const updatedPlayers = players.map((player) => {
@@ -279,15 +281,9 @@ const PlayerScreen: React.FC = () => {
   };
 
   const sortJoin = () => {
-    const nextSortOrder = isSortedJoin === "asc" ? "desc" : "asc";
-
     const sorted = [...players].sort((a, b) => {
-      return nextSortOrder === "asc"
-        ? (b.isJoin ? 1 : 0) - (a.isJoin ? 1 : 0)
-        : (a.isJoin ? 1 : 0) - (b.isJoin ? 1 : 0);
+      return (b.isJoin ? 1 : 0) - (a.isJoin ? 1 : 0);
     });
-
-    setIsSortedJoin(nextSortOrder);
     setPlayers(sorted);
   };
 
@@ -317,24 +313,17 @@ const PlayerScreen: React.FC = () => {
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
-      <TouchableOpacity
-        onPress={sortJoin}
-        style={[
-          // styles.removeIcon,
-          {
-            ...globalStyles.touch,
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          },
-        ]}
-      >
-        <AntDesign
-          name={isSortedJoin === "asc" ? "arrowup" : "arrowdown"}
-          size={16}
-          color={Colors.normalIcon}
-        />
-      </TouchableOpacity>
+      <Checkbox
+        checked={
+          filteredPlayers.length > 0 &&
+          filteredPlayers.every((player) => player.isJoin)
+        }
+        onChange={
+          filteredPlayers.every((player) => player.isJoin)
+            ? noJoinAllPlayer
+            : joinAllPlayer
+        }
+      />
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
       <TouchableOpacity
         onPress={sortGender}
@@ -638,6 +627,17 @@ const PlayerScreen: React.FC = () => {
           </View>
         </View>
       )}
+      <View style={{ flexDirection: "row", columnGap: 8 }}>
+        <TouchableOpacity style={styles.Button} onPress={sortJoin}>
+          <Text style={styles.ButtonText}>参加プレイヤーを上へ</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.Button}
+          onPress={() => setPlayers(defaultOrderPlayers)}
+        >
+          <Text style={styles.ButtonText}>並び順リセット</Text>
+        </TouchableOpacity>
+      </View>
       {renderHeader()}
       <SwipeListView
         // data={dispPlayers}
@@ -687,6 +687,23 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  Button: {
+    backgroundColor: Colors.background,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderColor: Colors.secondary,
+    borderWidth: 1,
+    flex: 1,
+    ...globalStyles.touch,
+  },
+  ButtonText: {
+    color: Colors.secondary,
+    fontWeight: "600",
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
