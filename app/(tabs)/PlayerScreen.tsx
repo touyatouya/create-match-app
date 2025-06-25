@@ -627,7 +627,7 @@ const PlayerScreen: React.FC = () => {
           </View>
         </View>
       )}
-      <View style={{ flexDirection: "row", columnGap: 8 }}>
+      <View style={{ flexDirection: "row", columnGap: 8, marginBottom: 8 }}>
         <TouchableOpacity style={styles.Button} onPress={sortJoin}>
           <Text style={styles.ButtonText}>参加プレイヤーを上へ</Text>
         </TouchableOpacity>
@@ -694,7 +694,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 10,
     borderRadius: 8,
-    marginBottom: 8,
     borderColor: Colors.secondary,
     borderWidth: 1,
     flex: 1,
@@ -754,7 +753,7 @@ const styles = StyleSheet.create({
   },
   rowBack: {
     alignItems: "center",
-    backgroundColor: "red",
+    // backgroundColor: "red",
     flex: 1,
     justifyContent: "flex-end",
     flexDirection: "row",
@@ -768,7 +767,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    // backgroundColor: Colors.background,
     padding: 16,
   },
   title: {
@@ -781,9 +780,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.borderline,
-    paddingVertical: 4,
+    // borderBottomWidth: 1,
+    // borderBottomColor: Colors.borderline,
+    marginVertical: 4,
+    // paddingVertical: 4,
+    // borderWidth: 1,
+    borderRadius: 8,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
   headerRow: {
     backgroundColor: Colors.playerTabelHeader,

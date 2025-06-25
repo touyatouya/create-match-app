@@ -49,7 +49,7 @@ const Colors = {
   accessoryborderColor: "#ccc",
   borderline: "#ccc",
   toggleCircle: "white",
-  playerTabelHeader: "#f0f0f0",
+  playerTabelHeader: "#c4c4c4",
   restPlayerBackground: "#FFF9E6",
   restPlayerBorder: "#FFE8B2",
   restPlayerName: "#664500",
