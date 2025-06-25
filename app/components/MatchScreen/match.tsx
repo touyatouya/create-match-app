@@ -2,11 +2,8 @@ import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import {
-  ActivityIndicator,
-  Button,
   SectionList,
   StyleSheet,
   Text,
@@ -35,12 +32,16 @@ interface MatchProps {
   swapPlayer: number | null;
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>;
   genderSetting: GenderPreferenceSetting;
+  dispRound: number;
+  setDispRound: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const Match: React.FC<MatchProps> = ({
   swapPlayer,
   setSwapPlayer,
   genderSetting,
+  dispRound,
+  setDispRound,
 }) => {
   const {
     players,
@@ -49,44 +50,8 @@ const Match: React.FC<MatchProps> = ({
     setGameRounds,
     pairs,
     courts,
-    isLoading,
     setIsLoading,
   } = useContext(AppContext);
-
-  const navigation = useNavigation();
-
-  const [dispRound, setDispRound] = React.useState<number>(0);
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Button
-          title="リセット"
-          onPress={() => {
-            setGameRounds([]);
-            setPlayers((prev) =>
-              prev.map((player) => ({
-                ...player,
-                matchCount: 0,
-              }))
-            );
-            setSwapPlayer(null);
-            setDispRound(0);
-          }}
-        />
-      ),
-    });
-  }, [
-    navigation,
-    gameRounds,
-    setGameRounds,
-    players,
-    setPlayers,
-    swapPlayer,
-    setSwapPlayer,
-    dispRound,
-    setDispRound,
-  ]);
 
   const selectSwapPlayer = (id: number) => {
     setSwapPlayer((prev) => {
@@ -398,149 +363,121 @@ const Match: React.FC<MatchProps> = ({
   ];
 
   useEffect(() => {
-    console.log("dispRound1");
     if (dispRound > 0) {
-      console.log("dispRound", dispRound);
       setIsLoading(false);
     }
-  }, [dispRound]);
+  }, [dispRound, setIsLoading]);
 
   return (
-    <>
-      {isLoading ? (
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator size="large" color="#fff" />
-          <Text style={{ color: "#fff", marginTop: 10 }}>試合を作成中...</Text>
-        </View>
-      ) : (
-        <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, padding: 10 }}>
+      <TouchableOpacity
+        style={styles.generateButton}
+        onPress={() => {
+          setIsLoading(true);
+          setTimeout(() => {
+            createMatch(
+              players,
+              setPlayers,
+              courts,
+              gameRounds,
+              setGameRounds,
+              pairs,
+              matches,
+              setSwapPlayer,
+              genderSetting,
+              setDispRound,
+              setIsLoading
+            );
+          }, 0);
+        }}
+      >
+        <Ionicons name="refresh" size={20} color={Colors.whiteText} />
+        <Text style={styles.generateButtonText}>新しい組み合わせを生成</Text>
+      </TouchableOpacity>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 8,
+        }}
+      >
+        {gameRounds[dispRound - 2] != null ? (
           <TouchableOpacity
-            style={styles.generateButton}
-            onPress={() => {
-              setIsLoading(true);
-              setTimeout(() => {
-                createMatch(
-                  players,
-                  setPlayers,
-                  courts,
-                  gameRounds,
-                  setGameRounds,
-                  pairs,
-                  matches,
-                  setSwapPlayer,
-                  genderSetting,
-                  setDispRound,
-                  setIsLoading
-                );
-              }, 0);
-            }}
-          >
-            <Ionicons name="refresh" size={20} color={Colors.whiteText} />
-            <Text style={styles.generateButtonText}>
-              新しい組み合わせを生成
-            </Text>
-          </TouchableOpacity>
-          <View
             style={{
-              flexDirection: "row",
+              ...globalStyles.touch,
+              justifyContent: "center",
               alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 8,
+            }}
+            onPress={() => setDispRound((prev) => prev - 1)}
+          >
+            <AntDesign name="left" size={20} color={Colors.normalIcon} />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 44 }}></View>
+        )}
+        {dispRound > 0 && (
+          <Text
+            style={{
+              fontSize: 20,
+              marginHorizontal: 8,
             }}
           >
-            {gameRounds[dispRound - 2] != null ? (
-              <TouchableOpacity
-                style={{
-                  ...globalStyles.touch,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => setDispRound((prev) => prev - 1)}
-              >
-                <AntDesign name="left" size={20} color={Colors.normalIcon} />
-              </TouchableOpacity>
-            ) : (
-              <View style={{ width: 44 }}></View>
-            )}
-            {dispRound > 0 && (
-              <Text
-                style={{
-                  fontSize: 20,
-                  marginHorizontal: 8,
-                }}
-              >
-                {dispRound}巡目
-              </Text>
-            )}
-            {gameRounds[dispRound] != null ? (
-              <TouchableOpacity
-                style={{
-                  ...globalStyles.touch,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={() => setDispRound((prev) => prev + 1)}
-              >
-                <AntDesign name="right" size={20} color={Colors.normalIcon} />
-              </TouchableOpacity>
-            ) : (
-              <View style={{ width: 44 }}></View>
-            )}
-          </View>
-          {gameRounds[dispRound - 1] != null && (
-            <SectionList
-              sections={sections}
-              keyExtractor={(item, index) => item.id.toString() + index}
-              renderItem={({ item, index, section }) => {
-                if (section.type === "match") {
-                  const match = item as MatchType;
-                  return renderMatch({ item: match, index: index }); // 例: カード表示など
-                } else if (section.type === "rest") {
-                  const restPlayer = item as Player;
-                  return renderRestingPlayer({ item: restPlayer }); // 例: 名前だけ表示など
-                }
-                return null;
-              }}
-              renderSectionHeader={({ section }) => {
-                if (section.type === "match") {
-                  return null;
-                } else if (section.type === "rest") {
-                  return (
-                    <View style={styles.restingHeader}>
-                      <View style={styles.restingTitle}>
-                        <Ionicons
-                          name="cafe"
-                          size={24}
-                          color={Colors.restIcon}
-                        />
-                        <Text style={styles.restingSectionTitle}>
-                          休憩中のプレイヤー
-                        </Text>
-                      </View>
-                      <Text style={styles.restingCount}>
-                        {restPlayers.length}人
-                      </Text>
-                    </View>
-                  );
-                }
-                return null;
-              }}
-            />
-          )}
-        </View>
+            {dispRound}巡目
+          </Text>
+        )}
+        {gameRounds[dispRound] != null ? (
+          <TouchableOpacity
+            style={{
+              ...globalStyles.touch,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => setDispRound((prev) => prev + 1)}
+          >
+            <AntDesign name="right" size={20} color={Colors.normalIcon} />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 44 }}></View>
+        )}
+      </View>
+      {gameRounds[dispRound - 1] != null && (
+        <SectionList
+          sections={sections}
+          keyExtractor={(item, index) => item.id.toString() + index}
+          renderItem={({ item, index, section }) => {
+            if (section.type === "match") {
+              const match = item as MatchType;
+              return renderMatch({ item: match, index: index }); // 例: カード表示など
+            } else if (section.type === "rest") {
+              const restPlayer = item as Player;
+              return renderRestingPlayer({ item: restPlayer }); // 例: 名前だけ表示など
+            }
+            return null;
+          }}
+          renderSectionHeader={({ section }) => {
+            if (section.type === "match") {
+              return null;
+            } else if (section.type === "rest") {
+              return (
+                <View style={styles.restingHeader}>
+                  <View style={styles.restingTitle}>
+                    <Ionicons name="cafe" size={24} color={Colors.restIcon} />
+                    <Text style={styles.restingSectionTitle}>
+                      休憩中のプレイヤー
+                    </Text>
+                  </View>
+                  <Text style={styles.restingCount}>
+                    {restPlayers.length}人
+                  </Text>
+                </View>
+              );
+            }
+            return null;
+          }}
+        />
       )}
-    </>
+    </View>
   );
 };
 

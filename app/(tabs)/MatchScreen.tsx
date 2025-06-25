@@ -17,8 +17,7 @@ import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
 
 const MatchScreen: React.FC = () => {
-  const { players, setPlayers, setGameRounds, isLoading } =
-    useContext(AppContext);
+  const { players, setPlayers, setGameRounds } = useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     men: false,
@@ -28,6 +27,7 @@ const MatchScreen: React.FC = () => {
 
   const [expanded, setExpanded] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
+  const [dispRound, setDispRound] = React.useState<number>(0);
 
   const navigation = useNavigation();
 
@@ -36,19 +36,18 @@ const MatchScreen: React.FC = () => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            if (!isLoading) {
-              setGameRounds([]);
-              setPlayers((prev) => {
-                return prev.map((player) => {
-                  return {
-                    ...player,
-                    isRest: false,
-                    matchCount: 0,
-                  };
-                });
+            setGameRounds([]);
+            setPlayers((prev) => {
+              return prev.map((player) => {
+                return {
+                  ...player,
+                  isRest: false,
+                  matchCount: 0,
+                };
               });
-              setSwapPlayer(null);
-            }
+            });
+            setSwapPlayer(null);
+            setDispRound(0);
           }}
           style={{
             ...globalStyles.touch,
@@ -60,7 +59,7 @@ const MatchScreen: React.FC = () => {
           <Text
             style={{
               fontSize: 18,
-              color: isLoading ? Colors.muted : Colors.link,
+              color: Colors.link,
             }}
           >
             リセット
@@ -68,7 +67,7 @@ const MatchScreen: React.FC = () => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, setGameRounds, setPlayers, isLoading]);
+  }, [navigation, setGameRounds, setPlayers]);
 
   const nextRestPlayer = players.filter(
     (player) => player.isJoin && player.isRest
@@ -172,6 +171,8 @@ const MatchScreen: React.FC = () => {
         swapPlayer={swapPlayer}
         setSwapPlayer={setSwapPlayer}
         genderSetting={genderSetting}
+        dispRound={dispRound}
+        setDispRound={setDispRound}
       />
     </View>
   );

@@ -23,16 +23,24 @@ import { findPairPlayerId } from "../components/PlayerScreen/util";
 
 type Sort = "asc" | "desc";
 
+type Section = {
+  title: string;
+  type: "joinedPlayer" | "noJoinedPlayer";
+  data: Player[];
+};
+
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs, filters, setFilters } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
     React.useState<Sort | null>(null);
+  const [isSortedJoin, setIsSortedJoin] = React.useState<Sort | null>(null);
   const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
   const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [joinedPlayer, setJoinedPlayer] = useState<Player[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -201,9 +209,21 @@ const PlayerScreen: React.FC = () => {
       player.id === id ? { ...player, isJoin: !player.isJoin } : player
     );
     setPlayers(updatedPlayers);
+
+    setJoinedPlayer((prev) => {
+      const newJoinedPlayer = players.find((player) => player.id === id);
+      if (
+        prev.filter((player) => player.id === id).length === 0 &&
+        newJoinedPlayer != null
+      ) {
+        return [...prev, { ...newJoinedPlayer, isJoin: true }];
+      } else {
+        return prev.filter((player) => player.id !== id);
+      }
+    });
   };
 
-  const joinedPlayer = players.filter((player) => player.isJoin);
+  // const joinedPlayer = players.filter((player) => player.isJoin);
 
   const joinAllPlayer = () => {
     const updatedPlayers = players.map((player) => {
@@ -258,6 +278,19 @@ const PlayerScreen: React.FC = () => {
     setPlayers(sorted);
   };
 
+  const sortJoin = () => {
+    const nextSortOrder = isSortedJoin === "asc" ? "desc" : "asc";
+
+    const sorted = [...players].sort((a, b) => {
+      return nextSortOrder === "asc"
+        ? (b.isJoin ? 1 : 0) - (a.isJoin ? 1 : 0)
+        : (a.isJoin ? 1 : 0) - (b.isJoin ? 1 : 0);
+    });
+
+    setIsSortedJoin(nextSortOrder);
+    setPlayers(sorted);
+  };
+
   const sortPair = () => {
     const nextSortOrder = isSortedPair === "asc" ? "desc" : "asc";
     const sorted = [...players].sort((a, b) => {
@@ -284,17 +317,24 @@ const PlayerScreen: React.FC = () => {
 
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
-      <Checkbox
-        checked={
-          filteredPlayers.length > 0 &&
-          filteredPlayers.every((player) => player.isJoin)
-        }
-        onChange={
-          filteredPlayers.every((player) => player.isJoin)
-            ? noJoinAllPlayer
-            : joinAllPlayer
-        }
-      />
+      <TouchableOpacity
+        onPress={sortJoin}
+        style={[
+          // styles.removeIcon,
+          {
+            ...globalStyles.touch,
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          },
+        ]}
+      >
+        <AntDesign
+          name={isSortedJoin === "asc" ? "arrowup" : "arrowdown"}
+          size={16}
+          color={Colors.normalIcon}
+        />
+      </TouchableOpacity>
       <Text style={[styles.cellName, styles.headerText]}>名前</Text>
       <TouchableOpacity
         onPress={sortGender}
@@ -355,7 +395,9 @@ const PlayerScreen: React.FC = () => {
   );
 
   const renderItem = ({ item }: { item: Player }) => (
-    <View style={styles.row}>
+    <View
+      style={[styles.row, item.isJoin && { backgroundColor: Colors.secondary }]}
+    >
       {isEdit && (
         <TouchableOpacity
           onPress={() => removePlayer(item.id)}
@@ -365,6 +407,7 @@ const PlayerScreen: React.FC = () => {
               ...globalStyles.touch,
               alignItems: "center",
               justifyContent: "center",
+              flex: 1,
             },
           ]}
         >
@@ -386,12 +429,31 @@ const PlayerScreen: React.FC = () => {
             onChange={() => joinPlayer(item.id)}
           />
         )}
-        <Text style={styles.cellName}>{item.name}</Text>
+        <Text
+          style={[
+            styles.cellName,
+            ,
+            item.isJoin && { color: Colors.whiteText },
+          ]}
+        >
+          {item.name}
+        </Text>
         <Text style={styles.cellGender}>
           {item.gender === Gender.男性 ? (
-            <Foundation name="male" size={24} color={Colors.men} />
+            <Foundation
+              name="male"
+              size={24}
+              // color={item.isJoin ? "#001d5c" : Colors.men}
+              color={Colors.men}
+              // style={{ borderColor: "black", borderWidth: 1 }}
+            />
           ) : item.gender === Gender.女性 ? (
-            <Foundation name="female" size={24} color={Colors.women} />
+            <Foundation
+              name="female"
+              size={24}
+              // color={item.isJoin ? Colors.whiteText : Colors.women}
+              color={Colors.women}
+            />
           ) : (
             ""
           )}
@@ -399,7 +461,12 @@ const PlayerScreen: React.FC = () => {
         <Text style={styles.cellPair}>
           {findPairPlayerId(item.id, pairs) && (
             <View style={styles.pairInfo}>
-              <Text style={styles.pairName}>
+              <Text
+                style={[
+                  styles.pairName,
+                  item.isJoin && { color: Colors.whiteText },
+                ]}
+              >
                 {
                   players.find(
                     (player) => player.id === findPairPlayerId(item.id, pairs)
@@ -409,7 +476,11 @@ const PlayerScreen: React.FC = () => {
             </View>
           )}
         </Text>
-        <Text style={styles.cellMatch}>{item.matchCount}</Text>
+        <Text
+          style={[styles.cellMatch, item.isJoin && { color: Colors.whiteText }]}
+        >
+          {item.matchCount}
+        </Text>
       </TouchableOpacity>
       {isEdit || (
         <TouchableOpacity
@@ -421,7 +492,11 @@ const PlayerScreen: React.FC = () => {
           }
           style={styles.removeButton}
         >
-          <AntDesign name="right" size={24} color={Colors.normalIcon} />
+          <AntDesign
+            name="right"
+            size={24}
+            color={item.isJoin ? Colors.whiteIcon : Colors.normalIcon}
+          />
         </TouchableOpacity>
       )}
     </View>
@@ -433,6 +508,8 @@ const PlayerScreen: React.FC = () => {
     if (filteredFilters.length === 0) return true;
     return filteredFilters.flatMap((item) => item.players).includes(player.id);
   });
+
+  const noJoinedPlayers = filteredPlayers.filter((player) => !player.isJoin);
 
   const selectFilter = (id: number) => {
     setFilteredFilters((prev) => {
@@ -454,6 +531,21 @@ const PlayerScreen: React.FC = () => {
   //     Alert.alert("エラー", "ローカルストレージの削除に失敗しました");
   //   }
   // };
+
+  const dispPlayers = [...joinedPlayer, ...noJoinedPlayers];
+
+  const sections: Section[] = [
+    {
+      title: "参加プレイヤー",
+      data: joinedPlayer,
+      type: "joinedPlayer",
+    },
+    {
+      title: "未参加プレイヤー",
+      data: noJoinedPlayers,
+      type: "noJoinedPlayer",
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -548,6 +640,7 @@ const PlayerScreen: React.FC = () => {
       )}
       {renderHeader()}
       <SwipeListView
+        // data={dispPlayers}
         data={filteredPlayers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
@@ -568,11 +661,38 @@ const PlayerScreen: React.FC = () => {
         disableRightSwipe
         style={styles.list}
       />
+      {/* <SectionList
+        sections={sections}
+        keyExtractor={(item, index) => item.id.toString() + index}
+        renderItem={({ item, section }) => {
+          const player = item as Player;
+          if (section.type === "joinedPlayer") {
+            return renderItem({ item: player }); // 例: カード表示など
+          } else if (section.type === "noJoinedPlayer") {
+            return renderItem({ item: player }); // 例: 名前だけ表示など
+          }
+          return null;
+        }}
+        renderSectionHeader={({ section }) => {
+          if (section.type === "joinedPlayer") {
+            return <Text style={styles.sectionTitle}>{section.title}</Text>;
+          } else if (section.type === "noJoinedPlayer") {
+            return <Text style={styles.sectionTitle}>{section.title}</Text>;
+          }
+          return null;
+        }}
+      /> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.sectionTitie,
+    backgroundColor: Colors.playerTabelHeader,
+  },
   joinedPlayerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -623,7 +743,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingRight: 20,
     textAlign: "center",
-    // paddingVertical: 8,
   },
   deleteText: {
     color: Colors.whiteText,
