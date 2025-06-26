@@ -4,12 +4,7 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
-import {
-  AntDesign,
-  FontAwesome5,
-  Foundation,
-  Ionicons,
-} from "@expo/vector-icons";
+import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
@@ -24,10 +19,9 @@ import {
   View,
 } from "react-native";
 import GenderToggle from "./components/GenderToggle";
-import { findPairPlayerId } from "./components/PlayerScreen/util";
 
 const PlayerEditScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
+  const { players, setPlayers } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
 
   // 選択しているレベル
@@ -168,12 +162,6 @@ const PlayerEditScreen: React.FC = () => {
     );
   };
 
-  const releasePair = (id: number) => {
-    setPairs((prev) =>
-      prev.filter((pair) => pair.player1 !== id && pair.player2 !== id)
-    );
-  };
-
   return (
     <>
       <Stack.Screen
@@ -237,48 +225,6 @@ const PlayerEditScreen: React.FC = () => {
             </View>
           </View>
         </View>
-
-        <View style={styles.item}>
-          <FontAwesome5
-            name="handshake"
-            size={20}
-            color={Colors.normalIcon}
-            style={styles.icon}
-          />
-          <View style={styles.info}>
-            <Text style={styles.label}>ペア</Text>
-            {findPairPlayerId(id, pairs) ? (
-              <Text style={styles.value}>
-                {
-                  players.find(
-                    (player) => player.id === findPairPlayerId(id, pairs)
-                  )?.name
-                }
-              </Text>
-            ) : (
-              <Text style={styles.value}>未設定</Text>
-            )}
-            <View style={styles.buttonArea}>
-              <TouchableOpacity
-                style={styles.resetPairButton}
-                onPress={() => releasePair(id)}
-              >
-                <Text style={styles.resetPairButtonText}>ペアを解除</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() =>
-                  router.push({
-                    pathname: "/pair-edit-screen",
-                    params: { playerId: id },
-                  })
-                }
-                style={styles.selectPairButton}
-              >
-                <Text style={styles.selectPairButtonText}>ペアを選択</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
         <View style={styles.item}>
           <Foundation name="male-female" size={24} color={Colors.normalIcon} />
           <View style={styles.info}>
@@ -300,16 +246,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     columnGap: 16,
   },
-  resetPairButton: {
-    flex: 1,
-    borderColor: Colors.primary,
-    borderWidth: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    ...globalStyles.touch,
-  },
   selectPairButton: {
     flex: 1,
     backgroundColor: Colors.primary,
@@ -318,10 +254,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     ...globalStyles.touch,
-  },
-  resetPairButtonText: {
-    color: Colors.primary,
-    fontWeight: "600",
   },
   selectPairButtonText: {
     color: Colors.whiteText,

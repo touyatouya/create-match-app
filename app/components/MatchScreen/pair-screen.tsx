@@ -2,7 +2,6 @@ import Colors from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { savePairs } from "@/utils/saveStorage";
 import {
   AntDesign,
   Ionicons,
@@ -68,11 +67,6 @@ const PairScreen: React.FC = () => {
       return newPairs;
     });
     setPair([]);
-    savePairs(
-      newPairs.map((pair) => {
-        return { id: pair.id, player1: pair.player1, player2: pair.player2 };
-      })
-    );
   };
 
   const renderPlayer = ({ item }: { item: Player }) => (
@@ -133,11 +127,6 @@ const PairScreen: React.FC = () => {
       newPairs = prev.filter((player) => player.id !== id);
       return newPairs;
     });
-    savePairs(
-      newPairs.map((pair) => {
-        return { id: pair.id, player1: pair.player1, player2: pair.player2 };
-      })
-    );
   };
 
   const renderPair = ({ item }: { item: Pair }) => (

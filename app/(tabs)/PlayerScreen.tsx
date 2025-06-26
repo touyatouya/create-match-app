@@ -2,7 +2,7 @@ import Colors from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { saveFilters, savePairs, savePlayerInfo } from "@/utils/saveStorage";
+import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
@@ -21,7 +21,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Filter, Gender, Pair, Player } from "../../types";
+import { Filter, Gender, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
@@ -29,7 +29,7 @@ import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 type Sort = "asc" | "desc";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, pairs, setPairs, filters, setFilters } =
+  const { players, setPlayers, pairs, filters, setFilters } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
@@ -64,23 +64,6 @@ const PlayerScreen: React.FC = () => {
         }
         setPlayers(players);
         setDefaultOrderPlayers(players);
-      }
-
-      const pairsData = await AsyncStorage.getItem("pairs");
-      let pairsLength: number = 0;
-      if (pairsData) pairsLength = JSON.parse(pairsData).length;
-
-      if (pairsData && pairsLength > 0) {
-        const parsedPairs = JSON.parse(pairsData);
-        let pairs: Pair[] = [];
-        for (let i = 0; i < parsedPairs.length; i++) {
-          pairs.push({
-            id: parsedPairs[i].id,
-            player1: parsedPairs[i].player1,
-            player2: parsedPairs[i].player2,
-          });
-        }
-        setPairs(pairs);
       }
 
       const filtersData = await AsyncStorage.getItem("filters");
@@ -186,15 +169,6 @@ const PlayerScreen: React.FC = () => {
     setDefaultOrderPlayers((prev) => {
       return prev.filter((player) => player.id !== id);
     });
-
-    const pairPlayers = pairs.flatMap((pair) => [pair.player1, pair.player2]);
-    if (pairPlayers.includes(id)) {
-      const newPairs = pairs.filter(
-        (pair) => pair.player1 !== id && pair.player2 !== id
-      );
-      setPairs(newPairs);
-      savePairs(newPairs);
-    }
 
     const filterPlayers = filters.flatMap((filter) => [...filter.players]);
     if (filterPlayers.includes(id)) {
