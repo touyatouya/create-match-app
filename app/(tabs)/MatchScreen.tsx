@@ -24,7 +24,7 @@ import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
 
 const MatchScreen: React.FC = () => {
-  const { players, setPlayers, setGameRounds } = useContext(AppContext);
+  const { players, setPlayers, setGameRounds, pairs } = useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     men: false,
@@ -98,6 +98,10 @@ const MatchScreen: React.FC = () => {
     (player) => player.isJoin && player.isRest
   );
 
+  const getPlayerName = (id: number) => {
+    return players.find((player) => player.id === id)?.name;
+  };
+
   return (
     <View style={{ flex: 1, padding: 16 }}>
       <View style={styles.item}>
@@ -107,89 +111,130 @@ const MatchScreen: React.FC = () => {
           label="詳細設定"
         />
         {expanded && (
-          <View style={styles.modalContent}>
-            <Text style={styles.section}>性別</Text>
-            <View>
-              <View
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.borderline,
-                }}
-              >
-                <Toggle
-                  label="なるべく男子ダブルス"
-                  checked={genderSetting.men}
-                  onChange={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, men: !prev.men };
-                    })
-                  }
-                />
-              </View>
-              <View
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.borderline,
-                }}
-              >
-                <Toggle
-                  label="なるべく女子ダブルス"
-                  checked={genderSetting.woman}
-                  onChange={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, woman: !prev.woman };
-                    })
-                  }
-                />
-              </View>
-              <Toggle
-                label="なるべくミックスダブルス"
-                checked={genderSetting.mix}
-                onChange={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, mix: !prev.mix };
-                  })
-                }
-              />
-            </View>
-            <Text style={styles.section}>休憩</Text>
-            <View>
-              <TouchableOpacity
-                style={styles.allPlayerButton}
-                onPress={() =>
-                  router.push({
-                    pathname: "/components/MatchScreen/edit-rest-screen",
-                  })
-                }
-              >
-                <Text style={styles.addButtonText}>
-                  次回休憩にするプレイヤー選択
-                </Text>
-              </TouchableOpacity>
-              {nextRestPlayer.length > 0 ? (
-                <>
-                  <Text style={styles.section}>次回休憩プレイヤー</Text>
-                  <FlatList
-                    data={nextRestPlayer}
-                    keyExtractor={(item, index) => `${item}-${index}`}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                      <View style={styles.restingPlayerItem}>
-                        <Text key={item.id} style={styles.restingPlayerName}>
-                          {item.name}
-                        </Text>
-                      </View>
-                    )}
+          <>
+            <View style={styles.modalContent}>
+              <Text style={styles.section}>性別</Text>
+              <View style={{ marginBottom: 4 }}>
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.borderline,
+                  }}
+                >
+                  <Toggle
+                    label="なるべく男子ダブルス"
+                    checked={genderSetting.men}
+                    onChange={() =>
+                      setGenderSetting((prev) => {
+                        return { ...prev, men: !prev.men };
+                      })
+                    }
                   />
-                </>
-              ) : (
-                <Text style={styles.emptyText}>
-                  次回休憩にするプレイヤーはいません
-                </Text>
-              )}
+                </View>
+                <View
+                  style={{
+                    borderBottomWidth: 1,
+                    borderBottomColor: Colors.borderline,
+                  }}
+                >
+                  <Toggle
+                    label="なるべく女子ダブルス"
+                    checked={genderSetting.woman}
+                    onChange={() =>
+                      setGenderSetting((prev) => {
+                        return { ...prev, woman: !prev.woman };
+                      })
+                    }
+                  />
+                </View>
+                <Toggle
+                  label="なるべくミックスダブルス"
+                  checked={genderSetting.mix}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, mix: !prev.mix };
+                    })
+                  }
+                />
+              </View>
             </View>
-          </View>
+            <View style={styles.modalContent}>
+              <Text style={styles.section}>休憩</Text>
+              <View style={{ marginBottom: 8, paddingHorizontal: 8 }}>
+                <TouchableOpacity
+                  style={styles.selectRestPlayerButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/components/MatchScreen/edit-rest-screen",
+                    })
+                  }
+                >
+                  <Text style={styles.selectRestPlayerButtonText}>
+                    次回休憩にするプレイヤー選択
+                  </Text>
+                </TouchableOpacity>
+                {nextRestPlayer.length > 0 ? (
+                  <>
+                    <Text style={styles.subSection}>次回休憩プレイヤー</Text>
+                    <FlatList
+                      data={nextRestPlayer}
+                      keyExtractor={(item, index) => `${item}-${index}`}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      renderItem={({ item }) => (
+                        <View style={styles.restingPlayerItem}>
+                          <Text key={item.id} style={styles.restingPlayerName}>
+                            {item.name}
+                          </Text>
+                        </View>
+                      )}
+                    />
+                  </>
+                ) : (
+                  <Text style={styles.emptyText}>
+                    次回休憩にするプレイヤーはいません
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.modalContent}>
+              <Text style={styles.section}>ペア</Text>
+              <View style={{ marginBottom: 4, paddingHorizontal: 8 }}>
+                <TouchableOpacity
+                  style={styles.allPlayerButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/components/MatchScreen/pair-screen",
+                    })
+                  }
+                >
+                  <Text style={styles.addButtonText}>ペア設定</Text>
+                </TouchableOpacity>
+                {pairs.length > 0 ? (
+                  <>
+                    <Text style={styles.subSection}>ペア一覧</Text>
+                    <FlatList
+                      data={pairs}
+                      keyExtractor={(item, index) => `${item}-${index}`}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      renderItem={({ item }) => (
+                        <View style={styles.pairItem}>
+                          <Text key={item.id} style={styles.restingPlayerName}>
+                            {`${getPlayerName(item.player1)}・${getPlayerName(
+                              item.player2
+                            )}`}
+                          </Text>
+                        </View>
+                      )}
+                    />
+                  </>
+                ) : (
+                  <Text style={styles.emptyText}>ペアはありません</Text>
+                )}
+              </View>
+            </View>
+          </>
         )}
       </View>
       <Match
@@ -208,6 +253,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: Colors.emptyText,
   },
+  selectRestPlayerButton: {
+    backgroundColor: Colors.background,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderColor: "#827101",
+    borderWidth: 1,
+    ...globalStyles.touch,
+  },
   allPlayerButton: {
     backgroundColor: Colors.background,
     flexDirection: "row",
@@ -220,16 +277,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     ...globalStyles.touch,
   },
+  selectRestPlayerButtonText: {
+    color: "#827101",
+    marginLeft: 8,
+    fontWeight: "600",
+    fontSize: FONT_SIZE.small,
+  },
   addButtonText: {
     color: Colors.secondary,
     marginLeft: 8,
     fontWeight: "600",
+    fontSize: FONT_SIZE.small,
   },
   modalContent: {
     backgroundColor: Colors.background,
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 12,
     width: "100%",
+    marginBottom: 8,
   },
   optionRow: {
     flexDirection: "row",
@@ -241,6 +307,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.borderline,
+    marginBottom: 4,
   },
   info: {
     flex: 1,
@@ -255,6 +322,12 @@ const styles = StyleSheet.create({
   section: {
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
+    color: Colors.sectionTitie,
+    marginBottom: 8,
+  },
+  subSection: {
+    fontSize: FONT_SIZE.small,
+    fontWeight: 500,
     color: Colors.sectionTitie,
     marginBottom: 8,
   },
@@ -298,9 +371,20 @@ const styles = StyleSheet.create({
     borderColor: Colors.borderline,
     flex: 1,
   },
+  pairItem: {
+    alignItems: "baseline",
+    backgroundColor: Colors.thirdry,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: Colors.borderline,
+    flex: 1,
+  },
   restingPlayerName: {
     marginLeft: 6,
-    fontSize: FONT_SIZE.heading,
+    fontSize: FONT_SIZE.small,
     color: Colors.restPlayerName,
     marginRight: 5,
   },

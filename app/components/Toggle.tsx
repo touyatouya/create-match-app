@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: 8,
+    paddingHorizontal: 8,
     ...globalStyles.touch,
   },
   toggle: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     right: 3,
   },
   label: {
-    fontSize: FONT_SIZE.body,
+    fontSize: FONT_SIZE.small,
   },
 });
 

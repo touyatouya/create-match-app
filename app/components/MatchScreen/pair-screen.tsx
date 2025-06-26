@@ -1,5 +1,7 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { savePairs } from "@/utils/saveStorage";
 import {
   AntDesign,
@@ -16,7 +18,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Pair, Player } from "../types";
+import { Pair, Player } from "../../../types";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
@@ -74,23 +76,26 @@ const PairScreen: React.FC = () => {
   };
 
   const renderPlayer = ({ item }: { item: Player }) => (
-    <TouchableOpacity onPress={() => selectPlayer(item.id)}>
-      <View
-        style={
-          pair.some((p) => item.id === p)
-            ? styles.joinPlayerItem
-            : styles.restPlayerItem
-        }
+    <TouchableOpacity
+      onPress={() => selectPlayer(item.id)}
+      style={[
+        styles.playerItem,
+        pair.some((p) => item.id === p) && styles.selectedPlayerItem,
+      ]}
+    >
+      <Text
+        style={[
+          styles.playerName,
+          pair.some((p) => item.id === p) && styles.selectedPlayerName,
+        ]}
       >
-        <View style={styles.playerInfo}>
-          <Text style={styles.playerName}>{item.name}</Text>
+        {item.name}
+      </Text>
+      {pair.some((p) => item.id === p) && (
+        <View style={styles.selectedBadge}>
+          <Text style={styles.selectedText}>選択中</Text>
         </View>
-        {pair.some((p) => item.id === p) && (
-          <View style={styles.joinBadge}>
-            <Text style={styles.joinText}>選択中</Text>
-          </View>
-        )}
-      </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -136,19 +141,25 @@ const PairScreen: React.FC = () => {
   };
 
   const renderPair = ({ item }: { item: Pair }) => (
-    <View style={styles.restPlayerItem}>
+    <View style={[styles.playerItem, { paddingVertical: 6 }]}>
       <View style={styles.playerInfo}>
         <Text style={styles.playerName}>
           {players.find((player) => player.id === item.player1)?.name}
         </Text>
-        <Text style={styles.playerName}>-</Text>
+        <Text style={styles.playerName}>・</Text>
         <Text style={styles.playerName}>
           {players.find((player) => player.id === item.player2)?.name}
         </Text>
       </View>
       <TouchableOpacity
         onPress={() => removePair(item.id)}
-        style={styles.removeButton}
+        style={[
+          {
+            ...globalStyles.touch,
+            justifyContent: "center",
+            alignItems: "center",
+          },
+        ]}
       >
         <Ionicons name="close-circle" size={24} color={Colors.remove} />
       </TouchableOpacity>
@@ -160,7 +171,7 @@ const PairScreen: React.FC = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: "詳細",
+          title: "ペア設定",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -229,10 +240,9 @@ const PairScreen: React.FC = () => {
             }
             return null;
           }}
-          // contentContainerStyle={styles.sectionListContainer}
         />
-        <TouchableOpacity style={styles.allPlayerButton} onPress={createPair}>
-          <Text style={styles.addButtonText}>ペア作成</Text>
+        <TouchableOpacity style={styles.button} onPress={createPair}>
+          <Text style={styles.buttonText}>ペア作成</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -240,6 +250,19 @@ const PairScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: Colors.primary,
+    ...globalStyles.touch,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginVertical: 12,
+  },
+  buttonText: {
+    color: Colors.whiteText,
+    fontSize: FONT_SIZE.body,
+    fontWeight: "bold",
+  },
   pairHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -325,36 +348,28 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  joinPlayerItem: {
-    flexDirection: "row",
-    backgroundColor: Colors.cardBackGround,
-    padding: 14,
-    borderRadius: 8,
-    marginBottom: 8,
-    alignItems: "center",
-    justifyContent: "space-between",
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  restPlayerItem: {
-    flexDirection: "row",
+  playerItem: {
     backgroundColor: Colors.background,
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 4,
-    paddingRight: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderline,
     borderRadius: 8,
     marginBottom: 8,
-    alignItems: "center",
     justifyContent: "space-between",
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+    ...globalStyles.touch,
+  },
+  selectedPlayerItem: {
+    backgroundColor: Colors.secondary,
+    paddingLeft: 14,
+    paddingRight: 14,
   },
   playerInfo: {
     flex: 1,
@@ -364,6 +379,9 @@ const styles = StyleSheet.create({
   playerName: {
     fontSize: 24,
     fontWeight: "500",
+  },
+  selectedPlayerName: {
+    color: Colors.whiteText,
   },
   playerStats: {
     flexDirection: "row",
@@ -377,8 +395,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 10,
   },
-  joinBadge: {
-    // flex: 1,
+  selectedBadge: {
     flexDirection: "row",
     backgroundColor: Colors.badgeBackground,
     paddingHorizontal: 8,
@@ -406,14 +423,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  joinText: {
-    color: Colors.whiteText,
-    fontSize: 18,
+  selectedText: {
+    color: Colors.badgeText,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-  },
-  removeButton: {
-    padding: 4,
-    display: "flex",
   },
   emptyText: {
     textAlign: "center",
