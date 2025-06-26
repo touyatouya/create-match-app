@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { AntDesign } from "@expo/vector-icons";
@@ -74,7 +75,7 @@ const EditRestScreen: React.FC = () => {
               <Text
                 style={{
                   marginLeft: 3,
-                  fontSize: 16,
+                  fontSize: FONT_SIZE.body,
                   color: Colors.link,
                 }}
               >
@@ -128,22 +129,9 @@ const styles = StyleSheet.create({
   },
   toastText: {
     marginTop: 12,
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: Colors.sectionTitie,
-  },
-  pairName: {
-    justifyContent: "flex-start",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  pairInfo: {
-    flexDirection: "row",
-    flex: 2,
-    fontSize: 20,
-    fontWeight: "500",
-    justifyContent: "flex-start",
-    alignItems: "baseline",
   },
   pairHeader: {
     flexDirection: "row",
@@ -161,15 +149,6 @@ const styles = StyleSheet.create({
   restingTitle: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  restingSectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  restingCount: {
-    fontSize: 20,
-    fontWeight: "600",
   },
   allPlayerButton: {
     backgroundColor: Colors.primary,
@@ -197,11 +176,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
   },
   addPlayerContainer: {
     flexDirection: "row",
@@ -265,11 +239,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 10,
   },
-  selectedText: {
-    color: Colors.badgeText,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
   playerInfo: {
     flex: 1,
     flexDirection: "row",
@@ -278,7 +247,7 @@ const styles = StyleSheet.create({
   playerName: {
     flex: 2,
     paddingHorizontal: 4,
-    fontSize: 24,
+    fontSize: FONT_SIZE.title,
   },
   selectedPlayerName: {
     color: Colors.whiteText,
@@ -314,19 +283,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 10,
   },
-  matchCountText: {
-    color: Colors.whiteText,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  restText: {
-    color: Colors.blackText,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
   joinText: {
     color: Colors.whiteText,
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
   removeButton: {

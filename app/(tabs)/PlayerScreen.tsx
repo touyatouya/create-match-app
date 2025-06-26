@@ -1,20 +1,26 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveFilters, savePairs, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign, Foundation } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   FlatList,
-  Pressable,
+  LayoutAnimation,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SwipeListView } from "react-native-swipe-list-view";
 import { Filter, Gender, Pair, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
 import Disclosure from "../components/Disclosure";
@@ -22,12 +28,6 @@ import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 import { findPairPlayerId } from "../components/PlayerScreen/util";
 
 type Sort = "asc" | "desc";
-
-type Section = {
-  title: string;
-  type: "joinedPlayer" | "noJoinedPlayer";
-  data: Player[];
-};
 
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs, filters, setFilters } =
@@ -138,7 +138,7 @@ const PlayerScreen: React.FC = () => {
             <Text
               style={{
                 marginLeft: 6,
-                fontSize: 18,
+                fontSize: FONT_SIZE.subsubheading,
                 color: Colors.link,
               }}
             >
@@ -157,7 +157,7 @@ const PlayerScreen: React.FC = () => {
             <Text
               style={{
                 marginLeft: 6,
-                fontSize: 18,
+                fontSize: FONT_SIZE.subsubheading,
                 color: Colors.link,
               }}
             >
@@ -169,6 +169,8 @@ const PlayerScreen: React.FC = () => {
   }, [isEdit, navigation, router]);
 
   const removePlayer = (id: number): void => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
     const newPlayers = players.filter((player) => player.id !== id);
     setPlayers(newPlayers);
     savePlayerInfo(
@@ -328,61 +330,65 @@ const PlayerScreen: React.FC = () => {
             : joinAllPlayer
         }
       />
-      <Text style={[styles.cellName, styles.headerText]}>名前</Text>
-      <TouchableOpacity
-        onPress={sortGender}
-        style={[
-          styles.cellGender,
-          {
-            ...globalStyles.touch,
-            alignItems: "center",
-            justifyContent: "center",
-          },
-        ]}
-      >
-        <Text style={[styles.headerText]}>性別</Text>
-        <AntDesign
-          name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
-          size={16}
-          color={Colors.normalIcon}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={sortPair}
-        style={[
-          styles.cellPair,
-          {
-            ...globalStyles.touch,
-            alignItems: "center",
-            justifyContent: "center",
-          },
-        ]}
-      >
-        <Text style={[styles.headerText]}>ペア</Text>
-        <AntDesign
-          name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
-          size={16}
-          color={Colors.normalIcon}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={sortMatchCount}
-        style={[
-          styles.cellMatch,
-          {
-            ...globalStyles.touch,
-            alignItems: "center",
-            justifyContent: "center",
-          },
-        ]}
-      >
-        <Text style={[styles.headerText]}>試合数</Text>
-        <AntDesign
-          name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
-          size={16}
-          color={Colors.normalIcon}
-        />
-      </TouchableOpacity>
+      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+        <View style={[styles.cellName, { flex: 7 }]}>
+          <Text style={[styles.headerText]}>名前</Text>
+        </View>
+        <TouchableOpacity
+          onPress={sortGender}
+          style={[
+            styles.cellGender,
+            {
+              ...globalStyles.touch,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
+          <Text style={[styles.headerText]}>性別</Text>
+          <AntDesign
+            name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
+            size={14}
+            color={Colors.normalIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={sortPair}
+          style={[
+            styles.cellPair,
+            {
+              ...globalStyles.touch,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
+          <Text style={[styles.headerText]}>ペア</Text>
+          <AntDesign
+            name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
+            size={14}
+            color={Colors.normalIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={sortMatchCount}
+          style={[
+            styles.cellMatch,
+            {
+              ...globalStyles.touch,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
+          <Text style={[styles.headerText]}>試合数</Text>
+          <AntDesign
+            name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
+            size={14}
+            color={Colors.normalIcon}
+          />
+        </TouchableOpacity>
+      </View>
       <Text style={[styles.removeButton, styles.headerText]}></Text>
     </View>
   );
@@ -402,8 +408,11 @@ const PlayerScreen: React.FC = () => {
             },
           ]}
         >
-          <AntDesign name="minuscircle" size={24} color="red" />
+          <AntDesign name="minuscircle" size={24} color={Colors.error} />
         </TouchableOpacity>
+      )}
+      {isEdit || (
+        <Checkbox checked={item.isJoin} onChange={() => joinPlayer(item.id)} />
       )}
       <TouchableOpacity
         onPress={() => joinPlayer(item.id)}
@@ -414,12 +423,6 @@ const PlayerScreen: React.FC = () => {
           ...globalStyles.touch,
         }}
       >
-        {isEdit || (
-          <Checkbox
-            checked={item.isJoin}
-            onChange={() => joinPlayer(item.id)}
-          />
-        )}
         <Text
           style={[
             styles.cellName,
@@ -502,8 +505,6 @@ const PlayerScreen: React.FC = () => {
     return filteredFilters.flatMap((item) => item.players).includes(player.id);
   });
 
-  // const noJoinedPlayers = filteredPlayers.filter((player) => !player.isJoin);
-
   const selectFilter = (id: number) => {
     setFilteredFilters((prev) => {
       if (prev.some((item) => item.id === id)) {
@@ -525,21 +526,6 @@ const PlayerScreen: React.FC = () => {
   //   }
   // };
 
-  // const dispPlayers = [...joinedPlayer, ...noJoinedPlayers];
-
-  // const sections: Section[] = [
-  //   {
-  //     title: "参加プレイヤー",
-  //     data: joinedPlayer,
-  //     type: "joinedPlayer",
-  //   },
-  //   {
-  //     title: "未参加プレイヤー",
-  //     data: noJoinedPlayers,
-  //     type: "noJoinedPlayer",
-  //   },
-  // ];
-
   const resetOrder = () => {
     const playerWithIndex = players.map((player) => {
       return {
@@ -560,6 +546,17 @@ const PlayerScreen: React.FC = () => {
     setPlayers(newPlayers);
   };
 
+  const flatListRef = useRef<FlatList<any>>(null);
+
+  const isAddingRef = useRef(false);
+
+  const handleContentSizeChange = () => {
+    if (isAddingRef.current) {
+      flatListRef.current?.scrollToEnd({ animated: true });
+      isAddingRef.current = false;
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
@@ -567,8 +564,9 @@ const PlayerScreen: React.FC = () => {
         isOpen={isAddModalVisible}
         onClose={() => setAddModalVisible(false)}
         setDefaultOrderPlayers={setDefaultOrderPlayers}
+        isAddingRef={isAddingRef}
       />
-      <View style={styles.joinedPlayerRow}>
+      <View style={styles.title}>
         <Text style={styles.description}>参加プレイヤーを選択してください</Text>
         <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
       </View>
@@ -594,7 +592,9 @@ const PlayerScreen: React.FC = () => {
               ...globalStyles.touch,
             }}
           >
-            <Text style={{ color: Colors.link, fontSize: 18 }}>
+            <Text
+              style={{ color: Colors.link, fontSize: FONT_SIZE.subsubheading }}
+            >
               フィルター一覧
             </Text>
           </TouchableOpacity>
@@ -615,23 +615,21 @@ const PlayerScreen: React.FC = () => {
                   onPress={() => selectFilter(item.id)}
                 >
                   <View
-                    style={
+                    style={[
+                      styles.filterItem,
                       filteredFilters.some(
                         (filterFilter) => filterFilter.id === item.id
-                      )
-                        ? styles.selectedFilterItem
-                        : styles.filterItem
-                    }
+                      ) && styles.selectedFilterItem,
+                    ]}
                   >
                     <Text
                       key={item.id}
-                      style={
+                      style={[
+                        styles.filterItemName,
                         filteredFilters.some(
                           (filterFilter) => filterFilter.id === item.id
-                        )
-                          ? styles.selectedFilterItemName
-                          : styles.filterItemName
-                      }
+                        ) && styles.selectedFilterItemName,
+                      ]}
                     >
                       {item.name}
                     </Text>
@@ -661,49 +659,20 @@ const PlayerScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
       {renderHeader()}
-      <SwipeListView
-        // data={dispPlayers}
+      <FlatList
+        onContentSizeChange={handleContentSizeChange}
+        ref={flatListRef}
         data={filteredPlayers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
-            プレイヤーがいません。追加してください。
+            {"プレイヤーがいません。\n 右上の＋から追加してください。"}
           </Text>
         }
-        renderHiddenItem={({ item }) => (
-          <View style={styles.rowBack}>
-            <Pressable onPress={() => removePlayer(item.id)}>
-              <Text style={styles.deleteText}>削除</Text>
-            </Pressable>
-          </View>
-        )}
-        rightOpenValue={-65}
-        disableRightSwipe
         style={styles.list}
       />
-      {/* <SectionList
-        sections={sections}
-        keyExtractor={(item, index) => item.id.toString() + index}
-        renderItem={({ item, section }) => {
-          const player = item as Player;
-          if (section.type === "joinedPlayer") {
-            return renderItem({ item: player }); // 例: カード表示など
-          } else if (section.type === "noJoinedPlayer") {
-            return renderItem({ item: player }); // 例: 名前だけ表示など
-          }
-          return null;
-        }}
-        renderSectionHeader={({ section }) => {
-          if (section.type === "joinedPlayer") {
-            return <Text style={styles.sectionTitle}>{section.title}</Text>;
-          } else if (section.type === "noJoinedPlayer") {
-            return <Text style={styles.sectionTitle}>{section.title}</Text>;
-          }
-          return null;
-        }}
-      /> */}
     </View>
   );
 };
@@ -714,7 +683,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
     borderRadius: 8,
     borderColor: Colors.secondary,
     borderWidth: 1,
@@ -723,15 +691,9 @@ const styles = StyleSheet.create({
   },
   ButtonText: {
     color: Colors.secondary,
-    fontWeight: "600",
+    fontWeight: 600,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-    backgroundColor: Colors.playerTabelHeader,
-  },
-  joinedPlayerRow: {
+  title: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
@@ -741,63 +703,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: Colors.filterItemBg,
     paddingHorizontal: 12,
-    paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
     borderStyle: "dashed",
     borderColor: Colors.secondary,
-    flexDirection: "row",
     flex: 1,
+    flexDirection: "row",
+    columnGap: 5,
   },
   selectedFilterItem: {
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: Colors.secondary,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.secondary,
-    flexDirection: "row",
-    flex: 1,
+    borderStyle: "solid",
   },
   filterItemName: {
-    marginLeft: 6,
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     color: Colors.filterItemName,
-    marginRight: 5,
   },
   selectedFilterItemName: {
-    marginLeft: 6,
-    fontSize: 16,
     color: Colors.whiteText,
-    marginRight: 5,
-  },
-  deleteText: {
-    color: Colors.whiteText,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   container: {
     flex: 1,
-    // backgroundColor: Colors.background,
     padding: 16,
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 12,
-  },
-  // 行全体：横並び
   row: {
     backgroundColor: Colors.background,
     flexDirection: "row",
     alignItems: "center",
-    // borderBottomWidth: 1,
-    // borderBottomColor: Colors.borderline,
     marginVertical: 4,
-    // paddingVertical: 4,
-    // borderWidth: 1,
     borderRadius: 8,
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 1 },
@@ -805,61 +738,39 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  rowBack: {
-    backgroundColor: "red",
-    flexDirection: "row",
-    alignItems: "center",
-    // borderBottomWidth: 1,
-    // borderBottomColor: Colors.borderline,
-    marginVertical: 4,
-    // paddingVertical: 4,
-    // borderWidth: 1,
-    borderRadius: 8,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-    flex: 1,
-    paddingRight: 20,
-    textAlign: "center",
-    justifyContent: "flex-end",
-  },
   headerRow: {
     backgroundColor: Colors.playerTabelHeader,
   },
-  // 共通セル
   headerText: {
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 14,
+    fontWeight: 600,
+    // textAlign: "center",
+    fontSize: FONT_SIZE.small,
   },
-  // それぞれのセル幅（flex値を統一する）
   cellName: {
-    flex: 2, // 名前は横幅を広めに取る
+    flex: 2,
     paddingHorizontal: 4,
-    fontSize: 20,
-    // fontWeight: "bold",
+    fontSize: FONT_SIZE.subheading,
   },
   cellGender: {
-    flex: 1, // ランクは幅を狭く
-    paddingHorizontal: 4,
-    fontSize: 16,
+    flex: 1,
+    marginHorizontal: 4,
+    fontSize: FONT_SIZE.small,
     flexDirection: "row",
-    justifyContent: "center",
+    // justifyContent: "center",
+    // width:""
   },
   cellPair: {
-    flex: 2, // ペアも少し広め
-    paddingHorizontal: 4,
-    fontSize: 16,
+    flex: 2,
+    marginHorizontal: 4,
+    fontSize: FONT_SIZE.small,
     justifyContent: "center",
     flexDirection: "row",
   },
   cellMatch: {
-    flex: 1, // 試合数は狭め
-    paddingHorizontal: 4,
+    flex: 1,
+    marginHorizontal: 4,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: FONT_SIZE.small,
     flexDirection: "row",
     justifyContent: "center",
   },
@@ -873,14 +784,14 @@ const styles = StyleSheet.create({
   pairInfo: {
     flexDirection: "row",
     flex: 2,
-    fontSize: 20,
+    fontSize: FONT_SIZE.subheading,
     fontWeight: "500",
     justifyContent: "flex-start",
     alignItems: "baseline",
   },
   pairName: {
     justifyContent: "flex-start",
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     fontWeight: "500",
   },
   removeButton: {
@@ -895,12 +806,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   joinedPlayer: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.subheading,
     fontWeight: 500,
   },
   description: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.subheading,
     fontWeight: 500,
+    flexShrink: 1,
   },
 });
 

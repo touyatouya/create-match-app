@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
@@ -26,12 +27,14 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  isAddingRef: React.RefObject<boolean>;
 }
 
 const AddPlayerModal: React.FC<Props> = ({
   isOpen,
   onClose,
   setDefaultOrderPlayers,
+  isAddingRef,
 }) => {
   const { players, setPlayers } = useContext(AppContext);
 
@@ -59,7 +62,8 @@ const AddPlayerModal: React.FC<Props> = ({
     const newPlayers = [...players, newPlayer];
     setPlayers(newPlayers);
     setDefaultOrderPlayers(newPlayers);
-    resetInput();
+
+    isAddingRef.current = true;
 
     savePlayerInfo(
       newPlayers.map((player) => {
@@ -78,6 +82,13 @@ const AddPlayerModal: React.FC<Props> = ({
     setName("");
     setGender(Gender.未設定);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      // addPlayer関数内で発火すると、リセットされない事象が発生したため、モーダルを開閉タイミングでリセットする。
+      resetInput();
+    }
+  }, [isOpen]);
 
   return (
     <Modal visible={isOpen} animationType="slide" transparent={true}>
@@ -164,11 +175,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerButtonText: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     color: Colors.link,
   },
   title: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
   body: {

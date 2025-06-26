@@ -7,6 +7,7 @@ import {
   Pair,
   Player,
 } from "@/types";
+import { router } from "expo-router";
 import { Alert } from "react-native";
 
 export const createMatch = (
@@ -30,7 +31,15 @@ export const createMatch = (
     setIsLoading(false);
     return Alert.alert(
       "試合を作成できません",
-      "コート数に対する人数が足りません。\nコート数を減らすか、人数を増やしてください。"
+      `プレイヤー数が不足しています。\n\nコート数：${courts.length}\n参加プレイヤー数：${sortedPlayer.length}\n\nコートを減らすか、参加プレイヤーを増やしてください。`,
+      [
+        { text: "キャンセル", style: "cancel" },
+        { text: "コートへ", onPress: () => router.push("/(tabs)/CourtScreen") },
+        {
+          text: "プレイヤーへ",
+          onPress: () => router.push("/(tabs)/PlayerScreen"),
+        },
+      ]
     );
   }
 

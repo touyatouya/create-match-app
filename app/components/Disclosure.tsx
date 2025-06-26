@@ -1,3 +1,4 @@
+import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
 import {
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     ...globalStyles.touch,
   },
   title: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: Colors.sectionTitie,
   },

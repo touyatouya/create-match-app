@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -34,7 +35,6 @@ const styles = StyleSheet.create({
     minHeight: 24,
     borderWidth: 2,
     borderColor: Colors.primary,
-    // borderColor: Colors.blackText,
     backgroundColor: Colors.background,
     borderRadius: 4,
     justifyContent: "center",
@@ -42,20 +42,15 @@ const styles = StyleSheet.create({
   },
   checked: {
     backgroundColor: Colors.whiteIcon,
-    // backgroundColor: Colors.blackText,
-    // backgroundColor: Colors.primary,
-    // borderColor: Colors.whiteIcon,
   },
   checkmark: {
     color: Colors.primary,
-    // color: Colors.whiteText,
-    // color: Colors.blackText,
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     lineHeight: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
   },
 });
 

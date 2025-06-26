@@ -1,3 +1,4 @@
+import { FONT_SIZE } from "@/constants/fonts";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
@@ -24,11 +25,6 @@ const Filter: React.FC<FilterProps> = ({ data }) => {
 };
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
   filterItem: {
     alignItems: "baseline",
     backgroundColor: Colors.restPlayerBackground,
@@ -42,7 +38,7 @@ const styles = StyleSheet.create({
   },
   filterItemName: {
     marginLeft: 6,
-    fontSize: 24,
+    fontSize: FONT_SIZE.title,
     color: Colors.restPlayerName,
     marginRight: 5,
   },

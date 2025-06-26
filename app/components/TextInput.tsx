@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
 import { forwardRef, useImperativeHandle, useRef } from "react";
@@ -117,8 +118,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   validationText: {
-    color: "red",
-    fontSize: 14,
+    color: Colors.error,
+    fontSize: FONT_SIZE.small,
     marginTop: 4,
     marginLeft: 4,
   },
@@ -152,9 +153,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     paddingRight: 30,
     ...globalStyles.touch,
+    fontSize: FONT_SIZE.body,
   },
   inputError: {
-    borderColor: "red",
+    borderColor: Colors.error,
   },
 });
 

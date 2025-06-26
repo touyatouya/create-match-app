@@ -1,5 +1,6 @@
 // CustomCheckbox.tsx
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     right: 3,
   },
   label: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
   },
 });
 

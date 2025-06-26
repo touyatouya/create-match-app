@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Filter, Player } from "@/types";
@@ -122,7 +123,7 @@ const CreateFilterScreen: React.FC = () => {
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 16,
+                  fontSize: FONT_SIZE.body,
                   color: Colors.link,
                 }}
               >
@@ -199,14 +200,14 @@ const styles = StyleSheet.create({
     paddingRight: 30,
   },
   validationText: {
-    color: "red",
+    color: Colors.error,
     marginVertical: 8,
-    fontSize: 14,
+    fontSize: FONT_SIZE.small,
   },
   playerName: {
     flex: 2,
     paddingHorizontal: 4,
-    fontSize: 24,
+    fontSize: FONT_SIZE.title,
   },
   selectedPlayerName: {
     color: Colors.whiteText,
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: Colors.badgeText,
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
   list: {
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.whiteText,
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     fontWeight: "bold",
   },
 });

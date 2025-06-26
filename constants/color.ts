@@ -29,6 +29,7 @@ const Colors = {
   women: "#9B0000",
   text: "#212121",
   muted: "#e0e0e0",
+  error: "#FF0000",
   whiteText: "white",
   blackText: "black",
   cardBackGround: "#f9d713",

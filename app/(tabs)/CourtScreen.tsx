@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
@@ -6,7 +7,7 @@ import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const CoatScreen: React.FC = () => {
+const CourtScreen: React.FC = () => {
   const { courts, setCourts } = useContext(AppContext);
 
   const addCourt = () => {
@@ -46,7 +47,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     borderRadius: 8,
-    flex: 1,
   },
   header: {
     flexDirection: "row",
@@ -55,33 +55,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: FONT_SIZE.title,
+    fontWeight: 600,
     color: Colors.sectionTitie,
   },
-  courtItem: {
-    flexDirection: "column", // View 用
-    marginBottom: 12,
-  },
-  courtTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  courtInfo: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  emptyText: {
-    textAlign: "center",
-    color: Colors.emptyText,
-    marginTop: 20,
-  },
-  list: {
-    flex: 1,
-  },
   count: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.heading,
     color: Colors.blackText,
   },
   addButton: {
@@ -89,7 +68,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
     borderRadius: 8,
     marginBottom: 8,
     ...globalStyles.touch,
@@ -97,8 +75,8 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: Colors.whiteText,
     marginLeft: 8,
-    fontWeight: "600",
+    fontWeight: 600,
   },
 });
 
-export default CoatScreen;
+export default CourtScreen;

@@ -1,8 +1,14 @@
 import Match from "@/app/components/MatchScreen/match";
 import { AppContext } from "@/context/AppContext";
 import { router, useNavigation } from "expo-router";
-import React, { useContext, useLayoutEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import {
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -11,6 +17,7 @@ import {
 } from "react-native";
 // import { Checkbox } from "react-native-paper";
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { GenderPreferenceSetting } from "../../types";
 import Disclosure from "../components/Disclosure";
@@ -31,23 +38,41 @@ const MatchScreen: React.FC = () => {
 
   const navigation = useNavigation();
 
+  const resetGameRound = useCallback(() => {
+    setGameRounds([]);
+    setPlayers((prev) => {
+      return prev.map((player) => {
+        return {
+          ...player,
+          isRest: false,
+          matchCount: 0,
+        };
+      });
+    });
+    setSwapPlayer(null);
+    setDispRound(0);
+  }, [setGameRounds, setPlayers]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
           onPress={() => {
-            setGameRounds([]);
-            setPlayers((prev) => {
-              return prev.map((player) => {
-                return {
-                  ...player,
-                  isRest: false,
-                  matchCount: 0,
-                };
-              });
-            });
-            setSwapPlayer(null);
-            setDispRound(0);
+            Alert.alert(
+              "確認",
+              "全ての組み合わせを削除しますがよろしいですか？",
+              [
+                {
+                  text: "キャンセル",
+                  style: "cancel",
+                },
+                {
+                  text: "削除",
+                  onPress: resetGameRound,
+                  style: "destructive",
+                },
+              ]
+            );
           }}
           style={{
             ...globalStyles.touch,
@@ -58,7 +83,7 @@ const MatchScreen: React.FC = () => {
         >
           <Text
             style={{
-              fontSize: 18,
+              fontSize: FONT_SIZE.subsubheading,
               color: Colors.link,
             }}
           >
@@ -67,14 +92,14 @@ const MatchScreen: React.FC = () => {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, setGameRounds, setPlayers]);
+  }, [navigation, setGameRounds, setPlayers, resetGameRound]);
 
   const nextRestPlayer = players.filter(
     (player) => player.isJoin && player.isRest
   );
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1, padding: 16 }}>
       <View style={styles.item}>
         <Disclosure
           isOpen={expanded}
@@ -83,7 +108,7 @@ const MatchScreen: React.FC = () => {
         />
         {expanded && (
           <View style={styles.modalContent}>
-            <Text style={styles.title}>性別</Text>
+            <Text style={styles.section}>性別</Text>
             <View>
               <View
                 style={{
@@ -127,7 +152,7 @@ const MatchScreen: React.FC = () => {
                 }
               />
             </View>
-            <Text style={styles.title}>休憩</Text>
+            <Text style={styles.section}>休憩</Text>
             <View>
               <TouchableOpacity
                 style={styles.allPlayerButton}
@@ -143,7 +168,7 @@ const MatchScreen: React.FC = () => {
               </TouchableOpacity>
               {nextRestPlayer.length > 0 ? (
                 <>
-                  <Text style={styles.title}>次回休憩プレイヤー</Text>
+                  <Text style={styles.section}>次回休憩プレイヤー</Text>
                   <FlatList
                     data={nextRestPlayer}
                     keyExtractor={(item, index) => `${item}-${index}`}
@@ -179,13 +204,9 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  restPlayers: {
-    flexDirection: "row",
-  },
   emptyText: {
     textAlign: "center",
     color: Colors.emptyText,
-    marginTop: 0,
   },
   allPlayerButton: {
     backgroundColor: Colors.background,
@@ -204,9 +225,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontWeight: "600",
   },
-  selectButtonText: {
-    fontSize: 16,
-  },
   modalContent: {
     backgroundColor: Colors.background,
     padding: 10,
@@ -218,9 +236,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
-  optionText: {
-    fontSize: 16,
-  },
   item: {
     flexDirection: "column",
     alignItems: "flex-start",
@@ -231,19 +246,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
   },
-  label: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
   },
-  title: {
-    fontSize: 18,
+  section: {
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: Colors.sectionTitie,
     marginBottom: 8,
@@ -257,12 +267,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
-  generateButtonText: {
-    color: Colors.whiteText,
-    marginLeft: 8,
-    fontWeight: "600",
-    fontSize: 16,
-  },
   matchCard: {
     backgroundColor: Colors.background,
     borderRadius: 8,
@@ -274,12 +278,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  courtName: {
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 6,
-    color: Colors.sectionTitie,
-  },
   teams: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -288,67 +286,6 @@ const styles = StyleSheet.create({
   team: {
     flex: 1,
     gap: 4,
-  },
-  playerButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 0,
-    borderWidth: 1,
-    borderColor: Colors.borderline,
-  },
-  swapPlayerButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 0,
-    borderWidth: 1,
-    borderColor: "#cc7838",
-  },
-  playerInfo: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
-  },
-  playerName: {
-    fontSize: 24,
-    color: Colors.sectionTitie,
-    fontWeight: "500",
-  },
-  playerGender: {
-    marginRight: 8,
-  },
-  vsText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: Colors.remove,
-    marginHorizontal: 6,
-  },
-  restingHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  restingTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  restingSectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  restingCount: {
-    fontSize: 20,
-    fontWeight: "600",
   },
   restingPlayerItem: {
     alignItems: "baseline",
@@ -363,7 +300,7 @@ const styles = StyleSheet.create({
   },
   restingPlayerName: {
     marginLeft: 6,
-    fontSize: 24,
+    fontSize: FONT_SIZE.heading,
     color: Colors.restPlayerName,
     marginRight: 5,
   },

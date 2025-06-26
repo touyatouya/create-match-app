@@ -1,10 +1,11 @@
+import Colors from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { useContext } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import CoatIcon from "./../../assets/images/coat.svg";
+import CourtIcon from "./../../assets/images/court.svg";
 
 export default function TabsLayout() {
   const { isLoading } = useContext(AppContext);
@@ -12,24 +13,17 @@ export default function TabsLayout() {
     <>
       <Tabs
         screenOptions={{
-          // tabBarActiveTintColor: Colors.whiteText, // アクティブ時の色（青）
-          // tabBarInactiveTintColor: Colors.muted, // 非アクティブ時の色（グレー）
           tabBarStyle: {
-            // backgroundColor: Colors.primary, // フッターの背景色
             ...globalStyles.touch,
           },
-          // headerStyle: {
-          //   backgroundColor: Colors.primary,
-          // },
-          // headerTintColor: Colors.whiteText,
         }}
       >
         <Tabs.Screen
-          name="CoatScreen"
+          name="CourtScreen"
           options={{
             title: "コート",
             tabBarIcon: ({ color }) => (
-              <CoatIcon width={28} height={28} color={color} />
+              <CourtIcon width={28} height={28} color={color} />
             ),
           }}
         />
@@ -73,7 +67,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 9999,
-    backgroundColor: "rgba(0,0,0,0.2)", // 薄暗くする
+    backgroundColor: Colors.transparent,
     justifyContent: "center",
     alignItems: "center",
   },

@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { savePairs } from "@/utils/saveStorage";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
@@ -154,7 +155,7 @@ const PairScreen: React.FC = () => {
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 16,
+                  fontSize: FONT_SIZE.body,
                   color: Colors.link,
                 }}
               >
@@ -164,7 +165,7 @@ const PairScreen: React.FC = () => {
           ),
         }}
       />
-      <CompleteToast isOpen={showPairUpdated} message="ペアを変更しました" />
+      <CompleteToast isOpen={showPairUpdated} message="ペアを設定しました" />
       <View style={styles.container}>
         <FlatList
           data={players.filter((player) => player.id !== id)}
@@ -179,7 +180,7 @@ const PairScreen: React.FC = () => {
           style={styles.list}
         />
         <TouchableOpacity style={styles.allPlayerButton} onPress={createPair}>
-          <Text style={styles.addButtonText}>ペア作成</Text>
+          <Text style={styles.addButtonText}>ペア確定</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -189,13 +190,13 @@ const PairScreen: React.FC = () => {
 const styles = StyleSheet.create({
   pairName: {
     justifyContent: "flex-start",
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     fontWeight: "500",
   },
   pairInfo: {
     flexDirection: "row",
     flex: 2,
-    fontSize: 20,
+    fontSize: FONT_SIZE.subheading,
     fontWeight: "500",
     justifyContent: "flex-start",
     alignItems: "baseline",
@@ -216,10 +217,6 @@ const styles = StyleSheet.create({
   restingTitle: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  restingCount: {
-    fontSize: 20,
-    fontWeight: "600",
   },
   allPlayerButton: {
     backgroundColor: Colors.primary,
@@ -248,11 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.blackText,
   },
   addPlayerContainer: {
     flexDirection: "row",
@@ -290,7 +282,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   playerName: {
-    fontSize: 24,
+    fontSize: FONT_SIZE.title,
     fontWeight: "500",
   },
   selectedPlayerName: {
@@ -312,7 +304,7 @@ const styles = StyleSheet.create({
   },
   joinText: {
     color: Colors.badgeText,
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
   removeButton: {

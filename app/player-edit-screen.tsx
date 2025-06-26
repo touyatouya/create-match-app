@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
@@ -191,7 +192,7 @@ const PlayerEditScreen: React.FC = () => {
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 16,
+                  fontSize: FONT_SIZE.body,
                   color: Colors.link,
                 }}
               >
@@ -335,18 +336,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     alignSelf: "flex-start",
   },
-  buttonText: {
-    fontSize: 16,
-    color: Colors.sectionTitie,
-  },
-  text: {
-    color: Colors.blackText,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  selectButtonText: {
-    fontSize: 16,
-  },
   modalContent: {
     backgroundColor: Colors.background,
     padding: 24,
@@ -354,19 +343,10 @@ const styles = StyleSheet.create({
     width: "80%",
     elevation: 4,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 24,
-  },
-  optionText: {
-    fontSize: 16,
   },
   accessory: {
     backgroundColor: Colors.accessoryBackground,
@@ -398,14 +378,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: Colors.background,
   },
-  backText: {
-    fontSize: 16,
-    color: Colors.link,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
   item: {
     flexDirection: "row",
     alignItems: "center",
@@ -422,15 +394,15 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: FONT_SIZE.small,
   },
   value: {
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
     marginTop: 2,
   },
   link: {
     color: Colors.link,
-    fontSize: 14,
+    fontSize: FONT_SIZE.small,
   },
 });
 export default PlayerEditScreen;

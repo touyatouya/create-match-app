@@ -1,4 +1,5 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveFilters } from "@/utils/saveStorage";
@@ -6,13 +7,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
 import React, { useContext } from "react";
 import {
-  Pressable,
+  FlatList,
+  LayoutAnimation,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SwipeListView } from "react-native-swipe-list-view";
 import { Filter } from "../../../types";
 
 const FilterScreen: React.FC = () => {
@@ -36,9 +37,12 @@ const FilterScreen: React.FC = () => {
         {isEdit && (
           <TouchableOpacity
             onPress={() => removeFilter(item.id)}
-            style={styles.removeButton}
+            style={[
+              styles.removeButton,
+              { ...globalStyles.touch, justifyContent: "center" },
+            ]}
           >
-            <AntDesign name="minuscircle" size={24} color="red" />
+            <AntDesign name="minuscircle" size={24} color={Colors.error} />
           </TouchableOpacity>
         )}
         <Text style={styles.filterText}>{item.name}</Text>
@@ -52,6 +56,7 @@ const FilterScreen: React.FC = () => {
   );
 
   const removeFilter = (id: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     let newFilters: Filter[] = [];
     setFilters((prev) => {
       newFilters = prev.filter((filter) => filter.id !== id);
@@ -80,7 +85,7 @@ const FilterScreen: React.FC = () => {
               <Text
                 style={{
                   marginLeft: 6,
-                  fontSize: 18,
+                  fontSize: FONT_SIZE.subsubheading,
                   color: Colors.link,
                 }}
               >
@@ -102,7 +107,7 @@ const FilterScreen: React.FC = () => {
                   <Text
                     style={{
                       marginLeft: 6,
-                      fontSize: 18,
+                      fontSize: FONT_SIZE.subsubheading,
                       color: Colors.link,
                     }}
                   >
@@ -123,7 +128,7 @@ const FilterScreen: React.FC = () => {
                   <Text
                     style={{
                       marginLeft: 6,
-                      fontSize: 18,
+                      fontSize: FONT_SIZE.subsubheading,
                       color: Colors.link,
                     }}
                   >
@@ -148,11 +153,11 @@ const FilterScreen: React.FC = () => {
             justifyContent: "center",
           }}
         >
-          <Text style={{ color: Colors.link, fontSize: 16 }}>
+          <Text style={{ color: Colors.link, fontSize: FONT_SIZE.body }}>
             フィルター作成
           </Text>
         </TouchableOpacity>
-        <SwipeListView
+        <FlatList
           data={filters}
           renderItem={renderFilter}
           keyExtractor={(item) => item.id.toString()}
@@ -160,15 +165,6 @@ const FilterScreen: React.FC = () => {
           ListEmptyComponent={
             <Text style={styles.emptyText}>フィルターがありません。</Text>
           }
-          renderHiddenItem={({ item }) => (
-            <View style={styles.rowBack}>
-              <Pressable onPress={() => removeFilter(item.id)}>
-                <Text style={styles.deleteText}>削除</Text>
-              </Pressable>
-            </View>
-          )}
-          rightOpenValue={-65}
-          disableRightSwipe
           style={styles.list}
         />
       </View>
@@ -190,23 +186,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   filterText: {
-    fontSize: 16,
-  },
-  rowBack: {
-    alignItems: "center",
-    backgroundColor: "red",
-    flex: 1,
-    justifyContent: "flex-end",
-    flexDirection: "row",
-    paddingRight: 20,
-    textAlign: "center",
-  },
-  deleteButton: {
-    backgroundColor: "red",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    fontSize: FONT_SIZE.body,
   },
   overlay: {
     position: "absolute",
@@ -231,25 +211,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
   },
-  toastText: {
-    marginTop: 12,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  pairName: {
-    justifyContent: "flex-start",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  pairInfo: {
-    flexDirection: "row",
-    flex: 2,
-    fontSize: 20,
-    fontWeight: "500",
-    justifyContent: "flex-start",
-    alignItems: "baseline",
-  },
   pairHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -266,15 +227,6 @@ const styles = StyleSheet.create({
   restingTitle: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  restingSectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  restingCount: {
-    fontSize: 20,
-    fontWeight: "600",
   },
   addButtonText: {
     color: Colors.whiteText,
@@ -294,6 +246,15 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.borderline,
     paddingVertical: 8,
     paddingHorizontal: 8,
+    marginVertical: 4,
+    // paddingVertical: 4,
+    // borderWidth: 1,
+    borderRadius: 8,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   cell: {
     flex: 1,
@@ -304,7 +265,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
     padding: 16,
   },
   header: {
@@ -312,11 +272,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
   },
   addPlayerContainer: {
     flexDirection: "row",
@@ -370,19 +325,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  playerName: {
-    fontSize: 24,
-    fontWeight: "500",
-  },
   playerStats: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 8,
-  },
-  restingText: {
-    color: Colors.restPlayerName,
-    fontSize: 20,
-    fontWeight: "bold",
   },
   matchCountBadge: {
     backgroundColor: Colors.badgeBackground,
@@ -410,24 +356,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 10,
   },
-  matchCountText: {
-    color: Colors.whiteText,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  restText: {
-    color: Colors.blackText,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  joinText: {
-    color: Colors.whiteText,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
   removeButton: {
     padding: 4,
-    // display: "flex",
   },
   emptyText: {
     textAlign: "center",

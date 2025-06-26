@@ -1,9 +1,11 @@
 import Colors from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import {
+  LayoutAnimation,
   SectionList,
   StyleSheet,
   Text,
@@ -54,6 +56,7 @@ const Match: React.FC<MatchProps> = ({
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setSwapPlayer((prev) => {
       let newSwapPlayer: number | null = null;
       if (prev === id) {
@@ -303,11 +306,10 @@ const Match: React.FC<MatchProps> = ({
     return (
       <>
         <Text
-          style={
-            swapPlayer === item.id
-              ? styles.restingSwapPlayerName
-              : styles.restingPlayerName
-          }
+          style={[
+            styles.restingPlayerName,
+            swapPlayer === item.id && styles.restingSwapPlayerName,
+          ]}
         >
           {item.name}
         </Text>
@@ -369,7 +371,7 @@ const Match: React.FC<MatchProps> = ({
   }, [dispRound, setIsLoading]);
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
+    <View style={{ flex: 1 }}>
       <TouchableOpacity
         style={styles.generateButton}
         onPress={() => {
@@ -419,7 +421,7 @@ const Match: React.FC<MatchProps> = ({
         {dispRound > 0 && (
           <Text
             style={{
-              fontSize: 20,
+              fontSize: FONT_SIZE.subheading,
               marginHorizontal: 8,
             }}
           >
@@ -482,9 +484,6 @@ const Match: React.FC<MatchProps> = ({
 };
 
 const styles = StyleSheet.create({
-  selectButtonText: {
-    fontSize: 16,
-  },
   modalContent: {
     backgroundColor: Colors.background,
     padding: 24,
@@ -492,19 +491,10 @@ const styles = StyleSheet.create({
     width: "80%",
     elevation: 4,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-    textAlign: "center",
-  },
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 24,
-  },
-  optionText: {
-    fontSize: 16,
   },
   item: {
     flexDirection: "column",
@@ -517,11 +507,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
   },
-  label: {
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -533,33 +518,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
   generateButton: {
     // backgroundColor: Colors.accent,
     backgroundColor: Colors.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 8,
     ...globalStyles.touch,
   },
   generateButtonText: {
     color: Colors.whiteText,
     marginLeft: 8,
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: FONT_SIZE.body,
   },
   matchCard: {
     backgroundColor: Colors.background,
     borderRadius: 8,
     padding: 8,
-    marginBottom: 16,
+    marginBottom: 8,
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -567,9 +546,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   courtName: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.small,
     fontWeight: "bold",
-    marginBottom: 6,
+    marginBottom: 4,
     color: Colors.sectionTitie,
   },
   teams: {
@@ -579,35 +558,13 @@ const styles = StyleSheet.create({
   },
   team: {
     flex: 1,
-    gap: 4,
-  },
-  playerButton: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.background,
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 0,
-    borderWidth: 1,
-    borderColor: Colors.borderline,
-  },
-  playerInfo: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
-  },
-  playerName: {
-    fontSize: 24,
-    color: Colors.blackText,
-    fontWeight: "500",
+    gap: 8,
   },
   playerGender: {
     marginRight: 8,
   },
   vsText: {
-    fontSize: 14,
+    fontSize: FONT_SIZE.small,
     fontWeight: "bold",
     color: Colors.remove,
     marginHorizontal: 6,
@@ -623,12 +580,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   restingSectionTitle: {
-    fontSize: 18,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: Colors.sectionTitie,
   },
   restingCount: {
-    fontSize: 20,
+    fontSize: FONT_SIZE.subheading,
     fontWeight: "600",
   },
   restingPlayerItem: {
@@ -639,7 +596,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    marginRight: 8,
+    marginBottom: 4,
     borderWidth: 1,
     borderColor: Colors.borderline,
     flex: 1,
@@ -651,15 +608,12 @@ const styles = StyleSheet.create({
   },
   restingPlayerName: {
     marginLeft: 6,
-    fontSize: 24,
+    fontSize: FONT_SIZE.heading,
     color: Colors.filterItemName,
     marginRight: 5,
   },
   restingSwapPlayerName: {
-    marginLeft: 6,
-    fontSize: 24,
     color: Colors.blackText,
-    marginRight: 5,
   },
 });
 
