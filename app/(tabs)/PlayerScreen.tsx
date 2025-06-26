@@ -25,7 +25,6 @@ import { Filter, Gender, Pair, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
-import { findPairPlayerId } from "../components/PlayerScreen/util";
 
 type Sort = "asc" | "desc";
 
@@ -353,31 +352,12 @@ const PlayerScreen: React.FC = () => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={sortPair}
-          style={[
-            styles.cellPair,
-            {
-              ...globalStyles.touch,
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <Text style={[styles.headerText]}>ペア</Text>
-          <AntDesign
-            name={isSortedPair === "asc" ? "arrowup" : "arrowdown"}
-            size={14}
-            color={Colors.normalIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={sortMatchCount}
           style={[
             styles.cellMatch,
             {
               ...globalStyles.touch,
               alignItems: "center",
-              justifyContent: "center",
             },
           ]}
         >
@@ -432,7 +412,14 @@ const PlayerScreen: React.FC = () => {
         >
           {item.name}
         </Text>
-        <Text style={styles.cellGender}>
+        <Text
+          style={[
+            styles.cellGender,
+            {
+              textAlign: "center",
+            },
+          ]}
+        >
           {item.gender === Gender.男性 ? (
             <Foundation
               name="male"
@@ -450,24 +437,6 @@ const PlayerScreen: React.FC = () => {
             />
           ) : (
             ""
-          )}
-        </Text>
-        <Text style={styles.cellPair}>
-          {findPairPlayerId(item.id, pairs) && (
-            <View style={styles.pairInfo}>
-              <Text
-                style={[
-                  styles.pairName,
-                  item.isJoin && { color: Colors.whiteText },
-                ]}
-              >
-                {
-                  players.find(
-                    (player) => player.id === findPairPlayerId(item.id, pairs)
-                  )?.name
-                }
-              </Text>
-            </View>
           )}
         </Text>
         <Text
