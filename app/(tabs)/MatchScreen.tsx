@@ -19,6 +19,7 @@ import {
 import Colors from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
+import { FontAwesome5, Foundation, Ionicons } from "@expo/vector-icons";
 import { GenderPreferenceSetting } from "../../types";
 import Disclosure from "../components/Disclosure";
 import Toggle from "../components/Toggle";
@@ -113,7 +114,21 @@ const MatchScreen: React.FC = () => {
         {expanded && (
           <>
             <View style={styles.modalContent}>
-              <Text style={styles.section}>性別</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 8,
+                  columnGap: 4,
+                }}
+              >
+                <Foundation
+                  name="male-female"
+                  size={20}
+                  color={Colors.normalIcon}
+                />
+                <Text style={styles.section}>性別</Text>
+              </View>
               <View style={{ marginBottom: 4 }}>
                 <View
                   style={{
@@ -159,7 +174,17 @@ const MatchScreen: React.FC = () => {
               </View>
             </View>
             <View style={styles.modalContent}>
-              <Text style={styles.section}>休憩</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 8,
+                  columnGap: 4,
+                }}
+              >
+                <Ionicons name="cafe" size={20} />
+                <Text style={styles.section}>休憩</Text>
+              </View>
               <View style={{ marginBottom: 8, paddingHorizontal: 8 }}>
                 <TouchableOpacity
                   style={styles.selectRestPlayerButton}
@@ -198,7 +223,21 @@ const MatchScreen: React.FC = () => {
               </View>
             </View>
             <View style={styles.modalContent}>
-              <Text style={styles.section}>ペア</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 8,
+                  columnGap: 4,
+                }}
+              >
+                <FontAwesome5
+                  name="handshake"
+                  size={20}
+                  color={Colors.normalIcon}
+                />
+                <Text style={styles.section}>ペア</Text>
+              </View>
               <View style={{ marginBottom: 4, paddingHorizontal: 8 }}>
                 <TouchableOpacity
                   style={styles.allPlayerButton}
@@ -323,7 +362,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: Colors.sectionTitie,
-    marginBottom: 8,
   },
   subSection: {
     fontSize: FONT_SIZE.small,
