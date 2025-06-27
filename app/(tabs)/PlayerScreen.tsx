@@ -24,6 +24,7 @@ import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import GenderIcon from "../components/GenderIcon";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
+import RemoveButton from "../components/RemoveButton";
 
 type Sort = "asc" | "desc";
 
@@ -266,20 +267,7 @@ const PlayerScreen: React.FC = () => {
         item.isJoin && { backgroundColor: ColorPalette.secondary },
       ]}
     >
-      {isEdit && (
-        <TouchableOpacity
-          onPress={() => removePlayer(item.id)}
-          style={[
-            {
-              ...globalStyles.touch,
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <AntDesign name="minuscircle" size={24} color={ColorPalette.error} />
-        </TouchableOpacity>
-      )}
+      {isEdit && <RemoveButton onPress={() => removePlayer(item.id)} />}
       {isEdit || (
         <Checkbox checked={item.isJoin} onChange={() => joinPlayer(item.id)} />
       )}

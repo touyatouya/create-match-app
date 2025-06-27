@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Filter } from "../../../types";
 import CustomHeader from "../CustomHeader";
+import RemoveButton from "../RemoveButton";
 
 const FilterScreen: React.FC = () => {
   const { filters, setFilters } = useContext(AppContext);
@@ -35,21 +36,7 @@ const FilterScreen: React.FC = () => {
         }
         style={[styles.filterItem, isEdit && { justifyContent: "flex-start" }]}
       >
-        {isEdit && (
-          <TouchableOpacity
-            onPress={() => removeFilter(item.id)}
-            style={[
-              styles.removeButton,
-              { ...globalStyles.touch, justifyContent: "center" },
-            ]}
-          >
-            <AntDesign
-              name="minuscircle"
-              size={24}
-              color={ColorPalette.error}
-            />
-          </TouchableOpacity>
-        )}
+        {isEdit && <RemoveButton onPress={() => removeFilter(item.id)} />}
         <Text style={styles.filterText}>{item.name}</Text>
         {isEdit || (
           <View style={styles.removeButton}>
@@ -136,6 +123,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 4,
     flex: 1,
     ...globalStyles.touch,
   },
