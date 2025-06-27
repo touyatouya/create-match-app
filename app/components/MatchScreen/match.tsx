@@ -2,7 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import {
   LayoutAnimation,
@@ -14,11 +14,11 @@ import {
 } from "react-native";
 import {
   GameRound,
-  Gender,
   GenderPreferenceSetting,
   Match as MatchType,
   Player,
 } from "../../../types";
+import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
 import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
@@ -315,13 +315,7 @@ const Match: React.FC<MatchProps> = ({
           {item.name}
         </Text>
         <Text style={styles.playerGender}>
-          {item.gender === Gender.男性 ? (
-            <Foundation name="male" size={24} color={ColorPalette.men} />
-          ) : item.gender === Gender.女性 ? (
-            <Foundation name="female" size={24} color={ColorPalette.women} />
-          ) : (
-            ""
-          )}
+          <GenderIcon gender={item.gender} />
         </Text>
       </>
     );

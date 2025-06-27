@@ -3,7 +3,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
-import { AntDesign, Foundation, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -22,9 +22,16 @@ import { Filter, Gender, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
+import GenderIcon from "../components/GenderIcon";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 
 type Sort = "asc" | "desc";
+
+const genderOrder = {
+  [Gender.男性]: 1,
+  [Gender.女性]: 2,
+  [Gender.未設定]: 3,
+};
 
 const PlayerScreen: React.FC = () => {
   const { players, setPlayers, pairs, setPairs, filters, setFilters } =
@@ -36,6 +43,12 @@ const PlayerScreen: React.FC = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
+  const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
+
+  const filteredPlayers = players.filter((player) => {
+    if (filteredFilters.length === 0) return true;
+    return filteredFilters.flatMap((item) => item.players).includes(player.id);
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -172,12 +185,6 @@ const PlayerScreen: React.FC = () => {
     setPlayers(sorted);
   };
 
-  const genderOrder = {
-    [Gender.男性]: 1,
-    [Gender.女性]: 2,
-    [Gender.未設定]: 3,
-  };
-
   const sortGender = () => {
     const nextSortOrder = isSortedGender === "asc" ? "desc" : "asc";
 
@@ -198,62 +205,59 @@ const PlayerScreen: React.FC = () => {
     setPlayers(sorted);
   };
 
-  const renderHeader = () => (
-    <View style={[styles.row, styles.headerRow]}>
-      <Checkbox
-        checked={
-          filteredPlayers.length > 0 &&
-          filteredPlayers.every((player) => player.isJoin)
-        }
-        onChange={
-          filteredPlayers.every((player) => player.isJoin)
-            ? noJoinAllPlayer
-            : joinAllPlayer
-        }
-      />
-      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-        <View style={[styles.cellName, { flex: 7 }]}>
-          <Text style={[styles.headerText]}>名前</Text>
+  const renderHeader = () => {
+    const isAllPlayerJoined = filteredPlayers.every((player) => player.isJoin);
+
+    return (
+      <View style={[styles.row, styles.headerRow]}>
+        <Checkbox
+          checked={filteredPlayers.length > 0 && isAllPlayerJoined}
+          onChange={isAllPlayerJoined ? noJoinAllPlayer : joinAllPlayer}
+        />
+        <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
+          <View style={[styles.cellName, { flex: 7 }]}>
+            <Text style={[styles.headerText]}>名前</Text>
+          </View>
+          <TouchableOpacity
+            onPress={sortGender}
+            style={[
+              styles.cellGender,
+              {
+                ...globalStyles.touch,
+                alignItems: "center",
+                justifyContent: "center",
+              },
+            ]}
+          >
+            <Text style={[styles.headerText]}>性別</Text>
+            <AntDesign
+              name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
+              size={14}
+              color={ColorPalette.normalIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={sortMatchCount}
+            style={[
+              styles.cellMatch,
+              {
+                ...globalStyles.touch,
+                alignItems: "center",
+              },
+            ]}
+          >
+            <Text style={[styles.headerText]}>試合数</Text>
+            <AntDesign
+              name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
+              size={14}
+              color={ColorPalette.normalIcon}
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={sortGender}
-          style={[
-            styles.cellGender,
-            {
-              ...globalStyles.touch,
-              alignItems: "center",
-              justifyContent: "center",
-            },
-          ]}
-        >
-          <Text style={[styles.headerText]}>性別</Text>
-          <AntDesign
-            name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
-            size={14}
-            color={ColorPalette.normalIcon}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={sortMatchCount}
-          style={[
-            styles.cellMatch,
-            {
-              ...globalStyles.touch,
-              alignItems: "center",
-            },
-          ]}
-        >
-          <Text style={[styles.headerText]}>試合数</Text>
-          <AntDesign
-            name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
-            size={14}
-            color={ColorPalette.normalIcon}
-          />
-        </TouchableOpacity>
+        <Text style={[styles.endIconButton, styles.headerText]}></Text>
       </View>
-      <Text style={[styles.endIconButton, styles.headerText]}></Text>
-    </View>
-  );
+    );
+  };
 
   const renderItem = ({ item, drag }: RenderItemParams<Player>) => (
     <View
@@ -305,24 +309,7 @@ const PlayerScreen: React.FC = () => {
             },
           ]}
         >
-          {item.gender === Gender.男性 ? (
-            <Foundation
-              name="male"
-              size={24}
-              // color={item.isJoin ? "#001d5c" : ColorPalette.men}
-              color={ColorPalette.men}
-              // style={{ borderColor: "black", borderWidth: 1 }}
-            />
-          ) : item.gender === Gender.女性 ? (
-            <Foundation
-              name="female"
-              size={24}
-              // color={item.isJoin ? ColorPalette.whiteText : ColorPalette.women}
-              color={ColorPalette.women}
-            />
-          ) : (
-            ""
-          )}
+          <GenderIcon gender={item.gender} />
         </Text>
         <Text
           style={[
@@ -362,13 +349,6 @@ const PlayerScreen: React.FC = () => {
       )}
     </View>
   );
-
-  const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
-
-  const filteredPlayers = players.filter((player) => {
-    if (filteredFilters.length === 0) return true;
-    return filteredFilters.flatMap((item) => item.players).includes(player.id);
-  });
 
   const selectFilter = (id: number) => {
     setFilteredFilters((prev) => {
@@ -504,48 +484,46 @@ const PlayerScreen: React.FC = () => {
                 keyExtractor={(item, index) => `${item}-${index}`}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      marginRight: 8,
-                      ...globalStyles.touch,
-                    }}
-                    onPress={() => selectFilter(item.id)}
-                  >
-                    <View
-                      style={[
-                        styles.filterItem,
-                        filteredFilters.some(
-                          (filterFilter) => filterFilter.id === item.id
-                        ) && styles.selectedFilterItem,
-                      ]}
+                renderItem={({ item }) => {
+                  const isSelectedFilter = filteredFilters.some(
+                    (filterFilter) => filterFilter.id === item.id
+                  );
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        marginRight: 8,
+                        ...globalStyles.touch,
+                      }}
+                      onPress={() => selectFilter(item.id)}
                     >
-                      <Text
-                        key={item.id}
+                      <View
                         style={[
-                          styles.filterItemName,
-                          filteredFilters.some(
-                            (filterFilter) => filterFilter.id === item.id
-                          ) && styles.selectedFilterItemName,
+                          styles.filterItem,
+                          isSelectedFilter && styles.selectedFilterItem,
                         ]}
                       >
-                        {item.name}
-                      </Text>
-
-                      {filteredFilters.some(
-                        (filterFilter) => filterFilter.id === item.id
-                      ) && (
-                        <AntDesign
-                          name="closecircle"
-                          size={16}
-                          color={ColorPalette.whiteIcon}
-                        />
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                )}
+                        <Text
+                          key={item.id}
+                          style={[
+                            styles.filterItemName,
+                            isSelectedFilter && styles.selectedFilterItemName,
+                          ]}
+                        >
+                          {item.name}
+                        </Text>
+                        {isSelectedFilter && (
+                          <AntDesign
+                            name="closecircle"
+                            size={16}
+                            color={ColorPalette.whiteIcon}
+                          />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  );
+                }}
               />
             </View>
           </View>

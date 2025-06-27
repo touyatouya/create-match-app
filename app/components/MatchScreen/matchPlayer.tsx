@@ -2,10 +2,10 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { Gender } from "@/types";
-import { Foundation, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import GenderIcon from "../GenderIcon";
 import { getPlayerName } from "./util";
 
 interface MatchPlayerProps {
@@ -36,13 +36,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
           {getPlayerName(playerId, players)}
         </Text>
         <Text style={styles.playerGender}>
-          {getGender(playerId) === Gender.男性 ? (
-            <Foundation name="male" size={24} color={ColorPalette.men} />
-          ) : getGender(playerId) === Gender.女性 ? (
-            <Foundation name="female" size={24} color={ColorPalette.women} />
-          ) : (
-            ""
-          )}
+          <GenderIcon gender={getGender(playerId)} />
         </Text>
       </View>
     );
