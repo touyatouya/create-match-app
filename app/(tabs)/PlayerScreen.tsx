@@ -3,7 +3,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -15,18 +15,14 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import DraggableFlatList, {
-  RenderItemParams,
-} from "react-native-draggable-flatlist";
+import DraggableFlatList from "react-native-draggable-flatlist";
 import { Filter, Gender, Player } from "../../types";
-import Checkbox from "../components/CheckBox";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
-import GenderIcon from "../components/GenderIcon";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
-import RemoveButton from "../components/RemoveButton";
-
-type Sort = "asc" | "desc";
+import PlayerRow from "../components/PlayerScreen/playerRow";
+import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
+import { Sort } from "../components/PlayerScreen/types";
 
 const genderOrder = {
   [Gender.男性]: 1,
@@ -204,137 +200,6 @@ const PlayerScreen: React.FC = () => {
       return (b.isJoin ? 1 : 0) - (a.isJoin ? 1 : 0);
     });
     setPlayers(sorted);
-  };
-
-  const renderHeader = () => {
-    const isAllPlayerJoined = filteredPlayers.every((player) => player.isJoin);
-
-    return (
-      <View style={[styles.row, styles.headerRow]}>
-        <Checkbox
-          checked={filteredPlayers.length > 0 && isAllPlayerJoined}
-          onChange={isAllPlayerJoined ? noJoinAllPlayer : joinAllPlayer}
-        />
-        <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-          <View style={[styles.cellName, { flex: 7 }]}>
-            <Text style={[styles.headerText]}>名前</Text>
-          </View>
-          <TouchableOpacity
-            onPress={sortGender}
-            style={[
-              styles.cellGender,
-              {
-                ...globalStyles.touch,
-                alignItems: "center",
-                justifyContent: "center",
-              },
-            ]}
-          >
-            <Text style={[styles.headerText]}>性別</Text>
-            <AntDesign
-              name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
-              size={14}
-              color={ColorPalette.normalIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={sortMatchCount}
-            style={[
-              styles.cellMatch,
-              {
-                ...globalStyles.touch,
-                alignItems: "center",
-              },
-            ]}
-          >
-            <Text style={[styles.headerText]}>試合数</Text>
-            <AntDesign
-              name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
-              size={14}
-              color={ColorPalette.normalIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <Text style={[styles.endIconButton, styles.headerText]}></Text>
-      </View>
-    );
-  };
-
-  const renderItem = ({ item, drag }: RenderItemParams<Player>) => {
-    const isJoin = item.isJoin;
-
-    return (
-      <View
-        style={[
-          styles.row,
-          isJoin && { backgroundColor: ColorPalette.secondary },
-        ]}
-      >
-        {isEdit && <RemoveButton onPress={() => removePlayer(item.id)} />}
-        {isEdit || (
-          <Checkbox
-            checked={item.isJoin}
-            onChange={() => joinPlayer(item.id)}
-          />
-        )}
-        <TouchableOpacity
-          onPress={() => joinPlayer(item.id)}
-          style={styles.playerItem}
-        >
-          <Text
-            style={[
-              styles.cellName,
-              isJoin && { color: ColorPalette.whiteText },
-            ]}
-          >
-            {item.name}
-          </Text>
-          <Text
-            style={[
-              styles.cellGender,
-              {
-                textAlign: "center",
-              },
-            ]}
-          >
-            <GenderIcon gender={item.gender} />
-          </Text>
-          <Text
-            style={[
-              styles.cellMatch,
-              isJoin && { color: ColorPalette.whiteText },
-            ]}
-          >
-            {item.matchCount}
-          </Text>
-        </TouchableOpacity>
-        {isEdit ? (
-          <TouchableOpacity onPressIn={drag} style={styles.endIconButton}>
-            <MaterialIcons
-              name="drag-handle"
-              size={24}
-              color={ColorPalette.normalIcon}
-            />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/player-edit-screen",
-                params: { playerId: item.id },
-              })
-            }
-            style={styles.endIconButton}
-          >
-            <AntDesign
-              name="right"
-              size={24}
-              color={isJoin ? ColorPalette.whiteIcon : ColorPalette.normalIcon}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-    );
   };
 
   const selectFilter = (id: number) => {
@@ -523,7 +388,15 @@ const PlayerScreen: React.FC = () => {
             <Text style={styles.buttonText}>並び順リセット</Text>
           </TouchableOpacity>
         </View>
-        {renderHeader()}
+        <PlayerTableHeader
+          filteredPlayers={filteredPlayers}
+          joinAllPlayer={joinAllPlayer}
+          noJoinAllPlayer={noJoinAllPlayer}
+          isSortedGender={isSortedGender}
+          sortGender={sortGender}
+          isSortedMatchCount={isSortedMatchCount}
+          sortMatchCount={sortMatchCount}
+        />
         <DraggableFlatList
           onContentSizeChange={handleContentSizeChange}
           ref={flatListRef}
@@ -542,7 +415,15 @@ const PlayerScreen: React.FC = () => {
               })
             );
           }}
-          renderItem={renderItem}
+          renderItem={({ item, drag }) => (
+            <PlayerRow
+              item={item}
+              drag={drag}
+              isEdit={isEdit}
+              removePlayer={removePlayer}
+              joinPlayer={joinPlayer}
+            />
+          )}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
@@ -605,50 +486,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  row: {
-    backgroundColor: ColorPalette.background,
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 4,
-    borderRadius: 8,
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  headerRow: {
-    backgroundColor: ColorPalette.playerTabelHeader,
-  },
-  headerText: {
-    fontWeight: 600,
-    fontSize: FONT_SIZE.small,
-  },
-  cellName: {
-    flex: 2,
-    paddingHorizontal: 4,
-    fontSize: FONT_SIZE.subheading,
-  },
-  cellGender: {
-    flex: 1,
-    marginHorizontal: 4,
-    fontSize: FONT_SIZE.small,
-    flexDirection: "row",
-  },
-  cellMatch: {
-    flex: 1,
-    marginHorizontal: 4,
-    textAlign: "center",
-    fontSize: FONT_SIZE.small,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  endIconButton: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    ...globalStyles.touch,
-  },
   emptyText: {
     textAlign: "center",
     color: ColorPalette.emptyText,
@@ -662,12 +499,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.subheading,
     fontWeight: 500,
     flexShrink: 1,
-  },
-  playerItem: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    ...globalStyles.touch,
   },
 });
 
