@@ -260,83 +260,82 @@ const PlayerScreen: React.FC = () => {
     );
   };
 
-  const renderItem = ({ item, drag }: RenderItemParams<Player>) => (
-    <View
-      style={[
-        styles.row,
-        item.isJoin && { backgroundColor: ColorPalette.secondary },
-      ]}
-    >
-      {isEdit && <RemoveButton onPress={() => removePlayer(item.id)} />}
-      {isEdit || (
-        <Checkbox checked={item.isJoin} onChange={() => joinPlayer(item.id)} />
-      )}
-      <TouchableOpacity
-        onPress={() => joinPlayer(item.id)}
-        style={{
-          flex: 1,
-          flexDirection: "row",
-          alignItems: "center",
-          ...globalStyles.touch,
-        }}
+  const renderItem = ({ item, drag }: RenderItemParams<Player>) => {
+    const isJoin = item.isJoin;
+
+    return (
+      <View
+        style={[
+          styles.row,
+          isJoin && { backgroundColor: ColorPalette.secondary },
+        ]}
       >
-        <Text
-          style={[
-            styles.cellName,
-            ,
-            item.isJoin && { color: ColorPalette.whiteText },
-          ]}
-        >
-          {item.name}
-        </Text>
-        <Text
-          style={[
-            styles.cellGender,
-            {
-              textAlign: "center",
-            },
-          ]}
-        >
-          <GenderIcon gender={item.gender} />
-        </Text>
-        <Text
-          style={[
-            styles.cellMatch,
-            item.isJoin && { color: ColorPalette.whiteText },
-          ]}
-        >
-          {item.matchCount}
-        </Text>
-      </TouchableOpacity>
-      {isEdit ? (
-        <TouchableOpacity onPressIn={drag} style={styles.endIconButton}>
-          <MaterialIcons
-            name="drag-handle"
-            size={24}
-            color={ColorPalette.normalIcon}
+        {isEdit && <RemoveButton onPress={() => removePlayer(item.id)} />}
+        {isEdit || (
+          <Checkbox
+            checked={item.isJoin}
+            onChange={() => joinPlayer(item.id)}
           />
-        </TouchableOpacity>
-      ) : (
+        )}
         <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/player-edit-screen",
-              params: { playerId: item.id },
-            })
-          }
-          style={styles.endIconButton}
+          onPress={() => joinPlayer(item.id)}
+          style={styles.playerItem}
         >
-          <AntDesign
-            name="right"
-            size={24}
-            color={
-              item.isJoin ? ColorPalette.whiteIcon : ColorPalette.normalIcon
-            }
-          />
+          <Text
+            style={[
+              styles.cellName,
+              isJoin && { color: ColorPalette.whiteText },
+            ]}
+          >
+            {item.name}
+          </Text>
+          <Text
+            style={[
+              styles.cellGender,
+              {
+                textAlign: "center",
+              },
+            ]}
+          >
+            <GenderIcon gender={item.gender} />
+          </Text>
+          <Text
+            style={[
+              styles.cellMatch,
+              isJoin && { color: ColorPalette.whiteText },
+            ]}
+          >
+            {item.matchCount}
+          </Text>
         </TouchableOpacity>
-      )}
-    </View>
-  );
+        {isEdit ? (
+          <TouchableOpacity onPressIn={drag} style={styles.endIconButton}>
+            <MaterialIcons
+              name="drag-handle"
+              size={24}
+              color={ColorPalette.normalIcon}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/player-edit-screen",
+                params: { playerId: item.id },
+              })
+            }
+            style={styles.endIconButton}
+          >
+            <AntDesign
+              name="right"
+              size={24}
+              color={isJoin ? ColorPalette.whiteIcon : ColorPalette.normalIcon}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
 
   const selectFilter = (id: number) => {
     setFilteredFilters((prev) => {
@@ -663,6 +662,12 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.subheading,
     fontWeight: 500,
     flexShrink: 1,
+  },
+  playerItem: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    ...globalStyles.touch,
   },
 });
 

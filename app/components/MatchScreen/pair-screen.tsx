@@ -2,8 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
 import {
   Alert,
@@ -15,12 +14,11 @@ import {
 } from "react-native";
 import { Pair, Player } from "../../../types";
 import CustomHeader from "../CustomHeader";
+import RemoveButton from "../RemoveButton";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
-
-  const router = useRouter();
 
   const selectPlayer = (id: number) => {
     setPair((prev) => {
@@ -122,7 +120,7 @@ const PairScreen: React.FC = () => {
   const removePair = (id: number): void => {
     let newPairs: Pair[] = [];
     setPairs((prev) => {
-      newPairs = prev.filter((player) => player.id !== id);
+      newPairs = prev.filter((pair) => pair.id !== id);
       return newPairs;
     });
   };
@@ -138,18 +136,7 @@ const PairScreen: React.FC = () => {
           {players.find((player) => player.id === item.player2)?.name}
         </Text>
       </View>
-      <TouchableOpacity
-        onPress={() => removePair(item.id)}
-        style={[
-          {
-            ...globalStyles.touch,
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
-      >
-        <Ionicons name="close-circle" size={24} color={ColorPalette.remove} />
-      </TouchableOpacity>
+      <RemoveButton onPress={() => removePair(item.id)} />
     </View>
   );
 
