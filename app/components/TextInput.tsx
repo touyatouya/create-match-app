@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
@@ -62,7 +62,7 @@ const TextInput = forwardRef<Ref, TextInputProps>(
               ref={inputRef}
               style={[styles.input, isError && styles.inputError]}
               placeholder={placeholder}
-              placeholderTextColor={Colors.emptyText}
+              placeholderTextColor={ColorPalette.emptyText}
               value={value}
               onChangeText={onChangeText}
               onSubmitEditing={onSubmitEditing}
@@ -78,7 +78,7 @@ const TextInput = forwardRef<Ref, TextInputProps>(
                 <AntDesign
                   name="closecircle"
                   size={20}
-                  color={Colors.emptyText}
+                  color={ColorPalette.emptyText}
                 />
               </TouchableOpacity>
             )}
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   validationText: {
-    color: Colors.error,
+    color: ColorPalette.error,
     fontSize: FONT_SIZE.small,
     marginTop: 4,
     marginLeft: 4,
@@ -136,27 +136,27 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   accessory: {
-    backgroundColor: Colors.accessoryBackground,
+    backgroundColor: ColorPalette.accessoryBackground,
     padding: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
   },
   input: {
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: Colors.inputBorder,
+    borderColor: ColorPalette.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     paddingRight: 30,
     ...globalStyles.touch,
     fontSize: FONT_SIZE.body,
   },
   inputError: {
-    borderColor: Colors.error,
+    borderColor: ColorPalette.error,
   },
 });
 

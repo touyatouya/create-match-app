@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
@@ -17,7 +17,7 @@ const CompleteToast: React.FC<CompleteToastProps> = ({ isOpen, message }) => {
             <Ionicons
               name="checkmark-circle"
               size={40}
-              color={Colors.success}
+              color={ColorPalette.success}
             />
             <Text style={styles.toastText}>{message}</Text>
           </View>
@@ -36,17 +36,17 @@ const styles = StyleSheet.create({
     right: 0,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.transparent,
+    backgroundColor: ColorPalette.transparent,
     zIndex: 9999,
   },
   centerToast: {
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     padding: 24,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     elevation: 8,
-    shadowColor: Colors.cardShadow,
+    shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-    color: Colors.sectionTitie,
+    color: ColorPalette.sectionTitie,
   },
 });
 

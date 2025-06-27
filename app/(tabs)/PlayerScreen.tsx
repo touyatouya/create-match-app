@@ -1,18 +1,12 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
-import { AntDesign, Foundation } from "@expo/vector-icons";
+import { AntDesign, Foundation, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation, useRouter } from "expo-router";
-import React, {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useRouter } from "expo-router";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   LayoutAnimation,
@@ -21,26 +15,27 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DraggableFlatList, {
+  RenderItemParams,
+} from "react-native-draggable-flatlist";
 import { Filter, Gender, Player } from "../../types";
 import Checkbox from "../components/CheckBox";
+import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 
 type Sort = "asc" | "desc";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, pairs, filters, setFilters } =
+  const { players, setPlayers, pairs, setPairs, filters, setFilters } =
     useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isSortedMatchCount, setIsSortedMatchCount] =
     React.useState<Sort | null>(null);
-  // const [isSortedJoin, setIsSortedJoin] = React.useState<Sort | null>(null);
   const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
-  const [isSortedPair, setIsSortedPair] = React.useState<Sort | null>(null);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
-  // const [joinedPlayer, setJoinedPlayer] = useState<Player[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,68 +82,7 @@ const PlayerScreen: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const navigation = useNavigation();
   const router = useRouter();
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () =>
-        isEdit || (
-          <TouchableOpacity
-            onPress={() => setAddModalVisible(true)}
-            style={{
-              ...globalStyles.touch,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ marginRight: 8 }}>
-              <AntDesign name="plus" size={24} color={Colors.link} />
-            </View>
-          </TouchableOpacity>
-        ),
-      headerLeft: () =>
-        isEdit ? (
-          <TouchableOpacity
-            onPress={() => setIsEdit(false)}
-            style={{
-              ...globalStyles.touch,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                marginLeft: 6,
-                fontSize: FONT_SIZE.subsubheading,
-                color: Colors.link,
-              }}
-            >
-              完了
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() => setIsEdit(true)}
-            style={{
-              ...globalStyles.touch,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text
-              style={{
-                marginLeft: 6,
-                fontSize: FONT_SIZE.subsubheading,
-                color: Colors.link,
-              }}
-            >
-              編集
-            </Text>
-          </TouchableOpacity>
-        ),
-    });
-  }, [isEdit, navigation, router]);
 
   const removePlayer = (id: number): void => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -186,22 +120,19 @@ const PlayerScreen: React.FC = () => {
   };
 
   const joinPlayer = (id: number): void => {
+    const targetPlayer = players.find((player) => player.id === id);
+
+    if (targetPlayer?.isJoin) {
+      const updatePairs = pairs.filter(
+        (pair) => pair.player1 !== id && pair.player2 !== id
+      );
+      setPairs(updatePairs);
+    }
+
     const updatedPlayers = players.map((player) =>
       player.id === id ? { ...player, isJoin: !player.isJoin } : player
     );
     setPlayers(updatedPlayers);
-
-    // setJoinedPlayer((prev) => {
-    //   const newJoinedPlayer = players.find((player) => player.id === id);
-    //   if (
-    //     prev.filter((player) => player.id === id).length === 0 &&
-    //     newJoinedPlayer != null
-    //   ) {
-    //     return [...prev, { ...newJoinedPlayer, isJoin: true }];
-    //   } else {
-    //     return prev.filter((player) => player.id !== id);
-    //   }
-    // });
   };
 
   const joinedPlayer = players.filter((player) => player.isJoin);
@@ -225,6 +156,7 @@ const PlayerScreen: React.FC = () => {
       return { ...player, isJoin: false };
     });
     setPlayers(updatedPlayers);
+    setPairs([]);
   };
 
   const sortMatchCount = () => {
@@ -266,30 +198,6 @@ const PlayerScreen: React.FC = () => {
     setPlayers(sorted);
   };
 
-  const sortPair = () => {
-    const nextSortOrder = isSortedPair === "asc" ? "desc" : "asc";
-    const sorted = [...players].sort((a, b) => {
-      const pairA = pairs.find(
-        (pair) => pair.player1 === a.id || pair.player2 === a.id
-      );
-      const pairB = pairs.find(
-        (pair) => pair.player1 === b.id || pair.player2 === b.id
-      );
-
-      const hasPairA = pairA ? 1 : 0;
-      const hasPairB = pairB ? 1 : 0;
-
-      if (isSortedPair === "asc") {
-        return hasPairB - hasPairA;
-      } else {
-        return hasPairA - hasPairB;
-      }
-    });
-
-    setIsSortedPair(nextSortOrder);
-    setPlayers(sorted);
-  };
-
   const renderHeader = () => (
     <View style={[styles.row, styles.headerRow]}>
       <Checkbox
@@ -322,7 +230,7 @@ const PlayerScreen: React.FC = () => {
           <AntDesign
             name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
             size={14}
-            color={Colors.normalIcon}
+            color={ColorPalette.normalIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -339,17 +247,20 @@ const PlayerScreen: React.FC = () => {
           <AntDesign
             name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
             size={14}
-            color={Colors.normalIcon}
+            color={ColorPalette.normalIcon}
           />
         </TouchableOpacity>
       </View>
-      <Text style={[styles.removeButton, styles.headerText]}></Text>
+      <Text style={[styles.endIconButton, styles.headerText]}></Text>
     </View>
   );
 
-  const renderItem = ({ item }: { item: Player }) => (
+  const renderItem = ({ item, drag }: RenderItemParams<Player>) => (
     <View
-      style={[styles.row, item.isJoin && { backgroundColor: Colors.secondary }]}
+      style={[
+        styles.row,
+        item.isJoin && { backgroundColor: ColorPalette.secondary },
+      ]}
     >
       {isEdit && (
         <TouchableOpacity
@@ -362,7 +273,7 @@ const PlayerScreen: React.FC = () => {
             },
           ]}
         >
-          <AntDesign name="minuscircle" size={24} color={Colors.error} />
+          <AntDesign name="minuscircle" size={24} color={ColorPalette.error} />
         </TouchableOpacity>
       )}
       {isEdit || (
@@ -381,7 +292,7 @@ const PlayerScreen: React.FC = () => {
           style={[
             styles.cellName,
             ,
-            item.isJoin && { color: Colors.whiteText },
+            item.isJoin && { color: ColorPalette.whiteText },
           ]}
         >
           {item.name}
@@ -398,29 +309,38 @@ const PlayerScreen: React.FC = () => {
             <Foundation
               name="male"
               size={24}
-              // color={item.isJoin ? "#001d5c" : Colors.men}
-              color={Colors.men}
+              // color={item.isJoin ? "#001d5c" : ColorPalette.men}
+              color={ColorPalette.men}
               // style={{ borderColor: "black", borderWidth: 1 }}
             />
           ) : item.gender === Gender.女性 ? (
             <Foundation
               name="female"
               size={24}
-              // color={item.isJoin ? Colors.whiteText : Colors.women}
-              color={Colors.women}
+              // color={item.isJoin ? ColorPalette.whiteText : ColorPalette.women}
+              color={ColorPalette.women}
             />
           ) : (
             ""
           )}
         </Text>
         <Text
-          style={[styles.cellMatch, item.isJoin && { color: Colors.whiteText }]}
+          style={[
+            styles.cellMatch,
+            item.isJoin && { color: ColorPalette.whiteText },
+          ]}
         >
           {item.matchCount}
         </Text>
       </TouchableOpacity>
       {isEdit ? (
-        <View style={styles.removeButton}></View>
+        <TouchableOpacity onPressIn={drag} style={styles.endIconButton}>
+          <MaterialIcons
+            name="drag-handle"
+            size={24}
+            color={ColorPalette.normalIcon}
+          />
+        </TouchableOpacity>
       ) : (
         <TouchableOpacity
           onPress={() =>
@@ -429,12 +349,14 @@ const PlayerScreen: React.FC = () => {
               params: { playerId: item.id },
             })
           }
-          style={styles.removeButton}
+          style={styles.endIconButton}
         >
           <AntDesign
             name="right"
             size={24}
-            color={item.isJoin ? Colors.whiteIcon : Colors.normalIcon}
+            color={
+              item.isJoin ? ColorPalette.whiteIcon : ColorPalette.normalIcon
+            }
           />
         </TouchableOpacity>
       )}
@@ -489,7 +411,7 @@ const PlayerScreen: React.FC = () => {
     setPlayers(newPlayers);
   };
 
-  const flatListRef = useRef<FlatList<any>>(null);
+  const flatListRef = useRef<any>(null);
 
   const isAddingRef = useRef(false);
 
@@ -499,141 +421,190 @@ const PlayerScreen: React.FC = () => {
       isAddingRef.current = false;
     }
   };
-
   return (
-    <View style={styles.container}>
-      {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
-      <AddPlayerModal
-        isOpen={isAddModalVisible}
-        onClose={() => setAddModalVisible(false)}
-        setDefaultOrderPlayers={setDefaultOrderPlayers}
-        isAddingRef={isAddingRef}
-      />
-      <View style={styles.title}>
-        <Text style={styles.description}>参加プレイヤーを選択してください</Text>
-        <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
-      </View>
-      <View style={{ marginBottom: 8 }}>
-        <Disclosure
-          isOpen={expanded}
-          setIsOpen={setExpanded}
-          label="絞り込み"
-        />
-      </View>
-      {expanded && (
-        <View style={{ marginBottom: 16 }}>
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/components/PlayerScreen/filter-screen",
-              })
-            }
-            style={{
-              alignItems: "flex-end",
-              marginBottom: 8,
-              justifyContent: "center",
-              ...globalStyles.touch,
-            }}
-          >
-            <Text
-              style={{ color: Colors.link, fontSize: FONT_SIZE.subsubheading }}
+    <>
+      <CustomHeader
+        title="プレイヤー"
+        headerRight={() =>
+          isEdit || (
+            <TouchableOpacity
+              onPress={() => setAddModalVisible(true)}
+              style={globalStyles.headerRight}
             >
-              フィルター一覧
-            </Text>
-          </TouchableOpacity>
-          <View>
-            <FlatList
-              data={filters}
-              keyExtractor={(item, index) => `${item}-${index}`}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    marginRight: 8,
-                    ...globalStyles.touch,
-                  }}
-                  onPress={() => selectFilter(item.id)}
-                >
-                  <View
-                    style={[
-                      styles.filterItem,
-                      filteredFilters.some(
-                        (filterFilter) => filterFilter.id === item.id
-                      ) && styles.selectedFilterItem,
-                    ]}
+              <AntDesign name="plus" size={24} color={ColorPalette.link} />
+            </TouchableOpacity>
+          )
+        }
+        headerLeft={() =>
+          isEdit ? (
+            <TouchableOpacity
+              onPress={() => setIsEdit(false)}
+              style={globalStyles.headerLeft}
+            >
+              <Text style={globalStyles.headerText}>完了</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setIsEdit(true)}
+              style={globalStyles.headerLeft}
+            >
+              <Text style={globalStyles.headerText}>編集</Text>
+            </TouchableOpacity>
+          )
+        }
+      />
+      <View style={styles.container}>
+        {/* <Button title="ローカルストレージを削除" onPress={clearStorage} /> */}
+        <AddPlayerModal
+          isOpen={isAddModalVisible}
+          onClose={() => setAddModalVisible(false)}
+          setDefaultOrderPlayers={setDefaultOrderPlayers}
+          isAddingRef={isAddingRef}
+        />
+        <View style={styles.title}>
+          <Text style={styles.description}>
+            参加プレイヤーを選択してください
+          </Text>
+          <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
+        </View>
+        <View style={{ marginBottom: 8 }}>
+          <Disclosure
+            isOpen={expanded}
+            setIsOpen={setExpanded}
+            label="絞り込み"
+          />
+        </View>
+        {expanded && (
+          <View style={{ marginBottom: 16 }}>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/components/PlayerScreen/filter-screen",
+                })
+              }
+              style={{
+                alignItems: "flex-end",
+                marginBottom: 8,
+                justifyContent: "center",
+                ...globalStyles.touch,
+              }}
+            >
+              <Text
+                style={{
+                  color: ColorPalette.link,
+                  fontSize: FONT_SIZE.subsubheading,
+                }}
+              >
+                フィルター一覧
+              </Text>
+            </TouchableOpacity>
+            <View>
+              <FlatList
+                data={filters}
+                keyExtractor={(item, index) => `${item}-${index}`}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      marginRight: 8,
+                      ...globalStyles.touch,
+                    }}
+                    onPress={() => selectFilter(item.id)}
                   >
-                    <Text
-                      key={item.id}
+                    <View
                       style={[
-                        styles.filterItemName,
+                        styles.filterItem,
                         filteredFilters.some(
                           (filterFilter) => filterFilter.id === item.id
-                        ) && styles.selectedFilterItemName,
+                        ) && styles.selectedFilterItem,
                       ]}
                     >
-                      {item.name}
-                    </Text>
+                      <Text
+                        key={item.id}
+                        style={[
+                          styles.filterItemName,
+                          filteredFilters.some(
+                            (filterFilter) => filterFilter.id === item.id
+                          ) && styles.selectedFilterItemName,
+                        ]}
+                      >
+                        {item.name}
+                      </Text>
 
-                    {filteredFilters.some(
-                      (filterFilter) => filterFilter.id === item.id
-                    ) && (
-                      <AntDesign
-                        name="closecircle"
-                        size={16}
-                        color={Colors.whiteIcon}
-                      />
-                    )}
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+                      {filteredFilters.some(
+                        (filterFilter) => filterFilter.id === item.id
+                      ) && (
+                        <AntDesign
+                          name="closecircle"
+                          size={16}
+                          color={ColorPalette.whiteIcon}
+                        />
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
           </View>
+        )}
+        <View style={{ flexDirection: "row", columnGap: 8, marginBottom: 8 }}>
+          <TouchableOpacity style={styles.button} onPress={sortJoin}>
+            <Text style={styles.buttonText}>参加プレイヤーを上へ</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={resetOrder}>
+            <Text style={styles.buttonText}>並び順リセット</Text>
+          </TouchableOpacity>
         </View>
-      )}
-      <View style={{ flexDirection: "row", columnGap: 8, marginBottom: 8 }}>
-        <TouchableOpacity style={styles.Button} onPress={sortJoin}>
-          <Text style={styles.ButtonText}>参加プレイヤーを上へ</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.Button} onPress={resetOrder}>
-          <Text style={styles.ButtonText}>並び順リセット</Text>
-        </TouchableOpacity>
+        {renderHeader()}
+        <DraggableFlatList
+          onContentSizeChange={handleContentSizeChange}
+          ref={flatListRef}
+          data={filteredPlayers}
+          onDragEnd={({ data }) => {
+            setPlayers(data);
+            setDefaultOrderPlayers(data);
+            savePlayerInfo(
+              data.map((player) => {
+                return {
+                  id: player.id,
+                  name: player.name,
+                  gender: player.gender,
+                  rank: player.rank,
+                };
+              })
+            );
+          }}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              {"プレイヤーがいません。\n 右上の＋から追加してください。"}
+            </Text>
+          }
+        />
       </View>
-      {renderHeader()}
-      <FlatList
-        onContentSizeChange={handleContentSizeChange}
-        ref={flatListRef}
-        data={filteredPlayers}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            {"プレイヤーがいません。\n 右上の＋から追加してください。"}
-          </Text>
-        }
-        style={styles.list}
-      />
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  Button: {
-    backgroundColor: Colors.background,
+  button: {
+    backgroundColor: ColorPalette.background,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    borderColor: Colors.secondary,
+    borderColor: ColorPalette.secondary,
     borderWidth: 1,
     flex: 1,
     ...globalStyles.touch,
   },
-  ButtonText: {
-    color: Colors.secondary,
+  buttonText: {
+    color: ColorPalette.secondary,
     fontWeight: 600,
   },
   title: {
@@ -644,49 +615,48 @@ const styles = StyleSheet.create({
   filterItem: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.filterItemBg,
+    backgroundColor: ColorPalette.filterItemBg,
     paddingHorizontal: 12,
     borderRadius: 20,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: Colors.secondary,
+    borderColor: ColorPalette.secondary,
     flex: 1,
     flexDirection: "row",
     columnGap: 5,
   },
   selectedFilterItem: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: ColorPalette.secondary,
     borderStyle: "solid",
   },
   filterItemName: {
     fontSize: FONT_SIZE.body,
-    color: Colors.filterItemName,
+    color: ColorPalette.filterItemName,
   },
   selectedFilterItemName: {
-    color: Colors.whiteText,
+    color: ColorPalette.whiteText,
   },
   container: {
     flex: 1,
     padding: 16,
   },
   row: {
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 4,
     borderRadius: 8,
-    shadowColor: Colors.cardShadow,
+    shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
   headerRow: {
-    backgroundColor: Colors.playerTabelHeader,
+    backgroundColor: ColorPalette.playerTabelHeader,
   },
   headerText: {
     fontWeight: 600,
-    // textAlign: "center",
     fontSize: FONT_SIZE.small,
   },
   cellName: {
@@ -699,15 +669,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     fontSize: FONT_SIZE.small,
     flexDirection: "row",
-    // justifyContent: "center",
-    // width:""
-  },
-  cellPair: {
-    flex: 2,
-    marginHorizontal: 4,
-    fontSize: FONT_SIZE.small,
-    justifyContent: "center",
-    flexDirection: "row",
   },
   cellMatch: {
     flex: 1,
@@ -717,27 +678,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  addPlayerContainer: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  list: {
-    flex: 1,
-  },
-  pairInfo: {
-    flexDirection: "row",
-    flex: 2,
-    fontSize: FONT_SIZE.subheading,
-    fontWeight: "500",
-    justifyContent: "flex-start",
-    alignItems: "baseline",
-  },
-  pairName: {
-    justifyContent: "flex-start",
-    fontSize: FONT_SIZE.body,
-    fontWeight: "500",
-  },
-  removeButton: {
+  endIconButton: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -745,7 +686,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: Colors.emptyText,
+    color: ColorPalette.emptyText,
     marginTop: 20,
   },
   joinedPlayer: {

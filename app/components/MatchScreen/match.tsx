@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
@@ -19,6 +19,7 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
+import PrimaryButton from "../PrimaryButton";
 import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
 
@@ -315,9 +316,9 @@ const Match: React.FC<MatchProps> = ({
         </Text>
         <Text style={styles.playerGender}>
           {item.gender === Gender.男性 ? (
-            <Foundation name="male" size={24} color={Colors.men} />
+            <Foundation name="male" size={24} color={ColorPalette.men} />
           ) : item.gender === Gender.女性 ? (
-            <Foundation name="female" size={24} color={Colors.women} />
+            <Foundation name="female" size={24} color={ColorPalette.women} />
           ) : (
             ""
           )}
@@ -372,8 +373,11 @@ const Match: React.FC<MatchProps> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity
-        style={styles.generateButton}
+      <PrimaryButton
+        text="新しい組み合わせを生成"
+        icon={
+          <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
+        }
         onPress={() => {
           setIsLoading(true);
           setTimeout(() => {
@@ -392,10 +396,7 @@ const Match: React.FC<MatchProps> = ({
             );
           }, 0);
         }}
-      >
-        <Ionicons name="refresh" size={20} color={Colors.whiteText} />
-        <Text style={styles.generateButtonText}>新しい組み合わせを生成</Text>
-      </TouchableOpacity>
+      />
       <View
         style={{
           flexDirection: "row",
@@ -413,7 +414,7 @@ const Match: React.FC<MatchProps> = ({
             }}
             onPress={() => setDispRound((prev) => prev - 1)}
           >
-            <AntDesign name="left" size={20} color={Colors.normalIcon} />
+            <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>
         ) : (
           <View style={{ width: 44 }}></View>
@@ -437,7 +438,7 @@ const Match: React.FC<MatchProps> = ({
             }}
             onPress={() => setDispRound((prev) => prev + 1)}
           >
-            <AntDesign name="right" size={20} color={Colors.normalIcon} />
+            <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>
         ) : (
           <View style={{ width: 44 }}></View>
@@ -464,7 +465,11 @@ const Match: React.FC<MatchProps> = ({
               return (
                 <View style={styles.restingHeader}>
                   <View style={styles.restingTitle}>
-                    <Ionicons name="cafe" size={24} color={Colors.restIcon} />
+                    <Ionicons
+                      name="cafe"
+                      size={24}
+                      color={ColorPalette.restIcon}
+                    />
                     <Text style={styles.restingSectionTitle}>
                       休憩中のプレイヤー
                     </Text>
@@ -484,62 +489,19 @@ const Match: React.FC<MatchProps> = ({
 };
 
 const styles = StyleSheet.create({
-  modalContent: {
-    backgroundColor: Colors.background,
-    padding: 24,
-    borderRadius: 12,
-    width: "80%",
-    elevation: 4,
-  },
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
   item: {
     flexDirection: "column",
     alignItems: "flex-start",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
     paddingVertical: 16,
   },
-  info: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  genderEdit: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  generateButton: {
-    // backgroundColor: Colors.accent,
-    backgroundColor: Colors.primary,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginBottom: 8,
-    ...globalStyles.touch,
-  },
-  generateButtonText: {
-    color: Colors.whiteText,
-    marginLeft: 8,
-    fontWeight: "600",
-    fontSize: FONT_SIZE.body,
-  },
   matchCard: {
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     borderRadius: 8,
     padding: 8,
     marginBottom: 8,
-    shadowColor: Colors.cardShadow,
+    shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -549,7 +511,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.small,
     fontWeight: "bold",
     marginBottom: 4,
-    color: Colors.sectionTitie,
+    color: ColorPalette.sectionTitie,
   },
   teams: {
     flexDirection: "row",
@@ -566,7 +528,7 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: FONT_SIZE.small,
     fontWeight: "bold",
-    color: Colors.remove,
+    color: ColorPalette.remove,
     marginHorizontal: 6,
   },
   restingHeader: {
@@ -582,7 +544,7 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-    color: Colors.sectionTitie,
+    color: ColorPalette.sectionTitie,
   },
   restingCount: {
     fontSize: FONT_SIZE.subheading,
@@ -592,28 +554,28 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
-    backgroundColor: Colors.restPlayerBackground,
+    backgroundColor: ColorPalette.restPlayerBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginBottom: 4,
     borderWidth: 1,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
     flex: 1,
     ...globalStyles.touch,
   },
   restingSwapPlayerItem: {
-    backgroundColor: Colors.thirdry,
-    borderColor: Colors.secondary,
+    backgroundColor: ColorPalette.thirdry,
+    borderColor: ColorPalette.secondary,
   },
   restingPlayerName: {
     marginLeft: 6,
     fontSize: FONT_SIZE.heading,
-    color: Colors.filterItemName,
+    color: ColorPalette.filterItemName,
     marginRight: 5,
   },
   restingSwapPlayerName: {
-    color: Colors.blackText,
+    color: ColorPalette.blackText,
   },
 });
 

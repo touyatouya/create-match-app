@@ -413,3 +413,7 @@ export function getCombinations<T>(arr: T[], k: number): T[][] {
   // 両方を統合して返す
   return [...withFirst, ...withoutFirst];
 }
+
+export const getPlayerName = (id: number, players: Player[]) => {
+  return players.find((player) => player.id === id)?.name;
+};

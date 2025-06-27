@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
@@ -6,6 +6,7 @@ import { Gender } from "@/types";
 import { Foundation, Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getPlayerName } from "./util";
 
 interface MatchPlayerProps {
   swapPlayer: number | null;
@@ -24,10 +25,6 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
 }) => {
   const { players } = useContext(AppContext);
 
-  const getPlayerName = (id: number) => {
-    return players.find((player) => player.id === id)?.name;
-  };
-
   const getGender = (id: number) => {
     return players.find((player) => player.id === id)?.gender;
   };
@@ -35,12 +32,14 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   const playerInfo = () => {
     return (
       <View style={styles.playerInfo}>
-        <Text style={styles.playerName}>{getPlayerName(playerId)}</Text>
+        <Text style={styles.playerName}>
+          {getPlayerName(playerId, players)}
+        </Text>
         <Text style={styles.playerGender}>
           {getGender(playerId) === Gender.男性 ? (
-            <Foundation name="male" size={24} color={Colors.men} />
+            <Foundation name="male" size={24} color={ColorPalette.men} />
           ) : getGender(playerId) === Gender.女性 ? (
-            <Foundation name="female" size={24} color={Colors.women} />
+            <Foundation name="female" size={24} color={ColorPalette.women} />
           ) : (
             ""
           )}
@@ -67,7 +66,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             <Ionicons
               name="swap-horizontal"
               size={18}
-              color={Colors.secondary}
+              color={ColorPalette.secondary}
             />
           )}
         </TouchableOpacity>
@@ -81,27 +80,21 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
 };
 
 const styles = StyleSheet.create({
-  selectButton: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderline,
-    borderRadius: 8,
-  },
   playerButton: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
     ...globalStyles.touch,
   },
   swapPlayerButton: {
-    backgroundColor: Colors.thirdry,
-    borderColor: Colors.secondary,
+    backgroundColor: ColorPalette.thirdry,
+    borderColor: ColorPalette.secondary,
   },
   playerInfo: {
     flex: 1,
@@ -111,7 +104,7 @@ const styles = StyleSheet.create({
   },
   playerName: {
     fontSize: FONT_SIZE.heading,
-    color: Colors.blackText,
+    color: ColorPalette.blackText,
     fontWeight: "500",
   },
   playerGender: {

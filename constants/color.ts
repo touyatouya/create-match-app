@@ -1,23 +1,4 @@
-const Colors = {
-  // エラー
-  // リンク色
-  // 成功
-  // disable
-  // メイン
-
-  // トグルボタン
-  // 男性
-  // 女性
-  // チェックボックス
-  // フィルタ背景色
-  //
-
-  //
-
-  // メイン ボタン、リンク、タブ選択
-  //
-  //
-  //
+const ColorPalette = {
   primary: "#007ACC",
   secondary: "#1479B9",
   thirdry: "#DFEFF9",
@@ -61,11 +42,10 @@ const Colors = {
   filterItemName: "#666",
   filterItemBg: "#f0f0f0",
   filterItemCancel: "#888888",
-  // 必要に応じてダークテーマも分けて書けます
   dark: {
     background: "#121212",
     text: "#FFFFFF",
   },
 };
 
-export default Colors;
+export default ColorPalette;

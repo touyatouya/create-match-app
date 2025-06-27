@@ -1,6 +1,6 @@
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 interface FilterProps {
   data: any[];
@@ -27,19 +27,19 @@ const Filter: React.FC<FilterProps> = ({ data }) => {
 const styles = StyleSheet.create({
   filterItem: {
     alignItems: "baseline",
-    backgroundColor: Colors.restPlayerBackground,
+    backgroundColor: ColorPalette.restPlayerBackground,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
-    borderColor: Colors.restPlayerBorder,
+    borderColor: ColorPalette.restPlayerBorder,
     flex: 1,
   },
   filterItemName: {
     marginLeft: 6,
     fontSize: FONT_SIZE.title,
-    color: Colors.restPlayerName,
+    color: ColorPalette.restPlayerName,
     marginRight: 5,
   },
 });

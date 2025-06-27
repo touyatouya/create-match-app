@@ -1,3 +1,4 @@
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
@@ -7,7 +8,6 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 interface DisclosureProps {
   isOpen: boolean;
@@ -30,7 +30,7 @@ const Disclosure: React.FC<DisclosureProps> = ({
       <AntDesign
         name={isOpen ? "down" : "right"}
         size={20}
-        color={Colors.normalIcon}
+        color={ColorPalette.normalIcon}
       />
       <Text style={styles.title}>{label}</Text>
     </TouchableOpacity>
@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-    color: Colors.sectionTitie,
+    color: ColorPalette.blackText,
   },
 });

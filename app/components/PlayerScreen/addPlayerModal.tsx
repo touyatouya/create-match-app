@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
@@ -115,7 +115,7 @@ const AddPlayerModal: React.FC<Props> = ({
                 <Text
                   style={[
                     styles.headerButtonText,
-                    name.trim() === "" && { color: Colors.muted },
+                    name.trim() === "" && { color: ColorPalette.muted },
                   ]}
                 >
                   作成
@@ -154,11 +154,11 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     justifyContent: "flex-end",
-    backgroundColor: Colors.transparent,
+    backgroundColor: ColorPalette.transparent,
   },
   modalContainer: {
     minHeight: Dimensions.get("window").height * 0.8,
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     paddingBottom: Platform.OS === "ios" ? 40 : 20,
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
   headerButtonText: {
     fontSize: FONT_SIZE.body,
-    color: Colors.link,
+    color: ColorPalette.link,
   },
   title: {
     fontSize: FONT_SIZE.subsubheading,
@@ -185,14 +185,6 @@ const styles = StyleSheet.create({
   body: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-  },
-  input: {
-    height: 48,
-    borderColor: Colors.borderline,
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: Colors.background,
   },
 });
 

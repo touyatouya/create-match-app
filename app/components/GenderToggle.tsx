@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { Gender } from "@/types";
@@ -32,26 +32,26 @@ const GenderToggle: React.FC<GenderToggleType> = ({ value, setGender }) => {
 const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: "row",
-    backgroundColor: Colors.toggleBackground,
+    backgroundColor: ColorPalette.toggleBackground,
     borderRadius: 32,
     borderWidth: 1,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
     overflow: "hidden",
     alignSelf: "flex-start",
   },
   selectedButton: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: ColorPalette.secondary,
   },
   buttonText: {
     fontSize: FONT_SIZE.body,
-    color: Colors.sectionTitie,
+    color: ColorPalette.sectionTitie,
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
     margin: 5,
-    backgroundColor: Colors.muted,
+    backgroundColor: ColorPalette.muted,
     alignSelf: "flex-start",
     ...globalStyles.touch,
     justifyContent: "center",
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     fontWeight: "bold",
-    color: Colors.whiteText,
+    color: ColorPalette.whiteText,
   },
 });
 

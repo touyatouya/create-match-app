@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import React from "react";
@@ -34,17 +34,17 @@ const styles = StyleSheet.create({
     minWidth: 24,
     minHeight: 24,
     borderWidth: 2,
-    borderColor: Colors.primary,
-    backgroundColor: Colors.background,
+    borderColor: ColorPalette.primary,
+    backgroundColor: ColorPalette.background,
     borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
   },
   checked: {
-    backgroundColor: Colors.whiteIcon,
+    backgroundColor: ColorPalette.whiteIcon,
   },
   checkmark: {
-    color: Colors.primary,
+    color: ColorPalette.primary,
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     lineHeight: 20,

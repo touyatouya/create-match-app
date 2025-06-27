@@ -1,4 +1,4 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 9999,
-    backgroundColor: Colors.transparent,
+    backgroundColor: ColorPalette.transparent,
     justifyContent: "center",
     alignItems: "center",
   },

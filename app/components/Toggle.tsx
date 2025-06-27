@@ -1,5 +1,5 @@
 // CustomCheckbox.tsx
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import React from "react";
@@ -46,16 +46,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
   },
   toggleOn: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: ColorPalette.secondary,
   },
   toggleOff: {
-    backgroundColor: Colors.muted,
+    backgroundColor: ColorPalette.muted,
   },
   circle: {
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: Colors.toggleCircle,
+    backgroundColor: ColorPalette.toggleCircle,
     position: "absolute",
     top: 3,
   },

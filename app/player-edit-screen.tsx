@@ -1,11 +1,10 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
-import { AntDesign, Foundation, Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Foundation, Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
   Alert,
@@ -15,19 +14,14 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import CustomHeader from "./components/CustomHeader";
 import GenderToggle from "./components/GenderToggle";
 
 const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers } = useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
-
-  // 選択しているレベル
-  // const [selected, setSelected] = useState<string | null>(null);
-  // レベル選択モーダル
-  // const [visible, setVisible] = useState(false);
 
   const textInputRef = useRef<TextInput>(null);
 
@@ -164,38 +158,17 @@ const PlayerEditScreen: React.FC = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "プレイヤー設定",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <AntDesign name="left" size={24} color={Colors.link} />
-              <Text
-                style={{
-                  marginLeft: 6,
-                  fontSize: FONT_SIZE.body,
-                  color: Colors.link,
-                }}
-              >
-                プレイヤー
-              </Text>
-            </TouchableOpacity>
-          ),
-        }}
+      <CustomHeader
+        title="プレイヤー設定"
+        isSlideScreen
+        headerLeftText="プレイヤー"
       />
       <View style={styles.container}>
         <View style={styles.item}>
           <Ionicons
             name="person-outline"
             size={24}
-            color={Colors.normalIcon}
+            color={ColorPalette.normalIcon}
             style={styles.icon}
           />
           <View style={styles.info}>
@@ -213,7 +186,7 @@ const PlayerEditScreen: React.FC = () => {
                 }
                 returnKeyType="done"
               />
-              {/* iOS限定: キーボード上に完了ボタンを表示 */}
+              {/* iOS限定: キーボード上にボタンを表示 */}
               {Platform.OS === "ios" && (
                 <InputAccessoryView nativeID={inputAccessoryViewID}>
                   <View style={styles.accessory}>
@@ -226,7 +199,11 @@ const PlayerEditScreen: React.FC = () => {
           </View>
         </View>
         <View style={styles.item}>
-          <Foundation name="male-female" size={24} color={Colors.normalIcon} />
+          <Foundation
+            name="male-female"
+            size={24}
+            color={ColorPalette.normalIcon}
+          />
           <View style={styles.info}>
             <Text style={styles.label}>性別</Text>
             <GenderToggle
@@ -241,52 +218,13 @@ const PlayerEditScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  buttonArea: {
-    marginTop: 8,
-    flexDirection: "row",
-    columnGap: 16,
-  },
-  selectPairButton: {
-    flex: 1,
-    backgroundColor: Colors.primary,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    ...globalStyles.touch,
-  },
-  selectPairButtonText: {
-    color: Colors.whiteText,
-    fontWeight: "600",
-  },
-  toggleContainer: {
-    flexDirection: "row",
-    backgroundColor: Colors.background,
-    borderRadius: 32,
-    borderWidth: 1,
-    borderColor: Colors.toggleBorder,
-    overflow: "hidden",
-    alignSelf: "flex-start",
-  },
-  modalContent: {
-    backgroundColor: Colors.background,
-    padding: 24,
-    borderRadius: 12,
-    width: "80%",
-    elevation: 4,
-  },
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-  },
   accessory: {
-    backgroundColor: Colors.accessoryBackground,
+    backgroundColor: ColorPalette.accessoryBackground,
     padding: 8,
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderColor: Colors.accessoryborderColor,
+    borderColor: ColorPalette.accessoryborderColor,
   },
   container: {
     flex: 1,
@@ -295,26 +233,20 @@ const styles = StyleSheet.create({
   addPlayerContainer: {
     flexDirection: "row",
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
   input: {
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: Colors.inputBorder,
+    borderColor: ColorPalette.inputBorder,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.borderline,
+    borderColor: ColorPalette.borderline,
     paddingVertical: 32,
   },
   icon: {
@@ -333,7 +265,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   link: {
-    color: Colors.link,
+    color: ColorPalette.link,
     fontSize: FONT_SIZE.small,
   },
 });

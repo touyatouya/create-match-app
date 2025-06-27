@@ -1,13 +1,12 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Filter, Player } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { saveFilters } from "@/utils/saveStorage";
-import { AntDesign } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import React, { useContext, useRef, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -17,10 +16,12 @@ import {
   View,
 } from "react-native";
 import CompleteToast from "../CompleteToast";
+import CustomHeader from "../CustomHeader";
+import PrimaryButton from "../PrimaryButton";
 import TextInput from "../TextInput";
 
-const CreateFilterScreen: React.FC = () => {
-  const { players, setFilters } = useContext(AppContext);
+const UpdateFilterScreen: React.FC = () => {
+  const { players, filters, setFilters } = useContext(AppContext);
 
   const [filter, setFilter] = useState<number[]>([]);
   const [showFilterCreated, setShowFilterCreated] = useState<boolean>(false);
@@ -29,6 +30,21 @@ const CreateFilterScreen: React.FC = () => {
   const [noMemberSelected, setNoMemberSelected] = useState(false);
 
   const router = useRouter();
+
+  const { filterId } = useLocalSearchParams();
+  const id = Number(filterId);
+
+  const isEdit = filterId != null;
+
+  const targetFilter = filters.find((filter) => filter.id === id);
+
+  useEffect(() => {
+    if (isEdit && targetFilter != null) {
+      setFilter(targetFilter.players);
+      setFilterName(targetFilter.name);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const selectPlayer = (id: number) => {
     setFilter((prev) => {
@@ -43,7 +59,7 @@ const CreateFilterScreen: React.FC = () => {
     });
   };
 
-  const createFilter = () => {
+  const updateFilter = () => {
     const isFilterNameEmpty = filterName.trim() === "";
     const isFilterEmpty = filter.length === 0;
 
@@ -52,14 +68,24 @@ const CreateFilterScreen: React.FC = () => {
 
     if (isFilterNameEmpty || isFilterEmpty) return;
 
-    let newFilters: Filter[] = [];
-    setFilters((prev) => {
-      const ids = prev.flatMap((item) => item.id);
-      const id = generateUniqId(ids);
-      const newFilter = { id: id, name: filterName, players: filter };
-      newFilters = [...prev, newFilter];
-      return newFilters;
-    });
+    const ids = filters.flatMap((item) => item.id);
+    const id = generateUniqId(ids);
+    const newFilter = { id: id, name: filterName, players: filter };
+
+    const newFilters: Filter[] = isEdit
+      ? filters.map((item) => {
+          if (item.id === id) {
+            return {
+              id: id,
+              name: filterName,
+              players: filter,
+            };
+          }
+          return { ...item };
+        })
+      : [...filters, newFilter];
+
+    setFilters(newFilters);
     saveFilters(newFilters);
     showSuccessAndGoBack();
   };
@@ -105,37 +131,14 @@ const CreateFilterScreen: React.FC = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "フィルター作成",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                flexDirection: "row",
-                ...globalStyles.touch,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <AntDesign name="left" size={24} color={Colors.link} />
-              <Text
-                style={{
-                  marginLeft: 6,
-                  fontSize: FONT_SIZE.body,
-                  color: Colors.link,
-                }}
-              >
-                フィルター設定
-              </Text>
-            </TouchableOpacity>
-          ),
-        }}
+      <CustomHeader
+        title={isEdit ? "フィルター編集" : "フィルター作成"}
+        isSlideScreen
+        headerLeftText="フィルター設定"
       />
       <CompleteToast
         isOpen={showFilterCreated}
-        message="フィルターを作成しました"
+        message={`フィルターを${isEdit ? "更新" : "作成"}しました`}
       />
       <View style={styles.container}>
         <View style={{ marginBottom: 8 }}>
@@ -172,10 +175,11 @@ const CreateFilterScreen: React.FC = () => {
             }
             style={styles.list}
           />
+          <PrimaryButton
+            text={`フィルターを${isEdit ? "更新" : "作成"}`}
+            onPress={updateFilter}
+          />
         </View>
-        <TouchableOpacity style={styles.button} onPress={createFilter}>
-          <Text style={styles.buttonText}>フィルターを作成</Text>
-        </TouchableOpacity>
       </View>
     </>
   );
@@ -189,18 +193,8 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 12,
   },
-  input: {
-    flex: 1,
-    height: 48,
-    borderWidth: 1,
-    borderColor: Colors.inputBorder,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: Colors.background,
-    paddingRight: 30,
-  },
   validationText: {
-    color: Colors.error,
+    color: ColorPalette.error,
     marginVertical: 8,
     fontSize: FONT_SIZE.small,
   },
@@ -210,18 +204,18 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.title,
   },
   selectedPlayerName: {
-    color: Colors.whiteText,
+    color: ColorPalette.whiteText,
   },
   playerItem: {
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderline,
+    borderBottomColor: ColorPalette.borderline,
     borderRadius: 8,
     marginBottom: 8,
     justifyContent: "space-between",
-    shadowColor: Colors.cardShadow,
+    shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -233,20 +227,20 @@ const styles = StyleSheet.create({
     ...globalStyles.touch,
   },
   selectedPlayerItem: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: ColorPalette.secondary,
     paddingLeft: 14,
     paddingRight: 14,
   },
   selectedBadge: {
     flexDirection: "row",
-    backgroundColor: Colors.badgeBackground,
+    backgroundColor: ColorPalette.badgeBackground,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     marginRight: 10,
   },
   selectedText: {
-    color: Colors.badgeText,
+    color: ColorPalette.badgeText,
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
@@ -255,23 +249,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    color: Colors.emptyText,
+    color: ColorPalette.emptyText,
     marginTop: 20,
-  },
-  button: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginVertical: 12,
-    ...globalStyles.touch,
-  },
-  buttonText: {
-    color: Colors.whiteText,
-    fontSize: FONT_SIZE.body,
-    fontWeight: "bold",
   },
 });
 
-export default CreateFilterScreen;
+export default UpdateFilterScreen;

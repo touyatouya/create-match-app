@@ -1,11 +1,11 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import PrimaryButton from "../components/PrimaryButton";
 
 const CourtScreen: React.FC = () => {
   const { courts, setCourts } = useContext(AppContext);
@@ -31,14 +31,28 @@ const CourtScreen: React.FC = () => {
         <Text style={styles.title}>コート管理</Text>
         <Text style={styles.count}>{courts.length}コート</Text>
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={addCourt}>
-        <Feather name="plus-circle" size={24} color={Colors.whiteText} />
-        <Text style={styles.addButtonText}>コートを追加</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.addButton} onPress={removeCourt}>
-        <Feather name="minus-circle" size={24} color={Colors.whiteText} />
-        <Text style={styles.addButtonText}>コートを削除</Text>
-      </TouchableOpacity>
+      <PrimaryButton
+        text="コートを追加"
+        icon={
+          <Feather
+            name="plus-circle"
+            size={24}
+            color={ColorPalette.whiteText}
+          />
+        }
+        onPress={addCourt}
+      />
+      <PrimaryButton
+        text="コートを削除"
+        icon={
+          <Feather
+            name="minus-circle"
+            size={24}
+            color={ColorPalette.whiteText}
+          />
+        }
+        onPress={removeCourt}
+      />
     </View>
   );
 };
@@ -57,25 +71,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.title,
     fontWeight: 600,
-    color: Colors.sectionTitie,
+    color: ColorPalette.sectionTitie,
   },
   count: {
     fontSize: FONT_SIZE.heading,
-    color: Colors.blackText,
-  },
-  addButton: {
-    backgroundColor: Colors.primary,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginBottom: 8,
-    ...globalStyles.touch,
-  },
-  addButtonText: {
-    color: Colors.whiteText,
-    marginLeft: 8,
-    fontWeight: 600,
+    color: ColorPalette.blackText,
   },
 });
 

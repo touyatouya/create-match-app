@@ -1,21 +1,24 @@
 import { AppProvider } from "@/context/AppContext";
 import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   return (
-    <AppProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen
-          name="(tabs)"
-          options={{
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppProvider>
+        <Stack
+          screenOptions={{
             headerShown: false,
           }}
-        />
-      </Stack>
-    </AppProvider>
+        >
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </AppProvider>
+    </GestureHandlerRootView>
   );
 }

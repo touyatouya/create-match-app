@@ -1,13 +1,9 @@
-import Colors from "@/constants/color";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import {
-  AntDesign,
-  Ionicons,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import {
   Alert,
@@ -18,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { Pair, Player } from "../../../types";
+import CustomHeader from "../CustomHeader";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
@@ -95,6 +92,7 @@ const PairScreen: React.FC = () => {
 
   const NotPaierPlayer = players.filter(
     (player) =>
+      player.isJoin &&
       !pairs.find(
         (pair) => pair.player1 === player.id || pair.player2 === player.id
       )
@@ -150,39 +148,18 @@ const PairScreen: React.FC = () => {
           },
         ]}
       >
-        <Ionicons name="close-circle" size={24} color={Colors.remove} />
+        <Ionicons name="close-circle" size={24} color={ColorPalette.remove} />
       </TouchableOpacity>
     </View>
   );
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: "ペア設定",
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <AntDesign name="left" size={24} color={Colors.link} />
-              <Text
-                style={{
-                  marginLeft: 6,
-                  fontSize: 16,
-                  color: Colors.link,
-                }}
-              >
-                プレイヤー
-              </Text>
-            </TouchableOpacity>
-          ),
-        }}
-      ></Stack.Screen>
+      <CustomHeader
+        title="ペア設定"
+        isSlideScreen
+        headerLeftText="プレイヤー"
+      />
       <View style={styles.container}>
         <SectionList
           sections={sections}
@@ -205,7 +182,7 @@ const PairScreen: React.FC = () => {
                     <MaterialCommunityIcons
                       name="human-male-male"
                       size={24}
-                      color={Colors.normalIcon}
+                      color={ColorPalette.normalIcon}
                     />
                     <Text style={styles.restingSectionTitle}>ペア一覧</Text>
                   </View>
@@ -218,7 +195,7 @@ const PairScreen: React.FC = () => {
                     <MaterialCommunityIcons
                       name="human-male"
                       size={24}
-                      color={Colors.normalIcon}
+                      color={ColorPalette.normalIcon}
                     />
                     <Text style={styles.restingSectionTitle}>
                       ペア未設定プレイヤー
@@ -226,6 +203,22 @@ const PairScreen: React.FC = () => {
                   </View>
                 </View>
               );
+            }
+            return null;
+          }}
+          renderSectionFooter={({ section }) => {
+            if (section.type === "pairs") {
+              return sections.find((s) => s.type === "pairs")?.data.length ===
+                0 ? (
+                <Text style={styles.emptyText}>ペアはありません</Text>
+              ) : null;
+            } else if (section.type === "players") {
+              return sections.find((s) => s.type === "players")?.data.length ===
+                0 ? (
+                <Text style={styles.emptyText}>
+                  参加中でペア未設定のプレイヤーはいません
+                </Text>
+              ) : null;
             }
             return null;
           }}
@@ -240,7 +233,7 @@ const PairScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Colors.primary,
+    backgroundColor: ColorPalette.primary,
     ...globalStyles.touch,
     alignItems: "center",
     justifyContent: "center",
@@ -248,7 +241,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   buttonText: {
-    color: Colors.whiteText,
+    color: ColorPalette.whiteText,
     fontSize: FONT_SIZE.body,
     fontWeight: "bold",
   },
@@ -272,81 +265,27 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  restingCount: {
-    fontSize: 20,
-    fontWeight: "600",
-  },
-  allPlayerButton: {
-    backgroundColor: Colors.primary,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 10,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  addButtonText: {
-    color: Colors.whiteText,
-    marginLeft: 8,
-    fontWeight: "600",
-  },
-  table: {
-    borderWidth: 1,
-    borderColor: Colors.borderline,
-  },
-  row: {
-    flexDirection: "row",
-  },
-  cell: {
-    flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: Colors.borderline,
-    textAlign: "center",
+    color: ColorPalette.sectionTitie,
   },
   container: {
     flex: 1,
     padding: 16,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: Colors.sectionTitie,
-  },
-  addPlayerContainer: {
-    flexDirection: "row",
-    marginBottom: 16,
-  },
-  input: {
-    flex: 1,
-    height: 48,
-    borderWidth: 1,
-    borderColor: Colors.inputBorder,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    backgroundColor: Colors.background,
-  },
-  list: {
-    flex: 1,
+    color: ColorPalette.sectionTitie,
   },
   playerItem: {
-    backgroundColor: Colors.background,
+    backgroundColor: ColorPalette.background,
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderline,
+    borderBottomColor: ColorPalette.borderline,
     borderRadius: 8,
     marginBottom: 8,
     justifyContent: "space-between",
-    shadowColor: Colors.cardShadow,
+    shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -356,7 +295,7 @@ const styles = StyleSheet.create({
     ...globalStyles.touch,
   },
   selectedPlayerItem: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: ColorPalette.secondary,
     paddingLeft: 14,
     paddingRight: 14,
   },
@@ -370,60 +309,24 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   selectedPlayerName: {
-    color: Colors.whiteText,
-  },
-  playerStats: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 8,
-  },
-  matchCountBadge: {
-    backgroundColor: Colors.badgeBackground,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 10,
+    color: ColorPalette.whiteText,
   },
   selectedBadge: {
     flexDirection: "row",
-    backgroundColor: Colors.badgeBackground,
+    backgroundColor: ColorPalette.badgeBackground,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     marginRight: 10,
-  },
-  allJoinBadge: {
-    // flex: 1,
-    flexDirection: "row",
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 10,
-  },
-  matchCountText: {
-    color: Colors.whiteText,
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  restText: {
-    color: Colors.blackText,
-    fontSize: 18,
-    fontWeight: "bold",
   },
   selectedText: {
-    color: Colors.badgeText,
+    color: ColorPalette.badgeText,
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
   },
   emptyText: {
     textAlign: "center",
-    color: Colors.emptyText,
-    marginTop: 20,
-  },
-  joinedPlayer: {
-    marginBottom: 6,
+    color: ColorPalette.emptyText,
   },
 });
 

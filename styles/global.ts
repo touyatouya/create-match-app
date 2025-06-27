@@ -1,3 +1,5 @@
+import ColorPalette from "@/constants/color";
+import { FONT_SIZE } from "@/constants/fonts";
 import { StyleSheet } from "react-native";
 
 export const globalStyles = StyleSheet.create({
@@ -13,5 +15,23 @@ export const globalStyles = StyleSheet.create({
   touch: {
     minWidth: 44,
     minHeight: 44,
+  },
+  headerLeft: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 8,
+  },
+  headerRight: {
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  headerText: {
+    fontSize: FONT_SIZE.subsubheading,
+    color: ColorPalette.link,
   },
 });
