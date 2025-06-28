@@ -18,7 +18,7 @@ import { Filter, Gender, Player } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
-import FilterButtons from "../components/PlayerScreen/filter";
+import FilterButtons from "../components/PlayerScreen/filterButtons";
 import PlayerRow from "../components/PlayerScreen/playerRow";
 import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
 import { Sort } from "../components/PlayerScreen/types";
