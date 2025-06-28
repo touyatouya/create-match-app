@@ -1,7 +1,6 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { Filter, Player } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { saveFilters } from "@/utils/saveStorage";
@@ -12,11 +11,12 @@ import {
   StyleSheet,
   Text,
   TextInput as TextInputOrigin,
-  TouchableOpacity,
   View,
 } from "react-native";
 import CompleteToast from "../CompleteToast";
 import CustomHeader from "../CustomHeader";
+import ListEmptyText from "../ListEmptyText";
+import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
 import TextInput from "../TextInput";
 
@@ -90,32 +90,6 @@ const UpdateFilterScreen: React.FC = () => {
     showSuccessAndGoBack();
   };
 
-  const renderPlayer = ({ item }: { item: Player }) => (
-    <TouchableOpacity
-      onPress={() => selectPlayer(item.id)}
-      style={[
-        styles.playerItem,
-        filter.some((playerId) => playerId === item.id) &&
-          styles.selectedPlayerItem,
-      ]}
-    >
-      <Text
-        style={[
-          styles.playerName,
-          filter.some((playerId) => playerId === item.id) &&
-            styles.selectedPlayerName,
-        ]}
-      >
-        {item.name}
-      </Text>
-      {filter.some((playerId) => playerId === item.id) && (
-        <View style={styles.selectedBadge}>
-          <Text style={styles.selectedText}>選択中</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-
   const showSuccessAndGoBack = () => {
     setShowFilterCreated(true); // 一時的な表示フラグON
 
@@ -165,13 +139,20 @@ const UpdateFilterScreen: React.FC = () => {
         <View style={styles.listContainer}>
           <FlatList
             data={players}
-            renderItem={renderPlayer}
+            renderItem={({ item }: { item: Player }) => (
+              <PlayerItem
+                item={item}
+                onPress={() => selectPlayer(item.id)}
+                isSelected={filter.some((playerId) => playerId === item.id)}
+                selectedText="選択中"
+              />
+            )}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>
-                プレイヤーがいません。追加してください。
-              </Text>
+              <ListEmptyText
+                message={"プレイヤーがいません。\n 追加してください。"}
+              />
             }
             style={styles.list}
           />
@@ -198,59 +179,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     fontSize: FONT_SIZE.small,
   },
-  playerName: {
-    flex: 2,
-    paddingHorizontal: 4,
-    fontSize: FONT_SIZE.title,
-  },
-  selectedPlayerName: {
-    color: ColorPalette.whiteText,
-  },
-  playerItem: {
-    backgroundColor: ColorPalette.background,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: ColorPalette.borderline,
-    borderRadius: 8,
-    marginBottom: 8,
-    justifyContent: "space-between",
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    paddingTop: 14,
-    paddingBottom: 14,
-    paddingLeft: 4,
-    paddingRight: 4,
-    ...globalStyles.touch,
-  },
-  selectedPlayerItem: {
-    backgroundColor: ColorPalette.secondary,
-    paddingLeft: 14,
-    paddingRight: 14,
-  },
-  selectedBadge: {
-    flexDirection: "row",
-    backgroundColor: ColorPalette.badgeBackground,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 10,
-  },
-  selectedText: {
-    color: ColorPalette.badgeText,
-    fontSize: FONT_SIZE.subsubheading,
-    fontWeight: "bold",
-  },
   list: {
     flex: 1,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: ColorPalette.emptyText,
-    marginTop: 20,
   },
 });
 

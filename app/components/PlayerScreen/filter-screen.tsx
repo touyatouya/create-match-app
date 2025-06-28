@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Filter } from "../../../types";
 import CustomHeader from "../CustomHeader";
+import ListEmptyText from "../ListEmptyText";
 import RemoveButton from "../RemoveButton";
 
 const FilterScreen: React.FC = () => {
@@ -109,7 +110,7 @@ const FilterScreen: React.FC = () => {
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>フィルターがありません。</Text>
+            <ListEmptyText message="フィルターがありません" />
           }
           style={styles.list}
         />
@@ -156,11 +157,6 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     padding: 4,
-  },
-  emptyText: {
-    textAlign: "center",
-    color: ColorPalette.emptyText,
-    marginTop: 20,
   },
 });
 

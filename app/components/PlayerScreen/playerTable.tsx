@@ -1,10 +1,10 @@
-import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
 import { useContext, useRef } from "react";
-import { LayoutAnimation, StyleSheet, Text } from "react-native";
+import { LayoutAnimation } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import ListEmptyText from "../ListEmptyText";
 import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {
@@ -113,20 +113,12 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
       ListEmptyComponent={
-        <Text style={styles.emptyText}>
-          {"プレイヤーがいません。\n 右上の＋から追加してください。"}
-        </Text>
+        <ListEmptyText
+          message={"プレイヤーがいません。\n 右上の＋から追加してください。"}
+        />
       }
     />
   );
 };
-
-const styles = StyleSheet.create({
-  emptyText: {
-    textAlign: "center",
-    color: ColorPalette.emptyText,
-    marginTop: 20,
-  },
-});
 
 export default PlayerTable;

@@ -99,10 +99,6 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  emptyText: {
-    textAlign: "center",
-    color: ColorPalette.emptyText,
-  },
   detailSetting: {
     flexDirection: "column",
     alignItems: "flex-start",

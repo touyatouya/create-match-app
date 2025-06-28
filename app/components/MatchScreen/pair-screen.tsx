@@ -14,7 +14,9 @@ import {
 } from "react-native";
 import { Pair, Player } from "../../../types";
 import CustomHeader from "../CustomHeader";
-import RemoveButton from "../RemoveButton";
+import ListEmptyText from "../ListEmptyText";
+import PairItem from "../PairItem";
+import PlayerItem from "../PlayerItem";
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
@@ -64,30 +66,6 @@ const PairScreen: React.FC = () => {
     setPair([]);
   };
 
-  const renderPlayer = ({ item }: { item: Player }) => (
-    <TouchableOpacity
-      onPress={() => selectPlayer(item.id)}
-      style={[
-        styles.playerItem,
-        pair.some((p) => item.id === p) && styles.selectedPlayerItem,
-      ]}
-    >
-      <Text
-        style={[
-          styles.playerName,
-          pair.some((p) => item.id === p) && styles.selectedPlayerName,
-        ]}
-      >
-        {item.name}
-      </Text>
-      {pair.some((p) => item.id === p) && (
-        <View style={styles.selectedBadge}>
-          <Text style={styles.selectedText}>選択中</Text>
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-
   const NotPaierPlayer = players.filter(
     (player) =>
       player.isJoin &&
@@ -125,21 +103,6 @@ const PairScreen: React.FC = () => {
     });
   };
 
-  const renderPair = ({ item }: { item: Pair }) => (
-    <View style={[styles.playerItem, { paddingVertical: 6 }]}>
-      <View style={styles.playerInfo}>
-        <Text style={styles.playerName}>
-          {players.find((player) => player.id === item.player1)?.name}
-        </Text>
-        <Text style={styles.playerName}>・</Text>
-        <Text style={styles.playerName}>
-          {players.find((player) => player.id === item.player2)?.name}
-        </Text>
-      </View>
-      <RemoveButton onPress={() => removePair(item.id)} />
-    </View>
-  );
-
   return (
     <>
       <CustomHeader
@@ -153,11 +116,21 @@ const PairScreen: React.FC = () => {
           keyExtractor={(item, index) => item.id.toString() + index}
           renderItem={({ item, section }) => {
             if (section.type === "pairs") {
-              const pairs = item as Pair;
-              return renderPair({ item: pairs }); // 例: カード表示など
+              return (
+                <PairItem
+                  item={item as Pair}
+                  onPressRemoveButton={() => removePair(item.id)}
+                />
+              );
             } else if (section.type === "players") {
-              const player = item as Player;
-              return renderPlayer({ item: player }); // 例: 名前だけ表示など
+              return (
+                <PlayerItem
+                  item={item as Player}
+                  onPress={() => selectPlayer(item.id)}
+                  isSelected={pair.some((p) => item.id === p)}
+                  selectedText="選択中"
+                />
+              );
             }
             return null;
           }}
@@ -197,14 +170,12 @@ const PairScreen: React.FC = () => {
             if (section.type === "pairs") {
               return sections.find((s) => s.type === "pairs")?.data.length ===
                 0 ? (
-                <Text style={styles.emptyText}>ペアはありません</Text>
+                <ListEmptyText message="ペアはありません" />
               ) : null;
             } else if (section.type === "players") {
               return sections.find((s) => s.type === "players")?.data.length ===
                 0 ? (
-                <Text style={styles.emptyText}>
-                  参加中でペア未設定のプレイヤーはいません
-                </Text>
+                <ListEmptyText message="参加中でペア未設定のプレイヤーはいません" />
               ) : null;
             }
             return null;
@@ -236,14 +207,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
   },
   playerHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 12,
-    marginTop: 12,
+    marginTop: 20,
   },
   restingTitle: {
     flexDirection: "row",
@@ -262,58 +232,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: ColorPalette.sectionTitie,
-  },
-  playerItem: {
-    backgroundColor: ColorPalette.background,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: ColorPalette.borderline,
-    borderRadius: 8,
-    marginBottom: 8,
-    justifyContent: "space-between",
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    paddingVertical: 14,
-    paddingHorizontal: 4,
-    ...globalStyles.touch,
-  },
-  selectedPlayerItem: {
-    backgroundColor: ColorPalette.secondary,
-    paddingLeft: 14,
-    paddingRight: 14,
-  },
-  playerInfo: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  playerName: {
-    fontSize: 24,
-    fontWeight: "500",
-  },
-  selectedPlayerName: {
-    color: ColorPalette.whiteText,
-  },
-  selectedBadge: {
-    flexDirection: "row",
-    backgroundColor: ColorPalette.badgeBackground,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 10,
-  },
-  selectedText: {
-    color: ColorPalette.badgeText,
-    fontSize: FONT_SIZE.subsubheading,
-    fontWeight: "bold",
-  },
-  emptyText: {
-    textAlign: "center",
-    color: ColorPalette.emptyText,
   },
 });
 
