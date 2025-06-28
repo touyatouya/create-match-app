@@ -5,10 +5,8 @@ import { globalStyles } from "@/styles/global";
 import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
-  FlatList,
   LayoutAnimation,
   StyleSheet,
   Text,
@@ -20,6 +18,7 @@ import { Filter, Gender, Player } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
+import FilterButtons from "../components/PlayerScreen/filter";
 import PlayerRow from "../components/PlayerScreen/playerRow";
 import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
 import { Sort } from "../components/PlayerScreen/types";
@@ -91,8 +90,6 @@ const PlayerScreen: React.FC = () => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const router = useRouter();
 
   const removePlayer = (id: number): void => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -202,18 +199,6 @@ const PlayerScreen: React.FC = () => {
     setPlayers(sorted);
   };
 
-  const selectFilter = (id: number) => {
-    setFilteredFilters((prev) => {
-      if (prev.some((item) => item.id === id)) {
-        return prev.filter((item) => item.id !== id);
-      } else {
-        const selectedFilter = filters.find((filter) => filter.id === id);
-        if (selectedFilter == null) return prev;
-        else return [...prev, selectedFilter];
-      }
-    });
-  };
-
   // const clearStorage = async () => {
   //   try {
   //     await AsyncStorage.clear();
@@ -307,78 +292,10 @@ const PlayerScreen: React.FC = () => {
           />
         </View>
         {expanded && (
-          <View style={{ marginBottom: 16 }}>
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: "/components/PlayerScreen/filter-screen",
-                })
-              }
-              style={{
-                alignItems: "flex-end",
-                marginBottom: 8,
-                justifyContent: "center",
-                ...globalStyles.touch,
-              }}
-            >
-              <Text
-                style={{
-                  color: ColorPalette.link,
-                  fontSize: FONT_SIZE.subsubheading,
-                }}
-              >
-                フィルター一覧
-              </Text>
-            </TouchableOpacity>
-            <View>
-              <FlatList
-                data={filters}
-                keyExtractor={(item, index) => `${item}-${index}`}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => {
-                  const isSelectedFilter = filteredFilters.some(
-                    (filterFilter) => filterFilter.id === item.id
-                  );
-                  return (
-                    <TouchableOpacity
-                      style={{
-                        flex: 1,
-                        flexDirection: "row",
-                        marginRight: 8,
-                        ...globalStyles.touch,
-                      }}
-                      onPress={() => selectFilter(item.id)}
-                    >
-                      <View
-                        style={[
-                          styles.filterItem,
-                          isSelectedFilter && styles.selectedFilterItem,
-                        ]}
-                      >
-                        <Text
-                          key={item.id}
-                          style={[
-                            styles.filterItemName,
-                            isSelectedFilter && styles.selectedFilterItemName,
-                          ]}
-                        >
-                          {item.name}
-                        </Text>
-                        {isSelectedFilter && (
-                          <AntDesign
-                            name="closecircle"
-                            size={16}
-                            color={ColorPalette.whiteIcon}
-                          />
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </View>
+          <FilterButtons
+            filteredFilters={filteredFilters}
+            setFilteredFilters={setFilteredFilters}
+          />
         )}
         <View style={{ flexDirection: "row", columnGap: 8, marginBottom: 8 }}>
           <TouchableOpacity style={styles.button} onPress={sortJoin}>
@@ -457,30 +374,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
-  },
-  filterItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: ColorPalette.filterItemBg,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: ColorPalette.secondary,
-    flex: 1,
-    flexDirection: "row",
-    columnGap: 5,
-  },
-  selectedFilterItem: {
-    backgroundColor: ColorPalette.secondary,
-    borderStyle: "solid",
-  },
-  filterItemName: {
-    fontSize: FONT_SIZE.body,
-    color: ColorPalette.filterItemName,
-  },
-  selectedFilterItemName: {
-    color: ColorPalette.whiteText,
   },
   container: {
     flex: 1,
