@@ -17,6 +17,7 @@ import {
 import { Filter } from "../../../types";
 import CustomHeader from "../CustomHeader";
 import ListEmptyText from "../ListEmptyText";
+import NavigateLink from "../NavigateLink";
 import RemoveButton from "../RemoveButton";
 
 const FilterScreen: React.FC = () => {
@@ -88,22 +89,14 @@ const FilterScreen: React.FC = () => {
         }}
       />
       <View style={styles.container}>
-        <TouchableOpacity
+        <NavigateLink
           onPress={() =>
             router.push({
               pathname: "/components/PlayerScreen/filter-update-screen",
             })
           }
-          style={{
-            alignItems: "flex-end",
-            ...globalStyles.touch,
-            justifyContent: "center",
-          }}
-        >
-          <Text style={{ color: ColorPalette.link, fontSize: FONT_SIZE.body }}>
-            フィルター作成
-          </Text>
-        </TouchableOpacity>
+          text="フィルター作成"
+        />
         <FlatList
           data={filters}
           renderItem={renderFilter}

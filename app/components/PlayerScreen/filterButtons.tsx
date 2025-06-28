@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import NavigateLink from "../NavigateLink";
 
 interface FilterButtonsProps {
   filteredFilters: Filter[];
@@ -38,28 +39,14 @@ const FilterButtons: React.FC<FilterButtonsProps> = ({
 
   return (
     <View style={{ marginBottom: 16 }}>
-      <TouchableOpacity
+      <NavigateLink
         onPress={() =>
           router.push({
             pathname: "/components/PlayerScreen/filter-screen",
           })
         }
-        style={{
-          alignItems: "flex-end",
-          marginBottom: 8,
-          justifyContent: "center",
-          ...globalStyles.touch,
-        }}
-      >
-        <Text
-          style={{
-            color: ColorPalette.link,
-            fontSize: FONT_SIZE.subsubheading,
-          }}
-        >
-          フィルター一覧
-        </Text>
-      </TouchableOpacity>
+        text="フィルター一覧"
+      />
       <View>
         <FlatList
           data={filters}
