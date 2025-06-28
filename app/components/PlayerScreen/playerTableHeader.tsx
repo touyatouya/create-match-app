@@ -1,8 +1,10 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { Player } from "@/types";
+import { Gender, Player } from "@/types";
 import { AntDesign } from "@expo/vector-icons";
+import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Checkbox from "../CheckBox";
 import { playerScreenStyles } from "./styles";
@@ -12,21 +14,51 @@ interface PlayerTableHeaderProps {
   filteredPlayers: Player[];
   joinAllPlayer: () => void;
   noJoinAllPlayer: () => void;
-  isSortedGender: Sort | null;
-  sortGender: () => void;
-  isSortedMatchCount: Sort | null;
-  sortMatchCount: () => void;
 }
+
+const genderOrder = {
+  [Gender.男性]: 1,
+  [Gender.女性]: 2,
+  [Gender.未設定]: 3,
+};
+
 const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
   filteredPlayers,
   joinAllPlayer,
   noJoinAllPlayer,
-  isSortedGender,
-  sortGender,
-  isSortedMatchCount,
-  sortMatchCount,
 }) => {
+  const { players, setPlayers } = useContext(AppContext);
+
+  const [isSortedMatchCount, setIsSortedMatchCount] =
+    React.useState<Sort | null>(null);
+  const [isSortedGender, setIsSortedGender] = React.useState<Sort | null>(null);
   const isAllPlayerJoined = filteredPlayers.every((player) => player.isJoin);
+
+  const sortMatchCount = () => {
+    const nextSortOrder = isSortedMatchCount === "asc" ? "desc" : "asc";
+
+    const sorted = [...players].sort((a, b) => {
+      return nextSortOrder === "asc"
+        ? a.matchCount - b.matchCount
+        : b.matchCount - a.matchCount;
+    });
+
+    setIsSortedMatchCount(nextSortOrder);
+    setPlayers(sorted);
+  };
+
+  const sortGender = () => {
+    const nextSortOrder = isSortedGender === "asc" ? "desc" : "asc";
+
+    const sorted = [...players].sort((a, b) => {
+      return nextSortOrder === "asc"
+        ? genderOrder[a.gender] - genderOrder[b.gender]
+        : genderOrder[b.gender] - genderOrder[a.gender];
+    });
+
+    setIsSortedGender(nextSortOrder);
+    setPlayers(sorted);
+  };
 
   return (
     <View style={[playerScreenStyles.row, styles.headerRow]}>

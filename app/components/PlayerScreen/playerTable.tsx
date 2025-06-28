@@ -1,0 +1,132 @@
+import ColorPalette from "@/constants/color";
+import { AppContext } from "@/context/AppContext";
+import { Player } from "@/types";
+import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
+import { useContext, useRef } from "react";
+import { LayoutAnimation, StyleSheet, Text } from "react-native";
+import DraggableFlatList from "react-native-draggable-flatlist";
+import PlayerRow from "./playerRow";
+
+interface PlayerTableProps {
+  filteredPlayers: Player[];
+  setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  isEdit: boolean;
+  isAddingRef: React.RefObject<boolean>;
+}
+const PlayerTable: React.FC<PlayerTableProps> = ({
+  filteredPlayers,
+  setDefaultOrderPlayers,
+  isEdit,
+  isAddingRef,
+}) => {
+  const { players, setPlayers, pairs, setPairs, filters, setFilters } =
+    useContext(AppContext);
+
+  const flatListRef = useRef<any>(null);
+
+  const handleContentSizeChange = () => {
+    if (isAddingRef.current) {
+      flatListRef.current?.scrollToEnd({ animated: true });
+      isAddingRef.current = false;
+    }
+  };
+
+  const joinPlayer = (id: number): void => {
+    const targetPlayer = players.find((player) => player.id === id);
+
+    if (targetPlayer?.isJoin) {
+      const updatePairs = pairs.filter(
+        (pair) => pair.player1 !== id && pair.player2 !== id
+      );
+      setPairs(updatePairs);
+    }
+
+    const updatedPlayers = players.map((player) =>
+      player.id === id ? { ...player, isJoin: !player.isJoin } : player
+    );
+    setPlayers(updatedPlayers);
+  };
+
+  const removePlayer = (id: number): void => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+
+    const newPlayers = players.filter((player) => player.id !== id);
+    setPlayers(newPlayers);
+    savePlayerInfo(
+      newPlayers.map((player) => {
+        return {
+          id: player.id,
+          name: player.name,
+          gender: player.gender,
+          rank: player.rank,
+        };
+      })
+    );
+
+    setDefaultOrderPlayers((prev) => {
+      return prev.filter((player) => player.id !== id);
+    });
+
+    const filterPlayers = filters.flatMap((filter) => [...filter.players]);
+    if (filterPlayers.includes(id)) {
+      const newFilters = filters
+        .map((filter) => {
+          return {
+            ...filter,
+            players: filter.players.filter((player) => player !== id),
+          };
+        })
+        .filter((filter) => filter.players.length > 0);
+      setFilters(newFilters);
+      saveFilters(newFilters);
+    }
+  };
+
+  return (
+    <DraggableFlatList
+      onContentSizeChange={handleContentSizeChange}
+      ref={flatListRef}
+      data={filteredPlayers}
+      onDragEnd={({ data }) => {
+        setPlayers(data);
+        setDefaultOrderPlayers(data);
+        savePlayerInfo(
+          data.map((player) => {
+            return {
+              id: player.id,
+              name: player.name,
+              gender: player.gender,
+              rank: player.rank,
+            };
+          })
+        );
+      }}
+      renderItem={({ item, drag }) => (
+        <PlayerRow
+          item={item}
+          drag={drag}
+          isEdit={isEdit}
+          removePlayer={removePlayer}
+          joinPlayer={joinPlayer}
+        />
+      )}
+      keyExtractor={(item) => item.id.toString()}
+      showsVerticalScrollIndicator={false}
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>
+          {"プレイヤーがいません。\n 右上の＋から追加してください。"}
+        </Text>
+      }
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  emptyText: {
+    textAlign: "center",
+    color: ColorPalette.emptyText,
+    marginTop: 20,
+  },
+});
+
+export default PlayerTable;
