@@ -1,18 +1,12 @@
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { useRouter } from "expo-router";
 import React, { useContext } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import CustomHeader from "../CustomHeader";
 import ListEmptyText from "../ListEmptyText";
 import NavigateLink from "../NavigateLink";
 import FilterList from "./filterList";
+import HeaderRight from "./headerRight";
 
 const FilterScreen: React.FC = () => {
   const { filters } = useContext(AppContext);
@@ -28,23 +22,9 @@ const FilterScreen: React.FC = () => {
         headerLeftText="プレイヤー"
         headerRight={() => {
           if (!isEdit) {
-            return (
-              <TouchableOpacity
-                onPress={() => setIsEdit(true)}
-                style={[globalStyles.headerRight, { marginRight: -8 }]}
-              >
-                <Text style={globalStyles.headerText}>編集</Text>
-              </TouchableOpacity>
-            );
+            return <HeaderRight text="編集" onPress={() => setIsEdit(true)} />;
           } else {
-            return (
-              <TouchableOpacity
-                onPress={() => setIsEdit(false)}
-                style={[globalStyles.headerRight, { marginRight: -8 }]}
-              >
-                <Text style={globalStyles.headerText}>完了</Text>
-              </TouchableOpacity>
-            );
+            return <HeaderRight text="完了" onPress={() => setIsEdit(false)} />;
           }
         }}
       />
