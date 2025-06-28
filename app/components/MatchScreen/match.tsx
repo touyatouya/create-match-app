@@ -95,7 +95,7 @@ const Match: React.FC<MatchProps> = ({
                 playerId={playerId}
                 selectSwapPlayer={selectSwapPlayer}
                 partnerId={partnerId}
-                isEdit={dispRound === gameRounds.length}
+                isSwap={dispRound === gameRounds.length}
               />
             );
           })}
@@ -114,7 +114,7 @@ const Match: React.FC<MatchProps> = ({
                 playerId={playerId}
                 selectSwapPlayer={selectSwapPlayer}
                 partnerId={partnerId}
-                isEdit={dispRound === gameRounds.length}
+                isSwap={dispRound === gameRounds.length}
               />
             );
           })}

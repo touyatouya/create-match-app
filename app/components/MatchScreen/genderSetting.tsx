@@ -2,7 +2,7 @@ import ColorPalette from "@/constants/color";
 import { GenderPreferenceSetting } from "@/types";
 import { Foundation } from "@expo/vector-icons";
 import React from "react";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import Toggle from "../Toggle";
 import { MarchScreenStyles } from "./styles";
 
@@ -18,14 +18,7 @@ const GenderSetting: React.FC<GenderSettingProps> = ({
   setGenderSetting,
 }) => (
   <View style={MarchScreenStyles.detailSettingSection}>
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 8,
-        columnGap: 4,
-      }}
-    >
+    <View style={MarchScreenStyles.settingTitle}>
       <Foundation
         name="male-female"
         size={20}
@@ -33,13 +26,8 @@ const GenderSetting: React.FC<GenderSettingProps> = ({
       />
       <Text style={MarchScreenStyles.sectionText}>性別</Text>
     </View>
-    <View style={{ marginBottom: 4 }}>
-      <View
-        style={{
-          borderBottomWidth: 1,
-          borderBottomColor: ColorPalette.borderline,
-        }}
-      >
+    <View style={styles.item}>
+      <View style={styles.itemBottomBorder}>
         <Toggle
           label="なるべく男子ダブルス"
           checked={genderSetting.men}
@@ -50,12 +38,7 @@ const GenderSetting: React.FC<GenderSettingProps> = ({
           }
         />
       </View>
-      <View
-        style={{
-          borderBottomWidth: 1,
-          borderBottomColor: ColorPalette.borderline,
-        }}
-      >
+      <View style={styles.itemBottomBorder}>
         <Toggle
           label="なるべく女子ダブルス"
           checked={genderSetting.woman}
@@ -78,5 +61,21 @@ const GenderSetting: React.FC<GenderSettingProps> = ({
     </View>
   </View>
 );
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  item: { marginBottom: 4 },
+  itemBottomBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: ColorPalette.borderline,
+  },
+  detailSetting: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: ColorPalette.borderline,
+    marginBottom: 4,
+  },
+});
 
 export default GenderSetting;

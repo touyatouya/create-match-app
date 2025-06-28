@@ -20,14 +20,7 @@ const PairSetting: React.FC = () => {
 
   return (
     <View style={MarchScreenStyles.detailSettingSection}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: 8,
-          columnGap: 4,
-        }}
-      >
+      <View style={MarchScreenStyles.settingTitle}>
         <FontAwesome5
           name="handshake"
           size={20}

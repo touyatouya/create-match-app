@@ -23,14 +23,7 @@ const RestSetting: React.FC = () => {
 
   return (
     <View style={MarchScreenStyles.detailSettingSection}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginBottom: 8,
-          columnGap: 4,
-        }}
-      >
+      <View style={MarchScreenStyles.settingTitle}>
         <Ionicons name="cafe" size={20} />
         <Text style={MarchScreenStyles.sectionText}>休憩</Text>
       </View>

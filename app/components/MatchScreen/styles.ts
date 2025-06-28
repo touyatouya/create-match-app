@@ -26,6 +26,12 @@ export const MarchScreenStyles = StyleSheet.create({
     color: ColorPalette.sectionTitie,
     marginBottom: 8,
   },
+  settingTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+    columnGap: 4,
+  },
   settingPlayerNameText: {
     marginLeft: 6,
     fontSize: FONT_SIZE.small,

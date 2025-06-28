@@ -1,19 +1,15 @@
 import ColorPalette from "@/constants/color";
-import { FONT_SIZE } from "@/constants/fonts";
-import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
-import { useContext } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import GenderIcon from "../GenderIcon";
-import { getPlayerName } from "./util";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { default as PlayerInfo } from "./playerInfo";
 
 interface MatchPlayerProps {
   swapPlayer: number | null;
   playerId: number;
   selectSwapPlayer: (id: number) => void;
   partnerId: number | undefined;
-  isEdit: boolean;
+  isSwap: boolean;
 }
 
 const MatchPlayer: React.FC<MatchPlayerProps> = ({
@@ -21,42 +17,23 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   playerId,
   selectSwapPlayer,
   partnerId,
-  isEdit,
+  isSwap,
 }) => {
-  const { players } = useContext(AppContext);
-
-  const getGender = (id: number) => {
-    return players.find((player) => player.id === id)?.gender;
-  };
-
-  const playerInfo = () => {
-    return (
-      <View style={styles.playerInfo}>
-        <Text style={styles.playerName}>
-          {getPlayerName(playerId, players)}
-        </Text>
-        <Text style={styles.playerGender}>
-          <GenderIcon gender={getGender(playerId)} />
-        </Text>
-      </View>
-    );
-  };
-
   return (
     <>
-      {isEdit ? (
+      {isSwap ? (
         <TouchableOpacity
           key={playerId}
           style={[
             styles.playerButton,
-            isEdit && swapPlayer === playerId && styles.swapPlayerButton,
+            isSwap && swapPlayer === playerId && styles.swapPlayerButton,
           ]}
           onPress={() => {
-            isEdit && swapPlayer !== partnerId && selectSwapPlayer(playerId);
+            isSwap && swapPlayer !== partnerId && selectSwapPlayer(playerId);
           }}
         >
-          {playerInfo()}
-          {isEdit && (
+          <PlayerInfo playerId={playerId} />
+          {isSwap && (
             <Ionicons
               name="swap-horizontal"
               size={18}
@@ -66,7 +43,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
         </TouchableOpacity>
       ) : (
         <View key={playerId} style={styles.playerButton}>
-          {playerInfo()}
+          <PlayerInfo playerId={playerId} />
         </View>
       )}
     </>
@@ -95,14 +72,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-  },
-  playerName: {
-    fontSize: FONT_SIZE.heading,
-    color: ColorPalette.blackText,
-    fontWeight: "500",
-  },
-  playerGender: {
-    marginRight: 8,
   },
 });
 

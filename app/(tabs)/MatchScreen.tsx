@@ -68,7 +68,7 @@ const MatchScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       />
-      <View style={{ flex: 1, padding: 16 }}>
+      <View style={styles.container}>
         <View style={styles.detailSetting}>
           <Disclosure
             isOpen={expanded}
@@ -99,6 +99,7 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
   detailSetting: {
     flexDirection: "column",
     alignItems: "flex-start",

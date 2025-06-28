@@ -14,28 +14,30 @@ import {
 } from "react-native";
 import { Pair, Player } from "../../../types";
 import CustomHeader from "../CustomHeader";
-import ListEmptyText from "../ListEmptyText";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
+import SectionFooter from "./sectionFooter";
+
+type SectionDataItem = Pair | Player;
+
+type Section = {
+  title: string;
+  type: "pairs" | "players";
+  data: SectionDataItem[];
+};
 
 const PairScreen: React.FC = () => {
   const { players, pairs, setPairs } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
 
-  const selectPlayer = (id: number) => {
-    setPair((prev) => {
-      let newPair: number[] = [];
-      if (prev.some((p) => p === id)) {
-        newPair = prev.filter((p) => p !== id);
-      } else if (prev.length === 2) {
-        newPair = [prev[0], id];
-      } else {
-        newPair = [...prev, id];
-      }
-
-      return newPair;
-    });
-  };
+  const selectPlayer = (id: number) =>
+    setPair((prev) =>
+      prev.includes(id)
+        ? prev.filter((p) => p !== id)
+        : prev.length === 2
+        ? [prev[0], id]
+        : [...prev, id]
+    );
 
   const createPair = () => {
     let newPairs: Pair[] = [];
@@ -56,7 +58,7 @@ const PairScreen: React.FC = () => {
       } while (pairIds.includes(newPairId));
 
       const newPair: Pair = {
-        id: prev.length + 1,
+        id: newPairId,
         player1: pair[0],
         player2: pair[1],
       };
@@ -66,6 +68,9 @@ const PairScreen: React.FC = () => {
     setPair([]);
   };
 
+  const removePair = (id: number) =>
+    setPairs((prev) => prev.filter((pair) => pair.id !== id));
+
   const NotPaierPlayer = players.filter(
     (player) =>
       player.isJoin &&
@@ -73,14 +78,6 @@ const PairScreen: React.FC = () => {
         (pair) => pair.player1 === player.id || pair.player2 === player.id
       )
   );
-
-  type SectionDataItem = Pair | Player;
-
-  type Section = {
-    title: string;
-    type: "pairs" | "players";
-    data: SectionDataItem[];
-  };
 
   const sections: Section[] = [
     {
@@ -95,14 +92,6 @@ const PairScreen: React.FC = () => {
     },
   ];
 
-  const removePair = (id: number): void => {
-    let newPairs: Pair[] = [];
-    setPairs((prev) => {
-      newPairs = prev.filter((pair) => pair.id !== id);
-      return newPairs;
-    });
-  };
-
   return (
     <>
       <CustomHeader
@@ -114,72 +103,61 @@ const PairScreen: React.FC = () => {
         <SectionList
           sections={sections}
           keyExtractor={(item, index) => item.id.toString() + index}
-          renderItem={({ item, section }) => {
-            if (section.type === "pairs") {
-              return (
-                <PairItem
-                  item={item as Pair}
-                  onPressRemoveButton={() => removePair(item.id)}
-                />
-              );
-            } else if (section.type === "players") {
-              return (
-                <PlayerItem
-                  item={item as Player}
-                  onPress={() => selectPlayer(item.id)}
-                  isSelected={pair.some((p) => item.id === p)}
-                  selectedText="選択中"
-                />
-              );
-            }
-            return null;
-          }}
-          renderSectionHeader={({ section }) => {
-            if (section.type === "pairs") {
-              return (
-                <View style={styles.pairHeader}>
-                  <View style={styles.restingTitle}>
-                    <MaterialCommunityIcons
-                      name="human-male-male"
-                      size={24}
-                      color={ColorPalette.normalIcon}
-                    />
-                    <Text style={styles.restingSectionTitle}>ペア一覧</Text>
-                  </View>
+          renderItem={({ item, section }) =>
+            section.type === "pairs" ? (
+              <PairItem
+                item={item as Pair}
+                onPressRemoveButton={() => removePair(item.id)}
+              />
+            ) : (
+              <PlayerItem
+                item={item as Player}
+                onPress={() => selectPlayer(item.id)}
+                isSelected={pair.some((p) => item.id === p)}
+                selectedText="選択中"
+              />
+            )
+          }
+          renderSectionHeader={({ section }) =>
+            section.type === "pairs" ? (
+              <View style={styles.pairHeader}>
+                <View style={styles.restingTitle}>
+                  <MaterialCommunityIcons
+                    name="human-male-male"
+                    size={24}
+                    color={ColorPalette.normalIcon}
+                  />
+                  <Text style={styles.restingSectionTitle}>ペア一覧</Text>
                 </View>
-              );
-            } else if (section.type === "players") {
-              return (
-                <View style={styles.playerHeader}>
-                  <View style={styles.restingTitle}>
-                    <MaterialCommunityIcons
-                      name="human-male"
-                      size={24}
-                      color={ColorPalette.normalIcon}
-                    />
-                    <Text style={styles.restingSectionTitle}>
-                      ペア未設定プレイヤー
-                    </Text>
-                  </View>
+              </View>
+            ) : (
+              <View style={styles.playerHeader}>
+                <View style={styles.restingTitle}>
+                  <MaterialCommunityIcons
+                    name="human-male"
+                    size={24}
+                    color={ColorPalette.normalIcon}
+                  />
+                  <Text style={styles.restingSectionTitle}>
+                    ペア未設定プレイヤー
+                  </Text>
                 </View>
-              );
-            }
-            return null;
-          }}
-          renderSectionFooter={({ section }) => {
-            if (section.type === "pairs") {
-              return sections.find((s) => s.type === "pairs")?.data.length ===
-                0 ? (
-                <ListEmptyText message="ペアはありません" />
-              ) : null;
-            } else if (section.type === "players") {
-              return sections.find((s) => s.type === "players")?.data.length ===
-                0 ? (
-                <ListEmptyText message="参加中でペア未設定のプレイヤーはいません" />
-              ) : null;
-            }
-            return null;
-          }}
+              </View>
+            )
+          }
+          renderSectionFooter={({ section }) =>
+            section.type === "pairs" ? (
+              <SectionFooter
+                message="ペアはありません"
+                visible={section.data.length === 0}
+              />
+            ) : (
+              <SectionFooter
+                message="参加中でペア未設定のプレイヤーはいません"
+                visible={section.data.length === 0}
+              />
+            )
+          }
         />
         <TouchableOpacity style={styles.button} onPress={createPair}>
           <Text style={styles.buttonText}>ペア作成</Text>
