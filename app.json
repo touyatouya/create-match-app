@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.touyatouya.creatematchapp",
       "supportsTablet": true
     },
     "android": {
