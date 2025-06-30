@@ -6,28 +6,59 @@ import { FlatList, StyleSheet, View } from "react-native";
 import CustomHeader from "../CustomHeader";
 import ListEmptyText from "../ListEmptyText";
 import PlayerItem from "../PlayerItem";
+import RewardAdButton from "../rewardAdButton";
 
 const EditRestScreen: React.FC = () => {
-  const { players, setPlayers } = useContext(AppContext);
+  const { players, setPlayers, isRestUnlocked, setIsRestUnlocked } =
+    useContext(AppContext);
 
   const { playerId } = useLocalSearchParams();
 
   const id = Number(playerId);
 
   const togglePlayerRest = (id: number) => {
-    setPlayers((prev) => {
-      return prev.map((player) => {
-        if (player.id === id) {
+    const targetPlayer = players.find((player) => player.id === id);
+    if (isRestUnlocked) {
+      setPlayers((prev) => {
+        return prev.map((player) => {
+          if (player.id === id) {
+            return {
+              ...player,
+              isRest: !player.isRest,
+            };
+          }
           return {
             ...player,
-            isRest: !player.isRest,
           };
-        }
-        return {
-          ...player,
-        };
+        });
       });
-    });
+    } else {
+      if (targetPlayer?.isRest) {
+        setPlayers((prev) => {
+          return prev.map((player) => {
+            return {
+              ...player,
+              isRest: false,
+            };
+          });
+        });
+      } else {
+        setPlayers((prev) => {
+          return prev.map((player) => {
+            if (player.id === id) {
+              return {
+                ...player,
+                isRest: true,
+              };
+            }
+            return {
+              ...player,
+              isRest: false,
+            };
+          });
+        });
+      }
+    }
   };
 
   return (
@@ -51,6 +82,12 @@ const EditRestScreen: React.FC = () => {
           }
           style={styles.list}
         />
+        {!isRestUnlocked && (
+          <RewardAdButton
+            onPress={() => setIsRestUnlocked(true)}
+            text="動画を見て休憩を複数人選択できるようにする"
+          />
+        )}
       </View>
     </>
   );

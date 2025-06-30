@@ -14,6 +14,10 @@ type AppContextType = {
   setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isPairUnlocked: boolean;
+  setIsPairUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
+  isRestUnlocked: boolean;
+  setIsRestUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -29,6 +33,10 @@ export const AppContext = createContext<AppContextType>({
   setFilters: () => {},
   isLoading: false,
   setIsLoading: () => {},
+  isPairUnlocked: false,
+  setIsPairUnlocked: () => {},
+  isRestUnlocked: false,
+  setIsRestUnlocked: () => {},
 });
 
 type AppContextProps = {
@@ -42,6 +50,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [pairs, setPairs] = React.useState<Pair[]>([]);
   const [filters, setFilters] = React.useState<Filter[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isPairUnlocked, setIsPairUnlocked] = React.useState<boolean>(false);
+  const [isRestUnlocked, setIsRestUnlocked] = React.useState<boolean>(false);
 
   return (
     <AppContext.Provider
@@ -58,6 +68,10 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setFilters,
         isLoading,
         setIsLoading,
+        isPairUnlocked,
+        setIsPairUnlocked,
+        isRestUnlocked,
+        setIsRestUnlocked,
       }}
     >
       {children}

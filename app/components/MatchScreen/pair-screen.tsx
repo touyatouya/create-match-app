@@ -16,6 +16,7 @@ import { Pair, Player } from "../../../types";
 import CustomHeader from "../CustomHeader";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
+import RewardAdButton from "../rewardAdButton";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;
@@ -27,7 +28,8 @@ type Section = {
 };
 
 const PairScreen: React.FC = () => {
-  const { players, pairs, setPairs } = useContext(AppContext);
+  const { players, pairs, setPairs, isPairUnlocked, setIsPairUnlocked } =
+    useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
 
   const selectPlayer = (id: number) =>
@@ -159,9 +161,16 @@ const PairScreen: React.FC = () => {
             )
           }
         />
-        <TouchableOpacity style={styles.button} onPress={createPair}>
-          <Text style={styles.buttonText}>ペア作成</Text>
-        </TouchableOpacity>
+        {pairs.length < 3 || isPairUnlocked ? (
+          <TouchableOpacity style={styles.button} onPress={createPair}>
+            <Text style={styles.buttonText}>ペア作成</Text>
+          </TouchableOpacity>
+        ) : (
+          <RewardAdButton
+            onPress={() => setIsPairUnlocked(true)}
+            text="動画を見て更にペアを作る"
+          />
+        )}
       </View>
     </>
   );

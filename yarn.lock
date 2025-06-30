@@ -733,7 +733,7 @@
     "@babel/plugin-transform-modules-commonjs" "^7.27.1"
     "@babel/plugin-transform-typescript" "^7.27.1"
 
-"@babel/runtime@^7.18.6", "@babel/runtime@^7.20.0", "@babel/runtime@^7.25.0":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.6", "@babel/runtime@^7.20.0", "@babel/runtime@^7.25.0":
   version "7.27.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.27.6.tgz#ec4070a04d76bae8ddbb10770ba55714a417b7c6"
   integrity sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q==
@@ -1540,6 +1540,11 @@
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.3.tgz#c2b9d2e374ee62c586d3adbea87199b1d7a7a6ba"
   integrity sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==
+
+"@iabtcf/core@^1.5.3":
+  version "1.5.6"
+  resolved "https://registry.yarnpkg.com/@iabtcf/core/-/core-1.5.6.tgz#92568d89252fbf205aa65836703cb0a52e812382"
+  integrity sha512-u2q9thI9vLurYZdGtyJsDYOqoeLc4EgQsYGSc+UVibYII61B/ENJPZS6eFlML1F0hSoTR/goptpo5nGRDkKd2w==
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
@@ -3761,6 +3766,11 @@ depd@2.0.0:
   resolved "https://registry.yarnpkg.com/depd/-/depd-2.0.0.tgz#b696163cc757560d09cf22cc8fad1571b79e76df"
   integrity sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==
 
+dequal@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
+  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
+
 destroy@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.2.0.tgz#4803735509ad8be552934c67df614f94e66fa015"
@@ -4447,6 +4457,39 @@ expo-constants@~17.1.5, expo-constants@~17.1.6:
   dependencies:
     "@expo/config" "~11.0.9"
     "@expo/env" "~1.0.5"
+
+expo-dev-client@~5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-5.2.2.tgz#f6ea3c8895ff2f96a6a03cde9aad2aa8671f6f9a"
+  integrity sha512-shOMVwnfpq8ptpix+KveFz9UWv4SNxqxFYkEvRfsgyLiUG8O1vXE0FaZUNZgF+idOPGuO6C34YZM6pLzE0Dd6A==
+  dependencies:
+    expo-dev-launcher "5.1.14"
+    expo-dev-menu "6.1.12"
+    expo-dev-menu-interface "1.10.0"
+    expo-manifests "~0.16.5"
+    expo-updates-interface "~1.1.0"
+
+expo-dev-launcher@5.1.14:
+  version "5.1.14"
+  resolved "https://registry.yarnpkg.com/expo-dev-launcher/-/expo-dev-launcher-5.1.14.tgz#509dab73af61c551a5dfafa36b6a63bc072a0bcc"
+  integrity sha512-pxXqn8xCgOuc+W32mRJ9DiVK7O0zmGTG/ePd3kw53Xg1PKB9iOeYNty53qZEkIWjt8xdqS0JdECQT4qjgA2d1g==
+  dependencies:
+    ajv "8.11.0"
+    expo-dev-menu "6.1.12"
+    expo-manifests "~0.16.5"
+    resolve-from "^5.0.0"
+
+expo-dev-menu-interface@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/expo-dev-menu-interface/-/expo-dev-menu-interface-1.10.0.tgz#04671bda3c163d1d7b9438ce7095c3913a3f53f9"
+  integrity sha512-NxtM/qot5Rh2cY333iOE87dDg1S8CibW+Wu4WdLua3UMjy81pXYzAGCZGNOeY7k9GpNFqDPNDXWyBSlk9r2pBg==
+
+expo-dev-menu@6.1.12:
+  version "6.1.12"
+  resolved "https://registry.yarnpkg.com/expo-dev-menu/-/expo-dev-menu-6.1.12.tgz#9bb8886265dd40e9a5ed3846e4d58e06b605feee"
+  integrity sha512-Bz8yjZ6a+u7ZrZWzfn3aCgBwAX+QB0ktQyV7QMS5/agyesKiqM43+VdwNQqrm8w9tS8HZ2sf6RTvdek8YgOEHg==
+  dependencies:
+    expo-dev-menu-interface "1.10.0"
 
 expo-eas-client@~0.14.3:
   version "0.14.3"
@@ -7257,6 +7300,14 @@ react-native-gesture-handler@~2.24.0:
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
 
+react-native-google-mobile-ads@^15.4.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-google-mobile-ads/-/react-native-google-mobile-ads-15.4.0.tgz#5ce456b5f63ff5a8b87c31ab01643eda62b727df"
+  integrity sha512-ukTPpTutSsWW9HezushfHR0kIVrWBbbeuyZZwYVCGda9EyDQjW5s6kGmfZ4qJ7tJSvVq1qLR+Hu+W0L3TmNonA==
+  dependencies:
+    "@iabtcf/core" "^1.5.3"
+    use-deep-compare-effect "^1.8.1"
+
 react-native-is-edge-to-edge@1.1.7, react-native-is-edge-to-edge@^1.1.6:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz#28947688f9fafd584e73a4f935ea9603bd9b1939"
@@ -8636,6 +8687,14 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-deep-compare-effect@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/use-deep-compare-effect/-/use-deep-compare-effect-1.8.1.tgz#ef0ce3b3271edb801da1ec23bf0754ef4189d0c6"
+  integrity sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    dequal "^2.0.2"
 
 use-latest-callback@^0.2.3, use-latest-callback@^0.2.4:
   version "0.2.4"

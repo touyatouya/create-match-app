@@ -4,12 +4,14 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 import { GenderPreferenceSetting } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import GenderSetting from "../components/MatchScreen/genderSetting";
 import PairSetting from "../components/MatchScreen/pairSetting";
 import RestSetting from "../components/MatchScreen/restSetting";
+import MyAdmob from "../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
   const { setPlayers, setGameRounds } = useContext(AppContext);
@@ -94,6 +96,7 @@ const MatchScreen: React.FC = () => {
           setDispRound={setDispRound}
         />
       </View>
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );
 };

@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.touyatouya.creatematchapp",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -33,6 +36,15 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7669516331915248~2675069065",
+          "iosAppId": "ca-app-pub-7669516331915248~2675069065",
+          "delay_app_measurement_init": true,
+          "user_tracking_usage_description": "許可することで、より関連性の高い広告を表示することができるようになります。"
         }
       ]
     ],

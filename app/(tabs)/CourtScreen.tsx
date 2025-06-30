@@ -5,6 +5,8 @@ import { generateUniqId } from "@/utils/createId";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { BannerAdSize } from "react-native-google-mobile-ads";
+import MyAdmob from "../components/MyAdmob";
 import PrimaryButton from "../components/PrimaryButton";
 
 const CourtScreen: React.FC = () => {
@@ -26,38 +28,42 @@ const CourtScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>コート管理</Text>
-        <Text style={styles.count}>{courts.length}コート</Text>
+    <View style={styles.page}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>コート管理</Text>
+          <Text style={styles.count}>{courts.length}コート</Text>
+        </View>
+        <PrimaryButton
+          text="コートを追加"
+          icon={
+            <Feather
+              name="plus-circle"
+              size={24}
+              color={ColorPalette.whiteText}
+            />
+          }
+          onPress={addCourt}
+        />
+        <PrimaryButton
+          text="コートを削除"
+          icon={
+            <Feather
+              name="minus-circle"
+              size={24}
+              color={ColorPalette.whiteText}
+            />
+          }
+          onPress={removeCourt}
+        />
       </View>
-      <PrimaryButton
-        text="コートを追加"
-        icon={
-          <Feather
-            name="plus-circle"
-            size={24}
-            color={ColorPalette.whiteText}
-          />
-        }
-        onPress={addCourt}
-      />
-      <PrimaryButton
-        text="コートを削除"
-        icon={
-          <Feather
-            name="minus-circle"
-            size={24}
-            color={ColorPalette.whiteText}
-          />
-        }
-        onPress={removeCourt}
-      />
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  page: { flex: 1, justifyContent: "space-between" },
   container: {
     padding: 16,
     borderRadius: 8,

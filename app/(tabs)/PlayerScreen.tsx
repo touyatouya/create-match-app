@@ -6,9 +6,11 @@ import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 import { Filter, Player } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
+import MyAdmob from "../components/MyAdmob";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 import FilterButtons from "../components/PlayerScreen/filterButtons";
 import HeaderSortButtons from "../components/PlayerScreen/headerSortButtons";
@@ -100,7 +102,7 @@ const PlayerScreen: React.FC = () => {
   };
 
   return (
-    <>
+    <View style={styles.page}>
       <CustomHeader
         title="プレイヤー"
         headerRight={() =>
@@ -170,11 +172,13 @@ const PlayerScreen: React.FC = () => {
           isAddingRef={isAddingRef}
         />
       </View>
-    </>
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  page: { flex: 1, justifyContent: "space-between" },
   container: {
     flex: 1,
     padding: 16,

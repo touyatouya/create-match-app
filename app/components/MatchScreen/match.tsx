@@ -20,6 +20,7 @@ import {
 } from "../../../types";
 import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
+import RewardAdButton from "../rewardAdButton";
 import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
 
@@ -365,32 +366,42 @@ const Match: React.FC<MatchProps> = ({
     }
   }, [dispRound, setIsLoading]);
 
+  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
+
   return (
     <View style={{ flex: 1 }}>
-      <PrimaryButton
-        text="新しい組み合わせを生成"
-        icon={
-          <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-        }
-        onPress={() => {
-          setIsLoading(true);
-          setTimeout(() => {
-            createMatch(
-              players,
-              setPlayers,
-              courts,
-              gameRounds,
-              setGameRounds,
-              pairs,
-              matches,
-              setSwapPlayer,
-              genderSetting,
-              setDispRound,
-              setIsLoading
-            );
-          }, 0);
-        }}
-      />
+      {numOfGenerate < 5 ? (
+        <PrimaryButton
+          text="新しい組み合わせを生成"
+          icon={
+            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
+          }
+          onPress={() => {
+            setIsLoading(true);
+            setTimeout(() => {
+              createMatch(
+                players,
+                setPlayers,
+                courts,
+                gameRounds,
+                setGameRounds,
+                pairs,
+                matches,
+                setSwapPlayer,
+                genderSetting,
+                setDispRound,
+                setIsLoading
+              );
+            }, 0);
+            setNumOfGenerate((prev) => prev + 1);
+          }}
+        />
+      ) : (
+        <RewardAdButton
+          onPress={() => setNumOfGenerate(0)}
+          text="動画を見て更に組み合わせを作る"
+        />
+      )}
       <View
         style={{
           flexDirection: "row",
@@ -411,7 +422,7 @@ const Match: React.FC<MatchProps> = ({
             <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>
         ) : (
-          <View style={{ width: 44 }}></View>
+          <View style={{ ...globalStyles.touch }}></View>
         )}
         {dispRound > 0 && (
           <Text
@@ -435,7 +446,7 @@ const Match: React.FC<MatchProps> = ({
             <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>
         ) : (
-          <View style={{ width: 44 }}></View>
+          <View style={{ ...globalStyles.touch }}></View>
         )}
       </View>
       {gameRounds[dispRound - 1] != null && (
@@ -478,6 +489,7 @@ const Match: React.FC<MatchProps> = ({
           }}
         />
       )}
+      {/* <RewardAdButton onPress={() => setNumOfGenerate(0)} /> */}
     </View>
   );
 };
