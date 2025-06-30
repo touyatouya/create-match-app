@@ -13,10 +13,6 @@ const adUnitId = __DEV__
   ? TestIds.REWARDED
   : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
 
-const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  keywords: ["fashion", "clothing"],
-});
-
 interface PrimaryRewardAdButtonProps {
   onPress?: () => void; // Not used in this component
   text: string;
@@ -26,31 +22,56 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
   onPress,
   text,
 }) => {
+  const [rewarded, setRewarded] = useState<RewardedAd | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const unsubscribeLoaded = rewarded.addAdEventListener(
+    const adInstance = RewardedAd.createForAdRequest(adUnitId, {
+      keywords: ["fashion", "clothing"],
+    });
+    setRewarded(adInstance);
+
+    const unsubscribeLoaded = adInstance.addAdEventListener(
       RewardedAdEventType.LOADED,
       () => {
         setLoaded(true);
       }
     );
-    const unsubscribeEarned = rewarded.addAdEventListener(
+    const unsubscribeEarned = adInstance.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
       (reward) => {
         console.log("User earned reward of ", reward);
       }
     );
 
-    // Start loading the rewarded ad straight away
-    rewarded.load();
+    adInstance.load();
 
-    // Unsubscribe from events on unmount
     return () => {
       unsubscribeLoaded();
       unsubscribeEarned();
     };
   }, []);
+
+  const handlePress = () => {
+    if (loaded && rewarded) {
+      rewarded.show();
+      setLoaded(false); // 次回のために初期化
+      // 新しい広告をロード
+      const newAd = RewardedAd.createForAdRequest(adUnitId, {
+        keywords: ["fashion", "clothing"],
+      });
+      setRewarded(newAd);
+      newAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
+        setLoaded(true);
+      });
+      newAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, (reward) => {
+        console.log("User earned reward of ", reward);
+      });
+      newAd.load();
+
+      onPress?.();
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -60,7 +81,7 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
       ]}
       onPress={() => {
         if (loaded) {
-          rewarded.show();
+          handlePress();
           onPress && onPress();
         }
       }}
