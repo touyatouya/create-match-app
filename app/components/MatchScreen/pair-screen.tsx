@@ -13,7 +13,9 @@ import {
   View,
 } from "react-native";
 import { Pair, Player } from "../../../types";
+import AdCompleteSnackbar from "../AdCompleteSnackbar";
 import CustomHeader from "../CustomHeader";
+import Loading from "../Loading";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
 import RewardAdButton from "../rewardAdButton";
@@ -28,9 +30,16 @@ type Section = {
 };
 
 const PairScreen: React.FC = () => {
-  const { players, pairs, setPairs, isPairUnlocked, setIsPairUnlocked } =
-    useContext(AppContext);
+  const {
+    players,
+    pairs,
+    setPairs,
+    isPairUnlocked,
+    setIsPairUnlocked,
+    isLoading,
+  } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const selectPlayer = (id: number) =>
     setPair((prev) =>
@@ -161,6 +170,12 @@ const PairScreen: React.FC = () => {
             )
           }
         />
+        <AdCompleteSnackbar
+          visiable={snackbarVisible}
+          message={`ペア数の制限が解除されました！`}
+          onDismiss={() => setSnackbarVisible(false)}
+          onPressLabel={() => setSnackbarVisible(false)}
+        />
         {pairs.length < 3 || isPairUnlocked ? (
           <TouchableOpacity style={styles.button} onPress={createPair}>
             <Text style={styles.buttonText}>ペア作成</Text>
@@ -169,9 +184,11 @@ const PairScreen: React.FC = () => {
           <RewardAdButton
             onPress={() => setIsPairUnlocked(true)}
             text="動画を見て更にペアを作る"
+            setSnackbarVisible={setSnackbarVisible}
           />
         )}
       </View>
+      {isLoading && <Loading />}
     </>
   );
 };

@@ -38,6 +38,7 @@ interface MatchProps {
   genderSetting: GenderPreferenceSetting;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
+  setSnackbarVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Match: React.FC<MatchProps> = ({
@@ -46,6 +47,7 @@ const Match: React.FC<MatchProps> = ({
   genderSetting,
   dispRound,
   setDispRound,
+  setSnackbarVisible,
 }) => {
   const {
     players,
@@ -56,6 +58,8 @@ const Match: React.FC<MatchProps> = ({
     courts,
     setIsLoading,
   } = useContext(AppContext);
+
+  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
 
   const selectSwapPlayer = (id: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -366,8 +370,6 @@ const Match: React.FC<MatchProps> = ({
     }
   }, [dispRound, setIsLoading]);
 
-  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
-
   return (
     <View style={{ flex: 1 }}>
       {numOfGenerate < 5 ? (
@@ -400,6 +402,7 @@ const Match: React.FC<MatchProps> = ({
         <RewardAdButton
           onPress={() => setNumOfGenerate(0)}
           text="動画を見て更に組み合わせを作る"
+          setSnackbarVisible={setSnackbarVisible}
         />
       )}
       <View
@@ -489,7 +492,6 @@ const Match: React.FC<MatchProps> = ({
           }}
         />
       )}
-      {/* <RewardAdButton onPress={() => setNumOfGenerate(0)} /> */}
     </View>
   );
 };

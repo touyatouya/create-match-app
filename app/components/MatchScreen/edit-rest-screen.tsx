@@ -1,16 +1,20 @@
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { useLocalSearchParams } from "expo-router";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
+import AdCompleteSnackbar from "../AdCompleteSnackbar";
 import CustomHeader from "../CustomHeader";
 import ListEmptyText from "../ListEmptyText";
+import Loading from "../Loading";
 import PlayerItem from "../PlayerItem";
 import RewardAdButton from "../rewardAdButton";
 
 const EditRestScreen: React.FC = () => {
-  const { players, setPlayers, isRestUnlocked, setIsRestUnlocked } =
+  const { players, setPlayers, isRestUnlocked, setIsRestUnlocked, isLoading } =
     useContext(AppContext);
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const { playerId } = useLocalSearchParams();
 
@@ -82,13 +86,21 @@ const EditRestScreen: React.FC = () => {
           }
           style={styles.list}
         />
+        <AdCompleteSnackbar
+          visiable={snackbarVisible}
+          message={`休憩人数の上限が解除されました！`}
+          onDismiss={() => setSnackbarVisible(false)}
+          onPressLabel={() => setSnackbarVisible(false)}
+        />
         {!isRestUnlocked && (
           <RewardAdButton
             onPress={() => setIsRestUnlocked(true)}
             text="動画を見て休憩を複数人選択できるようにする"
+            setSnackbarVisible={setSnackbarVisible}
           />
         )}
       </View>
+      {isLoading && <Loading />}
     </>
   );
 };

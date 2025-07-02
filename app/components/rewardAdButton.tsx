@@ -1,7 +1,8 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import {
   RewardedAd,
@@ -14,14 +15,26 @@ const adUnitId = __DEV__
   : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
 
 interface PrimaryRewardAdButtonProps {
-  onPress?: () => void; // Not used in this component
+  onPress?: () => void;
   text: string;
+  setSnackbarVisible: (value: React.SetStateAction<boolean>) => void;
 }
 
 const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
   onPress,
   text,
+  setSnackbarVisible,
 }) => {
+  const {
+    players,
+    setPlayers,
+    gameRounds,
+    setGameRounds,
+    pairs,
+    courts,
+    setIsLoading,
+  } = useContext(AppContext);
+
   const [rewarded, setRewarded] = useState<RewardedAd | null>(null);
   const [loaded, setLoaded] = useState(false);
 
@@ -40,7 +53,7 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
     const unsubscribeEarned = adInstance.addAdEventListener(
       RewardedAdEventType.EARNED_REWARD,
       (reward) => {
-        console.log("User earned reward of ", reward);
+        setSnackbarVisible(true);
       }
     );
 
@@ -50,24 +63,30 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
       unsubscribeLoaded();
       unsubscribeEarned();
     };
-  }, []);
+  }, [setSnackbarVisible]);
 
   const handlePress = () => {
     if (loaded && rewarded) {
-      rewarded.show();
+      setIsLoading(true);
       setLoaded(false); // 次回のために初期化
       // 新しい広告をロード
       const newAd = RewardedAd.createForAdRequest(adUnitId, {
         keywords: ["fashion", "clothing"],
       });
-      setRewarded(newAd);
+
       newAd.addAdEventListener(RewardedAdEventType.LOADED, () => {
+        setIsLoading(false);
         setLoaded(true);
+        newAd.show();
       });
+
       newAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, (reward) => {
-        console.log("User earned reward of ", reward);
+        setSnackbarVisible(true);
       });
+
       newAd.load();
+
+      setRewarded(newAd);
 
       onPress?.();
     }
@@ -96,7 +115,7 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: ColorPalette.primary,
+    backgroundColor: ColorPalette.successBackground,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

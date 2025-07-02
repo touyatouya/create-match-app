@@ -6,6 +6,7 @@ import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { BannerAdSize } from "react-native-google-mobile-ads";
 import { GenderPreferenceSetting } from "../../types";
+import AdCompleteSnackbar from "../components/AdCompleteSnackbar";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
 import GenderSetting from "../components/MatchScreen/genderSetting";
@@ -25,6 +26,7 @@ const MatchScreen: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
   const [dispRound, setDispRound] = React.useState<number>(0);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const resetGameRound = useCallback(() => {
     setGameRounds([]);
@@ -94,8 +96,15 @@ const MatchScreen: React.FC = () => {
           genderSetting={genderSetting}
           dispRound={dispRound}
           setDispRound={setDispRound}
+          setSnackbarVisible={setSnackbarVisible}
         />
       </View>
+      <AdCompleteSnackbar
+        visiable={snackbarVisible}
+        message={`あと5試合作成できるようになりました！`}
+        onDismiss={() => setSnackbarVisible(false)}
+        onPressLabel={() => setSnackbarVisible(false)}
+      />
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );

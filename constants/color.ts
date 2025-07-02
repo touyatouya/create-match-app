@@ -4,6 +4,7 @@ const ColorPalette = {
   thirdry: "#DFEFF9",
   accent: "#B65F2C",
   success: "#4CAF50",
+  successBackground: "#3C8C40",
   toggleBackground: "#f8f9fa",
   background: "white",
   men: "#0060a1",

@@ -1,10 +1,9 @@
-import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { useContext } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import Loading from "../components/Loading";
 import CourtIcon from "./../../assets/images/court.svg";
 
 export default function TabsLayout() {
@@ -50,25 +49,7 @@ export default function TabsLayout() {
           }}
         />
       </Tabs>
-      {isLoading && (
-        <View style={styles.overlay} pointerEvents="auto">
-          <ActivityIndicator size="large" color="#fff" />
-        </View>
-      )}
+      {isLoading && <Loading />}
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 9999,
-    backgroundColor: ColorPalette.transparent,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
