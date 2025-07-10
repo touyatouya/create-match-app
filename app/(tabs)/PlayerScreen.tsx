@@ -165,12 +165,14 @@ const PlayerScreen: React.FC = () => {
           joinAllPlayer={joinAllPlayer}
           noJoinAllPlayer={noJoinAllPlayer}
         />
-        <PlayerTable
-          filteredPlayers={filteredPlayers}
-          setDefaultOrderPlayers={setDefaultOrderPlayers}
-          isEdit={isEdit}
-          isAddingRef={isAddingRef}
-        />
+        <View style={{ flex: 1 }}>
+          <PlayerTable
+            filteredPlayers={filteredPlayers}
+            setDefaultOrderPlayers={setDefaultOrderPlayers}
+            isEdit={isEdit}
+            isAddingRef={isAddingRef}
+          />
+        </View>
       </View>
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </View>
@@ -178,7 +180,7 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  page: { flex: 1, justifyContent: "space-between" },
+  page: { flex: 1 },
   container: {
     flex: 1,
     padding: 16,
