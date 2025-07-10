@@ -90,6 +90,7 @@ const MatchScreen: React.FC = () => {
             </>
           )}
         </View>
+        {/* <Court /> */}
         <Match
           swapPlayer={swapPlayer}
           setSwapPlayer={setSwapPlayer}

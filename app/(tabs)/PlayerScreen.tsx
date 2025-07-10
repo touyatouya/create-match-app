@@ -192,12 +192,11 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: FONT_SIZE.subheading,
-    fontWeight: 500,
     flexShrink: 1,
   },
   joinedPlayer: {
     fontSize: FONT_SIZE.subheading,
-    fontWeight: 500,
+    fontWeight: 600,
   },
 });
 

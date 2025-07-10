@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: FONT_SIZE.subsubheading,
-    fontWeight: "bold",
     color: ColorPalette.blackText,
   },
 });
