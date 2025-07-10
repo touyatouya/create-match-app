@@ -18,11 +18,15 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen
-          name="CourtScreen"
+          name="MatchScreen"
           options={{
-            title: "コート",
+            title: "試合",
             tabBarIcon: ({ color }) => (
-              <CourtIcon width={28} height={28} color={color} />
+              <MaterialCommunityIcons
+                name="badminton"
+                size={28}
+                color={color}
+              />
             ),
           }}
         />
@@ -36,15 +40,11 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="MatchScreen"
+          name="CourtScreen"
           options={{
-            title: "試合",
+            title: "コート",
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons
-                name="badminton"
-                size={28}
-                color={color}
-              />
+              <CourtIcon width={28} height={28} color={color} />
             ),
           }}
         />
