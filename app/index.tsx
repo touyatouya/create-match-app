@@ -35,5 +35,5 @@ export default function Index() {
     });
   }, []);
 
-  return <Redirect href="/CourtScreen" />;
+  return <Redirect href="/MatchScreen" />;
 }
