@@ -2086,10 +2086,10 @@
   dependencies:
     nanoid "^3.3.11"
 
-"@revenuecat/purchases-typescript-internal@14.2.0":
-  version "14.2.0"
-  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-typescript-internal/-/purchases-typescript-internal-14.2.0.tgz#3c86d6e8410db33a6c40aa5fe279dad3c2418644"
-  integrity sha512-C/9RB2fZk/19HxCO+iFIMBR6WG5TtioUtHlsB7evYwLlHetMFmz79VNcRN1yXmHs1pcLcoRd/tnw9P0neG/54Q==
+"@revenuecat/purchases-typescript-internal@15.0.0":
+  version "15.0.0"
+  resolved "https://registry.yarnpkg.com/@revenuecat/purchases-typescript-internal/-/purchases-typescript-internal-15.0.0.tgz#9197fb1218238ac695a799b8c06d648430214f13"
+  integrity sha512-EUR2jD8zk59MNON3vYpU90J+rvLxP09jO1/x2rSMV8w6dd5BGoxIP5x5So5HdISfz5Lz1egeVbc2LQ+5Ord4fw==
 
 "@rtsao/scc@^1.1.0":
   version "1.1.0"
@@ -7326,20 +7326,19 @@ react-native-paper@^5.14.5:
     color "^3.1.2"
     use-latest-callback "^0.2.3"
 
-react-native-purchases-ui@^8.11.9:
-  version "8.11.9"
-  resolved "https://registry.yarnpkg.com/react-native-purchases-ui/-/react-native-purchases-ui-8.11.9.tgz#597c8dc217f8e6469d7378696f76d27693ad280e"
-  integrity sha512-3lIF4uLzK9QLIDw18OwL5dTaglfkuL9Wro5kG0uhekCxM9BcVD0kgWkiBzZaOFYZ4YBt5Sqe2LKBv6JILU49PA==
+react-native-purchases-ui@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-purchases-ui/-/react-native-purchases-ui-9.0.0.tgz#96e373c51223e7e66200db1a99c3d297532406eb"
+  integrity sha512-vgrI5F8R8diYCjt5F1JzDHRc/LDT43gMegDfzDYZvfF3qCzKdDEviaVKOsn3I3PTU1mI8uMSflA4H7cYeF9h3g==
   dependencies:
-    "@revenuecat/purchases-typescript-internal" "14.2.0"
-    react-native-purchases "8.11.9"
+    "@revenuecat/purchases-typescript-internal" "15.0.0"
 
-react-native-purchases@8.11.9, react-native-purchases@^8.11.9:
-  version "8.11.9"
-  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-8.11.9.tgz#500138395f1c82244fc1e095f8afa2fe6d19dd88"
-  integrity sha512-pGv0KbZUAL5ivsvRqfcIkbQ6KdBJ2W5gxI4LyVUg0e86DLpFw7lhz/YXDx3QzVzxSzILZoNfqac1lucGInzBqQ==
+react-native-purchases@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-9.0.0.tgz#5fa2eb8163fec063bda40950bbce7921774b4e3e"
+  integrity sha512-zBcP15n07CujuYAwEX3kWWjo5O9xwME6WLhuGAsQ5zbkP3eNM3TQtIM1O4HDxNZxkRlpZn1Z3YYWtJ1v/ljqMQ==
   dependencies:
-    "@revenuecat/purchases-typescript-internal" "14.2.0"
+    "@revenuecat/purchases-typescript-internal" "15.0.0"
 
 react-native-reanimated@~3.17.4:
   version "3.17.5"

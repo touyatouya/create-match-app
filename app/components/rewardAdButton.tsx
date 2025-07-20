@@ -10,9 +10,8 @@ import {
   TestIds,
 } from "react-native-google-mobile-ads";
 
-const adUnitId = __DEV__
-  ? TestIds.REWARDED
-  : "ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy";
+const adUnitId = __DEV__ ? TestIds.REWARDED : TestIds.REWARDED;
+// : "ca-app-pub-7669516331915248/9636196680";
 
 interface PrimaryRewardAdButtonProps {
   onPress?: () => void;
@@ -25,15 +24,7 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
   text,
   setSnackbarVisible,
 }) => {
-  const {
-    players,
-    setPlayers,
-    gameRounds,
-    setGameRounds,
-    pairs,
-    courts,
-    setIsLoading,
-  } = useContext(AppContext);
+  const { setIsLoading } = useContext(AppContext);
 
   const [rewarded, setRewarded] = useState<RewardedAd | null>(null);
   const [loaded, setLoaded] = useState(false);

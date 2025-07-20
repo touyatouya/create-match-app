@@ -1,5 +1,4 @@
 import React from "react";
-import { Platform } from "react-native";
 import {
   BannerAd,
   BannerAdSize,
@@ -21,10 +20,10 @@ export default function MyAdmob(props: Props) {
 
   // 実際に広告配信する際のID
   // 広告ユニット（バナー）を作成した際に表示されたものを設定する
-  const adUnitID = Platform.select({
-    ios: "ca-app-pub-7669516331915248/9420440810",
-    android: "ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy",
-  });
+  // const adUnitID = Platform.select({
+  //   ios: "ca-app-pub-7669516331915248/9420440810",
+  //   android: "ca-app-pub-xxxxxxxxxxxxxxxx/yyyyyyyyyy",
+  // });
 
   // プレミアムユーザーは広告を表示しない
   //   if (isPremium) {

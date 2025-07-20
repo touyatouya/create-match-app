@@ -18,6 +18,8 @@ type AppContextType = {
   setIsPairUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
   isRestUnlocked: boolean;
   setIsRestUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
+  isProUser: boolean;
+  setIsProUser: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -37,6 +39,8 @@ export const AppContext = createContext<AppContextType>({
   setIsPairUnlocked: () => {},
   isRestUnlocked: false,
   setIsRestUnlocked: () => {},
+  isProUser: false,
+  setIsProUser: () => {},
 });
 
 type AppContextProps = {
@@ -52,6 +56,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isPairUnlocked, setIsPairUnlocked] = React.useState<boolean>(false);
   const [isRestUnlocked, setIsRestUnlocked] = React.useState<boolean>(false);
+  const [isProUser, setIsProUser] = React.useState<boolean>(false);
 
   return (
     <AppContext.Provider
@@ -72,6 +77,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setIsPairUnlocked,
         isRestUnlocked,
         setIsRestUnlocked,
+        isProUser,
+        setIsProUser,
       }}
     >
       {children}

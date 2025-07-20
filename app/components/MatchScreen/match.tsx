@@ -392,10 +392,10 @@ const Match: React.FC<MatchProps> = ({
                 setSwapPlayer,
                 genderSetting,
                 setDispRound,
-                setIsLoading
+                setIsLoading,
+                setNumOfGenerate
               );
             }, 0);
-            setNumOfGenerate((prev) => prev + 1);
           }}
         />
       ) : (

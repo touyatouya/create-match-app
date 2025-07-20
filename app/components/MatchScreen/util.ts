@@ -21,7 +21,8 @@ export const createMatch = (
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>
 ): void => {
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
@@ -95,6 +96,7 @@ export const createMatch = (
   countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
   setSwapPlayer(null);
   setDispRound(prevGameRounds + 1);
+  setNumOfGenerate((prev) => prev + 1);
 };
 
 // スコアの高いコート構成を選ぶ関数
