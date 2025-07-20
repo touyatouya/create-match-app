@@ -1,12 +1,13 @@
 import { AppContext } from "@/context/AppContext";
 import { Redirect } from "expo-router";
 import { useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import {
   AdsConsent,
   AdsConsentDebugGeography,
   AdsConsentStatus,
 } from "react-native-google-mobile-ads";
-// import Purchases from "react-native-purchases";
+import Purchases from "react-native-purchases";
 
 export default function Index() {
   const [nonPersonalizedOnly, setNonPersonalizedOnly] = useState(true);
@@ -37,23 +38,23 @@ export default function Index() {
       }
     });
 
-    // if (Platform.OS === "ios") {
-    //   Purchases.configure({ apiKey: "appl_prIIHpEdeQhERPxdfLqNKAmppYN" });
-    // }
+    if (Platform.OS === "ios") {
+      Purchases.configure({ apiKey: "appl_prIIHpEdeQhERPxdfLqNKAmppYN" });
+    }
 
-    // const exec = async () => {
-    //   try {
-    //     const customerInfo = await Purchases.getCustomerInfo();
-    //     if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
-    //       setIsProUser(true);
-    //     } else {
-    //       setIsProUser(false);
-    //     }
-    //   } catch (e) {
-    //     console.error("Error fetching customer info:", e);
-    //   }
-    // };
-    // exec();
+    const exec = async () => {
+      try {
+        const customerInfo = await Purchases.getCustomerInfo();
+        if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
+          setIsProUser(true);
+        } else {
+          setIsProUser(false);
+        }
+      } catch (e) {
+        console.error("Error fetching customer info:", e);
+      }
+    };
+    exec();
   }, [setIsProUser]);
 
   return <Redirect href="/MatchScreen" />;

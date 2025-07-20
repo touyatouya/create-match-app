@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -16,6 +16,10 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Purchases, {
+  PurchasesOffering,
+  PurchasesPackage,
+} from "react-native-purchases";
 import PrimaryButton from "./PrimaryButton";
 
 interface PurchaseModalProps {
@@ -24,18 +28,42 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
-  const addPlayer = (): void => {};
+  const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 
-  //   const onPressPurchase = async (pkg: PurchasesPackage) => {
-  //   // 購入処理
-  //   const { customerInfo: _customerInfo, productIdentifier } =
-  //     await Purchases.purchasePackage(pkg);
+  useEffect(() => {
+    const fetchOfferings = async () => {
+      try {
+        const offerings = await Purchases.getOfferings();
+        if (
+          offerings.current !== null &&
+          offerings.current.availablePackages.length > 0
+        ) {
+          setOffering(offerings.current); // 最初のパッケージ
+        }
+      } catch (e) {
+        console.warn("Offering取得失敗", e);
+      }
+    };
+    fetchOfferings();
+  }, []);
 
-  //   if (typeof customerInfo.entitlements.active["premium"] !== "undefined") {
-  //     // 購入完了！
-  //     // 課金機能をアンロックする
-  //   }
-  // };
+  const handlePurchase = async () => {
+    try {
+      const { customerInfo } = await Purchases.purchasePackage(
+        offering?.availablePackages[0] as PurchasesPackage
+      );
+
+      // ユーザーが課金済みか確認
+      if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
+        console.log("プレミアム購入済み！");
+        // 自分のステートやストアに保存しておく
+      }
+    } catch (e: any) {
+      if (!e.userCancelled) {
+        console.error("購入エラー:", e);
+      }
+    }
+  };
 
   return (
     <Modal visible={isOpen} animationType="slide" transparent={true}>
@@ -131,7 +159,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
               <PrimaryButton
                 text="￥800円／無制限"
                 icon={null}
-                onPress={addPlayer}
+                onPress={handlePurchase}
               />
               <Text style={{ fontSize: FONT_SIZE.small, marginTop: 8 }}>
                 ※1度切りの購入でいつまでもpro版をお使い頂けます。
