@@ -69,8 +69,8 @@ const UpdateFilterScreen: React.FC = () => {
     if (isFilterNameEmpty || isFilterEmpty) return;
 
     const ids = filters.flatMap((item) => item.id);
-    const id = generateUniqId(ids);
-    const newFilter = { id: id, name: filterName, players: filter };
+    const newId = generateUniqId(ids);
+    const newFilter = { id: newId, name: filterName, players: filter };
 
     const newFilters: Filter[] = isEdit
       ? filters.map((item) => {
