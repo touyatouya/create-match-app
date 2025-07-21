@@ -112,7 +112,7 @@ export function selectBestGameRounds(
 ): GameRound {
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
-    100,
+    500,
     courts
   );
 
@@ -153,8 +153,8 @@ export function selectBestGameRounds(
       return results;
     };
 
-    // 計算量削減のため50個に制限
-    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 50);
+    // 計算量削減のため500個に制限
+    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 500);
 
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {
@@ -180,7 +180,23 @@ export function selectBestGameRounds(
 
       // すべてのペアが同じチーム、両方とも休憩、片方休憩のいずれかになっているかをチェック
       const areAllPairsValid = pairs.every((pair) => {
-        return courtTeams.every((team) => {
+        const isPlayer1 = courtTeams.find(
+          (team) =>
+            team.teamA.includes(pair.player1) ||
+            team.teamB.includes(pair.player1)
+        );
+
+        const isPlayer2 = courtTeams.find(
+          (team) =>
+            team.teamA.includes(pair.player2) ||
+            team.teamB.includes(pair.player2)
+        );
+
+        if (!isPlayer1 && !isPlayer2) return true; // どちらもいない場合はOK
+        if (isPlayer1 && !isPlayer2) return true; // 片方しかいない場合はOK
+        if (!isPlayer1 && isPlayer2) return true; // 片方しかいない場合はOK
+
+        return courtTeams.some((team) => {
           const aHas1 = team.teamA.includes(pair.player1);
           const aHas2 = team.teamA.includes(pair.player2);
           const bHas1 = team.teamB.includes(pair.player1);
@@ -188,11 +204,8 @@ export function selectBestGameRounds(
 
           const sameInA = aHas1 && aHas2;
           const sameInB = bHas1 && bHas2;
-          const bothAbsent = !aHas1 && !bHas1 && !aHas2 && !bHas2;
 
-          const eitherOnly = (aHas1 || bHas1) !== (aHas2 || bHas2); // どちらか一方だけ出場
-
-          return sameInA || sameInB || bothAbsent || eitherOnly;
+          return sameInA || sameInB;
         });
       });
 
