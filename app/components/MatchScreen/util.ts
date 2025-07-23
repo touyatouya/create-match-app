@@ -32,9 +32,14 @@ export const createMatch = (
     setIsLoading(false);
     return Alert.alert(
       "試合を作成できません",
-      `プレイヤー数が不足しています。\n\nコート数：${courts.length}\n参加プレイヤー数：${sortedPlayer.length}\n\nコートを減らすか、参加プレイヤーを増やしてください。`,
+      `${courts.length}面のため、${
+        courts.length * 4
+      }人必要ですが、\n参加プレイヤーは${sortedPlayer.length}人です。\n${
+        courts.length !== 1 ? "コート数を減らす、もしくは" : ""
+      }参加プレイヤーを追加してください。`,
       [
         { text: "キャンセル", style: "cancel" },
+
         { text: "コートへ", onPress: () => router.push("/(tabs)/CourtScreen") },
         {
           text: "プレイヤーへ",
