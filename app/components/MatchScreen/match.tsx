@@ -535,9 +535,9 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   vsText: {
-    fontSize: FONT_SIZE.small,
+    fontSize: FONT_SIZE.tiny,
     fontWeight: "bold",
-    color: ColorPalette.text,
+    color: ColorPalette.filterItemName,
     marginHorizontal: 6,
   },
   restingHeader: {
