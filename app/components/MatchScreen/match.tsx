@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: FONT_SIZE.small,
     fontWeight: "bold",
-    color: ColorPalette.remove,
+    color: ColorPalette.text,
     marginHorizontal: 6,
   },
   restingHeader: {
