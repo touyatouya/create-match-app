@@ -10,7 +10,7 @@ import { BannerAdSize } from "react-native-google-mobile-ads";
 import MyAdmob from "../components/MyAdmob";
 
 const CourtScreen: React.FC = () => {
-  const { courts, setCourts } = useContext(AppContext);
+  const { courts, setCourts, isProUser } = useContext(AppContext);
 
   const addCourt = () => {
     setCourts((prev) => {
@@ -51,7 +51,7 @@ const CourtScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
     </View>
   );
 };

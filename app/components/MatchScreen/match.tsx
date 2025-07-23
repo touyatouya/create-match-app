@@ -57,6 +57,7 @@ const Match: React.FC<MatchProps> = ({
     pairs,
     courts,
     setIsLoading,
+    isProUser,
   } = useContext(AppContext);
 
   const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
@@ -372,7 +373,7 @@ const Match: React.FC<MatchProps> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {numOfGenerate < 5 ? (
+      {isProUser || numOfGenerate < 5 ? (
         <PrimaryButton
           text="新しい組み合わせを生成"
           icon={

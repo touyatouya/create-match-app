@@ -37,6 +37,7 @@ const PairScreen: React.FC = () => {
     isPairUnlocked,
     setIsPairUnlocked,
     isLoading,
+    isProUser,
   } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -176,7 +177,7 @@ const PairScreen: React.FC = () => {
           onDismiss={() => setSnackbarVisible(false)}
           onPressLabel={() => setSnackbarVisible(false)}
         />
-        {pairs.length < 3 || isPairUnlocked ? (
+        {isProUser || pairs.length < 3 || isPairUnlocked ? (
           <TouchableOpacity style={styles.button} onPress={createPair}>
             <Text style={styles.buttonText}>ペア作成</Text>
           </TouchableOpacity>

@@ -18,7 +18,8 @@ import PlayerTable from "../components/PlayerScreen/playerTable";
 import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, setPairs, setFilters } = useContext(AppContext);
+  const { players, setPlayers, setPairs, setFilters, isProUser } =
+    useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -174,7 +175,7 @@ const PlayerScreen: React.FC = () => {
           />
         </View>
       </View>
-      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
     </View>
   );
 };

@@ -11,8 +11,14 @@ import PlayerItem from "../PlayerItem";
 import RewardAdButton from "../rewardAdButton";
 
 const EditRestScreen: React.FC = () => {
-  const { players, setPlayers, isRestUnlocked, setIsRestUnlocked, isLoading } =
-    useContext(AppContext);
+  const {
+    players,
+    setPlayers,
+    isRestUnlocked,
+    setIsRestUnlocked,
+    isLoading,
+    isProUser,
+  } = useContext(AppContext);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
@@ -22,7 +28,7 @@ const EditRestScreen: React.FC = () => {
 
   const togglePlayerRest = (id: number) => {
     const targetPlayer = players.find((player) => player.id === id);
-    if (isRestUnlocked) {
+    if (isProUser || isRestUnlocked) {
       setPlayers((prev) => {
         return prev.map((player) => {
           if (player.id === id) {
@@ -92,7 +98,7 @@ const EditRestScreen: React.FC = () => {
           onDismiss={() => setSnackbarVisible(false)}
           onPressLabel={() => setSnackbarVisible(false)}
         />
-        {!isRestUnlocked && (
+        {!isProUser && !isRestUnlocked && (
           <RewardAdButton
             onPress={() => setIsRestUnlocked(true)}
             text="動画を見て休憩を複数人選択できるようにする"

@@ -17,7 +17,7 @@ import MyAdmob from "../components/MyAdmob";
 import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, setGameRounds } = useContext(AppContext);
+  const { setPlayers, setGameRounds, isProUser } = useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     men: false,
@@ -124,7 +124,7 @@ const MatchScreen: React.FC = () => {
         onDismiss={() => setSnackbarVisible(false)}
         onPressLabel={() => setSnackbarVisible(false)}
       />
-      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
+      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
     </>
   );
 };
