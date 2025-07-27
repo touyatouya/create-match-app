@@ -11,7 +11,6 @@ import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
 import GenderSetting from "./components/MatchScreen/genderSetting";
 import PairSetting from "./components/MatchScreen/pairSetting";
-import RestSetting from "./components/MatchScreen/restSetting";
 // import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {
@@ -88,7 +87,7 @@ const MatchScreen: React.FC = () => {
                 genderSetting={genderSetting}
                 setGenderSetting={setGenderSetting}
               />
-              <RestSetting />
+              {/* <RestSetting /> */}
               <PairSetting />
             </>
           )}
