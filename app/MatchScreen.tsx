@@ -15,7 +15,8 @@ import RestSetting from "./components/MatchScreen/restSetting";
 // import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, setGameRounds, isProUser } = useContext(AppContext);
+  const { setPlayers, gameRounds, setGameRounds, isProUser } =
+    useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
     men: false,
@@ -25,7 +26,7 @@ const MatchScreen: React.FC = () => {
 
   const [expanded, setExpanded] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
-  const [dispRound, setDispRound] = React.useState<number>(0);
+  const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const resetGameRound = useCallback(() => {
