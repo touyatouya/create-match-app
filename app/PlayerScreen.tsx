@@ -14,7 +14,6 @@ import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
 import FilterButtons from "./components/PlayerScreen/filterButtons";
-import HeaderSortButtons from "./components/PlayerScreen/headerSortButtons";
 import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
@@ -198,6 +197,15 @@ const PlayerScreen: React.FC = () => {
             必要なプレイヤー：{joinedPlayer.length}／{courts.length * 4}人
           </Text>
         </View>
+        <Text
+          style={{
+            fontSize: FONT_SIZE.subsubheading,
+            fontWeight: "bold",
+            marginBottom: 8,
+          }}
+        >
+          プレイヤー選択
+        </Text>
         <View style={{ marginBottom: 8 }}>
           <Disclosure
             isOpen={expanded}
@@ -211,16 +219,7 @@ const PlayerScreen: React.FC = () => {
             setFilteredFilters={setFilteredFilters}
           />
         )}
-        <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} />
-        <Text
-          style={{
-            fontSize: FONT_SIZE.subsubheading,
-            fontWeight: "bold",
-            marginBottom: 8,
-          }}
-        >
-          プレイヤー選択
-        </Text>
+        {/* <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} /> */}
         <PlayerTableHeader
           filteredPlayers={filteredPlayers}
           joinAllPlayer={joinAllPlayer}
