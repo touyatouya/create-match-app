@@ -2,11 +2,12 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { BannerAdSize } from "react-native-google-mobile-ads";
+import { generateUniqId } from "@/utils/createId";
 import { Filter, Player } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
@@ -108,6 +109,21 @@ const PlayerScreen: React.FC = () => {
     setPairs([]);
   };
 
+  const addCourt = () => {
+    setCourts((prev) => {
+      const courtIds = prev.map((court) => court.id);
+      const id = generateUniqId(courtIds);
+      return [...prev, { id: id }];
+    });
+  };
+
+  const removeCourt = () => {
+    setCourts((prev) => {
+      if (prev.length === 1) return prev;
+      return prev.filter((_, index) => prev.length - 1 !== index);
+    });
+  };
+
   return (
     <View style={styles.page}>
       <CustomHeader
@@ -147,11 +163,38 @@ const PlayerScreen: React.FC = () => {
           setDefaultOrderPlayers={setDefaultOrderPlayers}
           isAddingRef={isAddingRef}
         />
-        <View style={styles.title}>
-          <Text style={styles.description}>
-            参加プレイヤーを選択してください
+        <Text
+          style={{
+            fontSize: FONT_SIZE.subsubheading,
+            fontWeight: "bold",
+            marginBottom: 8,
+          }}
+        >
+          コート数
+        </Text>
+        <View style={styles.matchCard}>
+          <View style={styles.courtBlock}>
+            <TouchableOpacity style={styles.button} onPress={removeCourt}>
+              <Feather
+                name="minus-circle"
+                size={24}
+                color={ColorPalette.primary}
+              />
+            </TouchableOpacity>
+            <Text style={styles.count}>{courts.length}</Text>
+            <TouchableOpacity style={styles.button} onPress={addCourt}>
+              <Feather
+                name="plus-circle"
+                size={24}
+                color={ColorPalette.primary}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.matchCard}>
+          <Text style={styles.playerNum}>
+            必要なプレイヤー：{joinedPlayer.length}／{courts.length * 4}人
           </Text>
-          <Text style={styles.joinedPlayer}>{joinedPlayer.length}人</Text>
         </View>
         <View style={{ marginBottom: 8 }}>
           <Disclosure
@@ -167,6 +210,16 @@ const PlayerScreen: React.FC = () => {
           />
         )}
         <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} />
+
+        <Text
+          style={{
+            fontSize: FONT_SIZE.subsubheading,
+            fontWeight: "bold",
+            marginBottom: 8,
+          }}
+        >
+          プレイヤー選択
+        </Text>
         <PlayerTableHeader
           filteredPlayers={filteredPlayers}
           joinAllPlayer={joinAllPlayer}
@@ -187,18 +240,46 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  matchCard: {
+    backgroundColor: ColorPalette.background,
+    borderRadius: 8,
+    padding: 6,
+    marginBottom: 8,
+    shadowColor: ColorPalette.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    alignItems: "center",
+  },
+  courtBlock: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    columnGap: 16,
+  },
+  count: {
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: FONT_SIZE.subsubheading,
+    color: ColorPalette.blackText,
+  },
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    ...globalStyles.touch,
+  },
   page: { flex: 1 },
   container: {
     flex: 1,
     padding: 16,
   },
-  title: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
+  courtTitle: {
+    width: "100%",
   },
-  description: {
-    fontSize: FONT_SIZE.subheading,
+  playerNum: {
+    fontSize: FONT_SIZE.body,
     flexShrink: 1,
   },
   joinedPlayer: {

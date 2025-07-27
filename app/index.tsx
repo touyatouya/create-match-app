@@ -55,5 +55,5 @@ export default function Index() {
   //   exec();
   // }, [setIsProUser]);
 
-  return <Redirect href="/MatchScreen" />;
+  return <Redirect href="/PlayerScreen" />;
 }

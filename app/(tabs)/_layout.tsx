@@ -4,7 +4,6 @@ import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { useContext } from "react";
 import Loading from "../components/Loading";
-import CourtIcon from "./../../assets/images/court.svg";
 
 export default function TabsLayout() {
   const { isLoading } = useContext(AppContext);
@@ -18,19 +17,6 @@ export default function TabsLayout() {
         }}
       >
         <Tabs.Screen
-          name="MatchScreen"
-          options={{
-            title: "試合",
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons
-                name="badminton"
-                size={28}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
           name="PlayerScreen"
           options={{
             title: "プレイヤー",
@@ -40,11 +26,15 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
-          name="CourtScreen"
+          name="MatchScreen"
           options={{
-            title: "コート",
+            title: "試合",
             tabBarIcon: ({ color }) => (
-              <CourtIcon width={28} height={28} color={color} />
+              <MaterialCommunityIcons
+                name="badminton"
+                size={28}
+                color={color}
+              />
             ),
           }}
         />
