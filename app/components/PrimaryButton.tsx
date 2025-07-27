@@ -8,14 +8,20 @@ interface PrimaryButtonProps {
   text: string;
   icon?: React.ReactNode;
   onPress: () => void;
+  disabled?: boolean;
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   text = "",
   icon,
   onPress,
+  disabled = false,
 }) => (
-  <TouchableOpacity style={styles.button} onPress={onPress}>
+  <TouchableOpacity
+    style={[styles.button, disabled && { backgroundColor: ColorPalette.muted }]}
+    onPress={onPress}
+    disabled={disabled}
+  >
     {icon}
     <Text style={styles.buttonText}>{text}</Text>
   </TouchableOpacity>

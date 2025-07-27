@@ -258,6 +258,7 @@ const PlayerScreen: React.FC = () => {
           })
         }
         text="組み合わせ生成画面へ"
+        disabled={joinedPlayer.length < courts.length * 4}
       />
       {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </View>
