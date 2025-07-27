@@ -6,11 +6,10 @@ import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BannerAdSize } from "react-native-google-mobile-ads";
+// import { BannerAdSize } from "react-native-google-mobile-ads";
 import { Filter, Player } from "../../types";
 import CustomHeader from "../components/CustomHeader";
 import Disclosure from "../components/Disclosure";
-import MyAdmob from "../components/MyAdmob";
 import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
 import FilterButtons from "../components/PlayerScreen/filterButtons";
 import HeaderSortButtons from "../components/PlayerScreen/headerSortButtons";
@@ -18,8 +17,15 @@ import PlayerTable from "../components/PlayerScreen/playerTable";
 import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
 
 const PlayerScreen: React.FC = () => {
-  const { players, setPlayers, setPairs, setFilters, isProUser } =
-    useContext(AppContext);
+  const {
+    players,
+    setPlayers,
+    setPairs,
+    setFilters,
+    isProUser,
+    courts,
+    setCourts,
+  } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -175,7 +181,7 @@ const PlayerScreen: React.FC = () => {
           />
         </View>
       </View>
-      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
+      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </View>
   );
 };

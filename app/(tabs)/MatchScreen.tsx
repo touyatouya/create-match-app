@@ -5,7 +5,7 @@ import { globalStyles } from "@/styles/global";
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BannerAdSize } from "react-native-google-mobile-ads";
+// import { BannerAdSize } from "react-native-google-mobile-ads";
 import { GenderPreferenceSetting } from "../../types";
 import AdCompleteSnackbar from "../components/AdCompleteSnackbar";
 import CustomHeader from "../components/CustomHeader";
@@ -13,8 +13,7 @@ import Disclosure from "../components/Disclosure";
 import GenderSetting from "../components/MatchScreen/genderSetting";
 import PairSetting from "../components/MatchScreen/pairSetting";
 import RestSetting from "../components/MatchScreen/restSetting";
-import MyAdmob from "../components/MyAdmob";
-import PurchaseModal from "../components/PurchaseModal";
+// import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {
   const { setPlayers, setGameRounds, isProUser } = useContext(AppContext);
@@ -87,10 +86,10 @@ const MatchScreen: React.FC = () => {
           </TouchableOpacity>
         )}
       />
-      <PurchaseModal
+      {/* <PurchaseModal
         isOpen={isOpenPurchaseModal}
         onClose={() => setIsOpenPurchaseModal(false)}
-      />
+      /> */}
       <View style={styles.container}>
         <View style={styles.detailSetting}>
           <Disclosure
@@ -120,11 +119,11 @@ const MatchScreen: React.FC = () => {
       </View>
       <AdCompleteSnackbar
         visiable={snackbarVisible}
-        message={`あと5試合作成できるようになりました！`}
+        message={`あと5回試合作成できるようになりました！`}
         onDismiss={() => setSnackbarVisible(false)}
         onPressLabel={() => setSnackbarVisible(false)}
       />
-      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
+      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </>
   );
 };
