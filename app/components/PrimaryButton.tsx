@@ -18,7 +18,10 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   disabled = false,
 }) => (
   <TouchableOpacity
-    style={[styles.button, disabled && { backgroundColor: ColorPalette.muted }]}
+    style={[
+      styles.button,
+      disabled && { backgroundColor: ColorPalette.disabled },
+    ]}
     onPress={onPress}
     disabled={disabled}
   >
