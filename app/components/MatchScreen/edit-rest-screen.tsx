@@ -8,7 +8,7 @@ import CustomHeader from "../CustomHeader";
 import ListEmptyText from "../ListEmptyText";
 import Loading from "../Loading";
 import PlayerItem from "../PlayerItem";
-import RewardAdButton from "../rewardAdButton";
+// import RewardAdButton from "../rewardAdButton";
 
 const EditRestScreen: React.FC = () => {
   const {
@@ -98,13 +98,13 @@ const EditRestScreen: React.FC = () => {
           onDismiss={() => setSnackbarVisible(false)}
           onPressLabel={() => setSnackbarVisible(false)}
         />
-        {!isProUser && !isRestUnlocked && (
+        {/* {!isProUser && !isRestUnlocked && (
           <RewardAdButton
             onPress={() => setIsRestUnlocked(true)}
             text="動画を見て休憩を複数人選択できるようにする"
             setSnackbarVisible={setSnackbarVisible}
           />
-        )}
+        )} */}
       </View>
       {isLoading && <Loading />}
     </>
