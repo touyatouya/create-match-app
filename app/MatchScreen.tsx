@@ -6,13 +6,13 @@ import { FontAwesome } from "@expo/vector-icons";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { BannerAdSize } from "react-native-google-mobile-ads";
-import { GenderPreferenceSetting } from "../../types";
-import AdCompleteSnackbar from "../components/AdCompleteSnackbar";
-import CustomHeader from "../components/CustomHeader";
-import Disclosure from "../components/Disclosure";
-import GenderSetting from "../components/MatchScreen/genderSetting";
-import PairSetting from "../components/MatchScreen/pairSetting";
-import RestSetting from "../components/MatchScreen/restSetting";
+import { GenderPreferenceSetting } from "../types";
+import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
+import CustomHeader from "./components/CustomHeader";
+import Disclosure from "./components/Disclosure";
+import GenderSetting from "./components/MatchScreen/genderSetting";
+import PairSetting from "./components/MatchScreen/pairSetting";
+import RestSetting from "./components/MatchScreen/restSetting";
 // import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {

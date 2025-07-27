@@ -8,14 +8,16 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { BannerAdSize } from "react-native-google-mobile-ads";
 import { generateUniqId } from "@/utils/createId";
-import { Filter, Player } from "../../types";
-import CustomHeader from "../components/CustomHeader";
-import Disclosure from "../components/Disclosure";
-import AddPlayerModal from "../components/PlayerScreen/addPlayerModal";
-import FilterButtons from "../components/PlayerScreen/filterButtons";
-import HeaderSortButtons from "../components/PlayerScreen/headerSortButtons";
-import PlayerTable from "../components/PlayerScreen/playerTable";
-import PlayerTableHeader from "../components/PlayerScreen/playerTableHeader";
+import { router } from "expo-router";
+import { Filter, Player } from "../types";
+import CustomHeader from "./components/CustomHeader";
+import Disclosure from "./components/Disclosure";
+import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
+import FilterButtons from "./components/PlayerScreen/filterButtons";
+import HeaderSortButtons from "./components/PlayerScreen/headerSortButtons";
+import PlayerTable from "./components/PlayerScreen/playerTable";
+import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
+import PrimaryButton from "./components/PrimaryButton";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -210,7 +212,6 @@ const PlayerScreen: React.FC = () => {
           />
         )}
         <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} />
-
         <Text
           style={{
             fontSize: FONT_SIZE.subsubheading,
@@ -234,6 +235,14 @@ const PlayerScreen: React.FC = () => {
           />
         </View>
       </View>
+      <PrimaryButton
+        onPress={() =>
+          router.push({
+            pathname: "/MatchScreen",
+          })
+        }
+        text="組み合わせ生成画面へ"
+      />
       {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </View>
   );
