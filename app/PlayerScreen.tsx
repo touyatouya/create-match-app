@@ -9,6 +9,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { BannerAdSize } from "react-native-google-mobile-ads";
 import { generateUniqId } from "@/utils/createId";
 import { router } from "expo-router";
+import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
@@ -213,6 +214,17 @@ const PlayerScreen: React.FC = () => {
           <Text style={styles.playerNum}>
             必要なプレイヤー：{joinedPlayer.length}／{courts.length * 4}人
           </Text>
+          <View style={styles.progress}>
+            <Progress.Bar
+              progress={joinedPlayer.length / (courts.length * 4)}
+              color={
+                joinedPlayer.length / (courts.length * 4) >= 1
+                  ? ColorPalette.success
+                  : ColorPalette.progress
+              }
+              width={null}
+            />
+          </View>
         </View>
         <Text
           style={{
@@ -278,6 +290,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     alignItems: "center",
   },
+  progress: { width: "100%", paddingHorizontal: 16 },
   courtBlock: {
     justifyContent: "center",
     alignItems: "center",
@@ -307,6 +320,7 @@ const styles = StyleSheet.create({
   playerNum: {
     fontSize: FONT_SIZE.body,
     flexShrink: 1,
+    marginBottom: 4,
   },
   joinedPlayer: {
     fontSize: FONT_SIZE.subheading,

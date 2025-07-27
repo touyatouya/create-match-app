@@ -16,6 +16,7 @@ const ColorPalette = {
   whiteText: "white",
   blackText: "black",
   cardBackGround: "#f9d713",
+  progress: "#FFC107",
   cardShadow: "#000",
   badgeBackground: "black",
   badgeText: "white",
