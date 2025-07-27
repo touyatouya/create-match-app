@@ -211,9 +211,23 @@ const PlayerScreen: React.FC = () => {
           </View>
         </View>
         <View style={styles.matchCard}>
-          <Text style={styles.playerNum}>
-            必要なプレイヤー：{joinedPlayer.length}／{courts.length * 4}人
-          </Text>
+          <View style={styles.textView}>
+            <Text style={styles.playerNum}>必要なプレイヤー：</Text>
+            <Text
+              style={[
+                styles.playerNum,
+                {
+                  color:
+                    joinedPlayer.length / (courts.length * 4) >= 1
+                      ? ColorPalette.blackText
+                      : ColorPalette.error,
+                },
+              ]}
+            >
+              {joinedPlayer.length}
+            </Text>
+            <Text style={[styles.playerNum]}>／{courts.length * 4}人</Text>
+          </View>
           <View style={styles.progress}>
             <Progress.Bar
               progress={joinedPlayer.length / (courts.length * 4)}
@@ -278,6 +292,7 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  textView: { flexDirection: "row", alignItems: "center" },
   matchCard: {
     backgroundColor: ColorPalette.background,
     borderRadius: 8,
