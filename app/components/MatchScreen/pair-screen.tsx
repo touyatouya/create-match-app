@@ -1,23 +1,16 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useContext, useState } from "react";
-import {
-  Alert,
-  SectionList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, SectionList, StyleSheet, Text, View } from "react-native";
 import { Pair, Player } from "../../../types";
 import AdCompleteSnackbar from "../AdCompleteSnackbar";
 import CustomHeader from "../CustomHeader";
 import Loading from "../Loading";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
+import PrimaryButton from "../PrimaryButton";
 import RewardAdButton from "../rewardAdButton";
 import SectionFooter from "./sectionFooter";
 
@@ -178,9 +171,7 @@ const PairScreen: React.FC = () => {
           onPressLabel={() => setSnackbarVisible(false)}
         />
         {isProUser || pairs.length < 3 || isPairUnlocked ? (
-          <TouchableOpacity style={styles.button} onPress={createPair}>
-            <Text style={styles.buttonText}>ペア作成</Text>
-          </TouchableOpacity>
+          <PrimaryButton onPress={createPair} text="ペア作成" />
         ) : (
           <RewardAdButton
             onPress={() => setIsPairUnlocked(true)}
@@ -195,14 +186,6 @@ const PairScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: ColorPalette.primary,
-    ...globalStyles.touch,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    marginVertical: 12,
-  },
   buttonText: {
     color: ColorPalette.whiteText,
     fontSize: FONT_SIZE.body,
