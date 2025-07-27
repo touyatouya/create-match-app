@@ -2,7 +2,6 @@ import Match from "@/app/components/MatchScreen/match";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { FontAwesome } from "@expo/vector-icons";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 // import { BannerAdSize } from "react-native-google-mobile-ads";
@@ -28,7 +27,6 @@ const MatchScreen: React.FC = () => {
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
   const [dispRound, setDispRound] = React.useState<number>(0);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
 
   const resetGameRound = useCallback(() => {
     setGameRounds([]);
@@ -73,23 +71,9 @@ const MatchScreen: React.FC = () => {
             <Text style={globalStyles.headerText}>リセット</Text>
           </TouchableOpacity>
         )}
-        headerLeft={() => (
-          <TouchableOpacity
-            onPress={() => setIsOpenPurchaseModal(true)}
-            style={globalStyles.headerLeft}
-          >
-            <FontAwesome
-              name="diamond"
-              size={24}
-              color={ColorPalette.normalIcon}
-            />
-          </TouchableOpacity>
-        )}
+        isSlideScreen
+        headerLeftText="試合準備"
       />
-      {/* <PurchaseModal
-        isOpen={isOpenPurchaseModal}
-        onClose={() => setIsOpenPurchaseModal(false)}
-      /> */}
       <View style={styles.container}>
         <View style={styles.detailSetting}>
           <Disclosure

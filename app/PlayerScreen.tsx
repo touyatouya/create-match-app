@@ -2,7 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -33,6 +33,7 @@ const PlayerScreen: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
   const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
+  const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
 
   const isAddingRef = useRef(false);
 
@@ -128,15 +129,27 @@ const PlayerScreen: React.FC = () => {
   return (
     <View style={styles.page}>
       <CustomHeader
-        title="プレイヤー"
+        title="試合準備"
         headerRight={() =>
           isEdit || (
-            <TouchableOpacity
-              onPress={() => setAddModalVisible(true)}
-              style={globalStyles.headerRight}
-            >
-              <AntDesign name="plus" size={24} color={ColorPalette.link} />
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                onPress={() => setIsOpenPurchaseModal(true)}
+                style={globalStyles.headerLeft}
+              >
+                <FontAwesome
+                  name="diamond"
+                  size={24}
+                  color={ColorPalette.normalIcon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setAddModalVisible(true)}
+                style={globalStyles.headerRight}
+              >
+                <AntDesign name="plus" size={24} color={ColorPalette.link} />
+              </TouchableOpacity>
+            </>
           )
         }
         headerLeft={() =>
@@ -157,6 +170,10 @@ const PlayerScreen: React.FC = () => {
           )
         }
       />
+      {/* <PurchaseModal
+        isOpen={isOpenPurchaseModal}
+        onClose={() => setIsOpenPurchaseModal(false)}
+      /> */}
       <View style={styles.container}>
         <AddPlayerModal
           isOpen={isAddModalVisible}
