@@ -9,12 +9,13 @@ import { GenderPreferenceSetting } from "../types";
 import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
 import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
+import Loading from "./components/Loading";
 import GenderSetting from "./components/MatchScreen/genderSetting";
 import PairSetting from "./components/MatchScreen/pairSetting";
 // import PurchaseModal from "../components/PurchaseModal";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, gameRounds, setGameRounds, isProUser } =
+  const { setPlayers, gameRounds, setGameRounds, isLoading, isProUser } =
     useContext(AppContext);
 
   const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
@@ -45,6 +46,7 @@ const MatchScreen: React.FC = () => {
 
   return (
     <>
+      {isLoading && <Loading />}
       <CustomHeader
         title="試合"
         headerRight={() => (
@@ -73,6 +75,7 @@ const MatchScreen: React.FC = () => {
         )}
         isSlideScreen
         headerLeftText="試合準備"
+        disalbed={isLoading}
       />
       <View style={styles.container}>
         <View style={styles.detailSetting}>

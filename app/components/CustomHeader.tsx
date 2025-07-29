@@ -14,6 +14,7 @@ interface CustomHeaderProps {
   headerLeftText?: string;
   headerRight?: (props: NativeStackHeaderRightProps) => React.ReactNode;
   headerLeft?: (props: NativeStackHeaderLeftProps) => React.ReactNode;
+  disalbed?: boolean;
 }
 
 const CustomHeader: React.FC<CustomHeaderProps> = ({
@@ -22,24 +23,27 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
   headerLeftText,
   headerRight,
   headerLeft,
+  disalbed = false,
 }) => {
   return (
     <Stack.Screen
       options={{
         headerShown: true,
         title: title,
-        headerLeft: isSlideScreen
-          ? () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={[styles.headerLeft, { marginLeft: -8 }]}
-              >
-                <AntDesign name="left" size={24} color={ColorPalette.link} />
-                <Text style={styles.headerLeftText}>{headerLeftText}</Text>
-              </TouchableOpacity>
-            )
-          : headerLeft,
-        headerRight: headerRight,
+        headerLeft: !disalbed
+          ? isSlideScreen
+            ? () => (
+                <TouchableOpacity
+                  onPress={() => router.back()}
+                  style={[styles.headerLeft, { marginLeft: -8 }]}
+                >
+                  <AntDesign name="left" size={24} color={ColorPalette.link} />
+                  <Text style={styles.headerLeftText}>{headerLeftText}</Text>
+                </TouchableOpacity>
+              )
+            : headerLeft
+          : undefined,
+        headerRight: !disalbed ? headerRight : undefined,
       }}
     />
   );
