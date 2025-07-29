@@ -2,22 +2,24 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { generateUniqId } from "@/utils/createId";
 import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-// import { BannerAdSize } from "react-native-google-mobile-ads";
-import { generateUniqId } from "@/utils/createId";
-import { router } from "expo-router";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
+import MyAdmob from "./components/MyAdmob";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
 import FilterButtons from "./components/PlayerScreen/filterButtons";
 import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
+import PurchaseModal from "./components/PurchaseModal";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -171,10 +173,10 @@ const PlayerScreen: React.FC = () => {
           )
         }
       />
-      {/* <PurchaseModal
+      <PurchaseModal
         isOpen={isOpenPurchaseModal}
         onClose={() => setIsOpenPurchaseModal(false)}
-      /> */}
+      />
       <View style={styles.container}>
         <AddPlayerModal
           isOpen={isAddModalVisible}
@@ -286,7 +288,7 @@ const PlayerScreen: React.FC = () => {
           disabled={joinedPlayer.length < courts.length * 4}
         />
       </View>
-      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
+      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
     </View>
   );
 };
