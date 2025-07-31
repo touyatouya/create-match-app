@@ -29,7 +29,7 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
-  const { isProUser } = useContext(AppContext);
+  const { isProUser, setIsProUser } = useContext(AppContext);
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 
   useEffect(() => {
@@ -58,6 +58,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
       // ユーザーが課金済みか確認
       if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
         console.log("プレミアム購入済み！");
+        setIsProUser(true);
         // 自分のステートやストアに保存しておく
       }
     } catch (e: any) {
