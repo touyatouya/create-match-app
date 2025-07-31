@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -14,6 +14,7 @@ import {
 
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Purchases, {
@@ -28,6 +29,7 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
+  const { isProUser } = useContext(AppContext);
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 
   useEffect(() => {
@@ -157,9 +159,10 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
                 </Text>
               </View>
               <PrimaryButton
-                text="￥800円／無制限"
+                text={isProUser ? "購入済み" : "￥800円／無制限"}
                 icon={null}
                 onPress={handlePurchase}
+                disabled={isProUser}
               />
               <Text style={{ fontSize: FONT_SIZE.small, marginTop: 8 }}>
                 ※1度切りの購入でいつまでもpro版をお使い頂けます。
