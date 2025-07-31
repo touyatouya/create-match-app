@@ -12,7 +12,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
-import Disclosure from "./components/Disclosure";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
 import FilterButtons from "./components/PlayerScreen/filterButtons";
 import PlayerTable from "./components/PlayerScreen/playerTable";
@@ -245,18 +244,18 @@ const PlayerScreen: React.FC = () => {
           style={{
             fontSize: FONT_SIZE.subsubheading,
             fontWeight: "bold",
-            marginBottom: 8,
+            marginVertical: 8,
           }}
         >
           プレイヤー選択
         </Text>
-        <View style={{ marginBottom: 8 }}>
+        {/* <View style={{ marginBottom: 8 }}>
           <Disclosure
             isOpen={expanded}
             setIsOpen={setExpanded}
             label="絞り込み"
           />
-        </View>
+        </View> */}
         {expanded && (
           <FilterButtons
             filteredFilters={filteredFilters}
