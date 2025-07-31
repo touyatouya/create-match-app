@@ -20,6 +20,7 @@ import {
 } from "../../../types";
 import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
+import RewardAdButton from "../rewardAdButton";
 import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
 
@@ -399,35 +400,10 @@ const Match: React.FC<MatchProps> = ({
           }}
         />
       ) : (
-        // <RewardAdButton
-        //   onPress={() => setNumOfGenerate(0)}
-        //   text="動画を見て更に組み合わせを作る"
-        //   setSnackbarVisible={setSnackbarVisible}
-        // />
-        <PrimaryButton
-          text="新しい組み合わせを生成"
-          icon={
-            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-          }
-          onPress={() => {
-            setIsLoading(true);
-            setTimeout(() => {
-              createMatch(
-                players,
-                setPlayers,
-                courts,
-                gameRounds,
-                setGameRounds,
-                pairs,
-                matches,
-                setSwapPlayer,
-                genderSetting,
-                setDispRound,
-                setIsLoading,
-                setNumOfGenerate
-              );
-            }, 0);
-          }}
+        <RewardAdButton
+          onPress={() => setNumOfGenerate(0)}
+          text="動画を見て更に組み合わせを作る"
+          setSnackbarVisible={setSnackbarVisible}
         />
       )}
       <View
