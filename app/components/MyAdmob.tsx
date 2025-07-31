@@ -32,10 +32,12 @@ export default function MyAdmob(props: Props) {
   }
 
   return (
-    <BannerAd
-      {...props}
-      unitId={unitId}
-      //   requestOptions={{ requestNonPersonalizedAdsOnly: !!nonPersonalizedOnly }}
-    />
+    <View style={{ marginBottom: 8 }}>
+      <BannerAd
+        {...props}
+        unitId={unitId}
+        //   requestOptions={{ requestNonPersonalizedAdsOnly: !!nonPersonalizedOnly }}
+      />
+    </View>
   );
 }
