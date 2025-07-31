@@ -7,8 +7,6 @@ import {
   Pair,
   Player,
 } from "@/types";
-import { router } from "expo-router";
-import { Alert } from "react-native";
 
 export const createMatch = (
   players: Player[],
@@ -27,27 +25,6 @@ export const createMatch = (
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
     .sort((a, b) => a.matchCount - b.matchCount);
-
-  if (sortedPlayer.length < courts.length * 4) {
-    setIsLoading(false);
-    return Alert.alert(
-      "試合を作成できません",
-      `${courts.length}面のため、${
-        courts.length * 4
-      }人必要ですが、\n参加プレイヤーは${sortedPlayer.length}人です。\n${
-        courts.length !== 1 ? "コート数を減らす、もしくは" : ""
-      }参加プレイヤーを追加してください。`,
-      [
-        { text: "キャンセル", style: "cancel" },
-
-        { text: "コートへ", onPress: () => router.push("/(tabs)/CourtScreen") },
-        {
-          text: "プレイヤーへ",
-          onPress: () => router.push("/(tabs)/PlayerScreen"),
-        },
-      ]
-    );
-  }
 
   let separatedPlayers: Player[][] = [];
   let matchCountSeparete_i = 0;
