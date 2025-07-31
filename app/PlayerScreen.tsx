@@ -8,12 +8,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BannerAdSize } from "react-native-google-mobile-ads";
+// import { BannerAdSize } from "react-native-google-mobile-ads";
 import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
 import Disclosure from "./components/Disclosure";
-import MyAdmob from "./components/MyAdmob";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
 import FilterButtons from "./components/PlayerScreen/filterButtons";
 import PlayerTable from "./components/PlayerScreen/playerTable";
@@ -288,7 +287,7 @@ const PlayerScreen: React.FC = () => {
           disabled={joinedPlayer.length < courts.length * 4}
         />
       </View>
-      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
+      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </View>
   );
 };

@@ -11,7 +11,6 @@ import Loading from "../Loading";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
-import RewardAdButton from "../rewardAdButton";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;
@@ -173,11 +172,12 @@ const PairScreen: React.FC = () => {
         {isProUser || pairs.length < 3 || isPairUnlocked ? (
           <PrimaryButton onPress={createPair} text="ペア作成" />
         ) : (
-          <RewardAdButton
-            onPress={() => setIsPairUnlocked(true)}
-            text="動画を見て更にペアを作る"
-            setSnackbarVisible={setSnackbarVisible}
-          />
+          // <RewardAdButton
+          //   onPress={() => setIsPairUnlocked(true)}
+          //   text="動画を見て更にペアを作る"
+          //   setSnackbarVisible={setSnackbarVisible}
+          // />
+          <PrimaryButton onPress={createPair} text="ペア作成" />
         )}
       </View>
       {isLoading && <Loading />}

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -17,10 +17,10 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import Purchases, {
-  PurchasesOffering,
-  PurchasesPackage,
-} from "react-native-purchases";
+// import Purchases, {
+//   PurchasesOffering,
+//   PurchasesPackage,
+// } from "react-native-purchases";
 import PrimaryButton from "./PrimaryButton";
 
 interface PurchaseModalProps {
@@ -30,42 +30,41 @@ interface PurchaseModalProps {
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
   const { isProUser, setIsProUser } = useContext(AppContext);
-  const [offering, setOffering] = useState<PurchasesOffering | null>(null);
+  // const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 
   useEffect(() => {
-    const fetchOfferings = async () => {
-      try {
-        const offerings = await Purchases.getOfferings();
-        if (
-          offerings.current !== null &&
-          offerings.current.availablePackages.length > 0
-        ) {
-          setOffering(offerings.current); // 最初のパッケージ
-        }
-      } catch (e) {
-        console.warn("Offering取得失敗", e);
-      }
-    };
-    fetchOfferings();
+    // const fetchOfferings = async () => {
+    //   try {
+    //     const offerings = await Purchases.getOfferings();
+    //     if (
+    //       offerings.current !== null &&
+    //       offerings.current.availablePackages.length > 0
+    //     ) {
+    //       setOffering(offerings.current); // 最初のパッケージ
+    //     }
+    //   } catch (e) {
+    //     console.warn("Offering取得失敗", e);
+    //   }
+    // };
+    // fetchOfferings();
   }, []);
 
   const handlePurchase = async () => {
-    try {
-      const { customerInfo } = await Purchases.purchasePackage(
-        offering?.availablePackages[0] as PurchasesPackage
-      );
-
-      // ユーザーが課金済みか確認
-      if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
-        console.log("プレミアム購入済み！");
-        setIsProUser(true);
-        // 自分のステートやストアに保存しておく
-      }
-    } catch (e: any) {
-      if (!e.userCancelled) {
-        console.error("購入エラー:", e);
-      }
-    }
+    // try {
+    //   const { customerInfo } = await Purchases.purchasePackage(
+    //     offering?.availablePackages[0] as PurchasesPackage
+    //   );
+    //   // ユーザーが課金済みか確認
+    //   if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
+    //     console.log("プレミアム購入済み！");
+    //     setIsProUser(true);
+    //     // 自分のステートやストアに保存しておく
+    //   }
+    // } catch (e: any) {
+    //   if (!e.userCancelled) {
+    //     console.error("購入エラー:", e);
+    //   }
+    // }
   };
 
   return (
