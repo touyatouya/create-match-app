@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
-    marginBottom: 8,
+    marginVertical: 8,
     ...globalStyles.touch,
   },
   buttonText: {
