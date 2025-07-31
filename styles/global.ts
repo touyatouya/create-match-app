@@ -21,14 +21,12 @@ export const globalStyles = StyleSheet.create({
     minHeight: 44,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 8,
   },
   headerRight: {
     minWidth: 44,
     minHeight: 44,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 8,
   },
   headerText: {
     fontSize: FONT_SIZE.subsubheading,
