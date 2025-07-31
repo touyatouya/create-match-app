@@ -7,6 +7,7 @@ const ColorPalette = {
   successBackground: "#3C8C40",
   toggleBackground: "#f8f9fa",
   background: "white",
+  selected: "#9bd0f3ff",
   men: "#0060a1",
   women: "#9B0000",
   text: "#212121",

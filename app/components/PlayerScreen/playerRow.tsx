@@ -29,7 +29,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
     <View
       style={[
         playerScreenStyles.row,
-        isJoin && { backgroundColor: ColorPalette.secondary },
+        isJoin && { backgroundColor: ColorPalette.selected },
       ]}
     >
       {isEdit && <RemoveButton onPress={() => removePlayer(item.id)} />}
@@ -40,14 +40,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
         onPress={isEdit ? undefined : () => joinPlayer(item.id)}
         style={styles.playerItem}
       >
-        <Text
-          style={[
-            playerScreenStyles.cellName,
-            isJoin && { color: ColorPalette.whiteText },
-          ]}
-        >
-          {item.name}
-        </Text>
+        <Text style={[playerScreenStyles.cellName]}>{item.name}</Text>
         <Text
           style={[
             playerScreenStyles.cellGender,
@@ -58,14 +51,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
         >
           <GenderIcon gender={item.gender} />
         </Text>
-        <Text
-          style={[
-            playerScreenStyles.cellMatch,
-            isJoin && { color: ColorPalette.whiteText },
-          ]}
-        >
-          {item.matchCount}
-        </Text>
+        <Text style={[playerScreenStyles.cellMatch]}>{item.matchCount}</Text>
       </TouchableOpacity>
       {isEdit ? (
         <TouchableOpacity
@@ -88,11 +74,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
           }
           style={playerScreenStyles.endIconButton}
         >
-          <AntDesign
-            name="right"
-            size={24}
-            color={isJoin ? ColorPalette.whiteIcon : ColorPalette.normalIcon}
-          />
+          <AntDesign name="right" size={24} color={ColorPalette.normalIcon} />
         </TouchableOpacity>
       )}
     </View>

@@ -41,10 +41,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   checked: {
-    backgroundColor: ColorPalette.whiteIcon,
+    backgroundColor: ColorPalette.primary,
   },
   checkmark: {
-    color: ColorPalette.primary,
+    color: ColorPalette.whiteIcon,
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     lineHeight: 20,
