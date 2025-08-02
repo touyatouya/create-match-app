@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -14,7 +14,6 @@ import {
 
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
-import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Purchases, {
@@ -29,7 +28,7 @@ interface PurchaseModalProps {
 }
 
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
-  const { isProUser, setIsProUser } = useContext(AppContext);
+  // const { isProUser, setIsProUser } = useContext(AppContext);
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
   }, []);
 
   const handlePurchase = async () => {
-    if (!offering || isProUser) return;
+    // if (!offering || isProUser) return;
 
     try {
       const { customerInfo } = await Purchases.purchasePackage(
@@ -59,6 +58,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
 
       // ユーザーが課金済みか確認
       if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
+        console.log("プレミアム購入済み！");
         // setIsProUser(true);
       }
     } catch (e: any) {
@@ -157,10 +157,11 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
                 </Text>
               </View>
               <PrimaryButton
-                text={isProUser ? "購入済み" : "￥800円／無制限"}
+                // text={isProUser ? "購入済み" : "￥800円／無制限"}
+                text="￥800円／無制限"
                 icon={null}
                 onPress={handlePurchase}
-                disabled={isProUser}
+                // disabled={isProUser}
               />
               <Text style={{ fontSize: FONT_SIZE.small, marginTop: 8 }}>
                 ※1度切りの購入でいつまでもpro版をお使い頂けます。
