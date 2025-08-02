@@ -31,7 +31,6 @@ interface PurchaseModalProps {
 const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
   const { isProUser, setIsProUser } = useContext(AppContext);
   const [offering, setOffering] = useState<PurchasesOffering | null>(null);
-  const [isPurchasing, setIsPurchasing] = useState(false);
 
   useEffect(() => {
     const fetchOfferings = async () => {
@@ -51,9 +50,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
   }, []);
 
   const handlePurchase = async () => {
-    if (!offering || isPurchasing || isProUser) return;
-
-    setIsPurchasing(true);
+    if (!offering || isProUser) return;
 
     try {
       const { customerInfo } = await Purchases.purchasePackage(
@@ -68,8 +65,6 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
       if (!e.userCancelled) {
         console.error("購入エラー:", e);
       }
-    } finally {
-      setIsPurchasing(false);
     }
   };
 
@@ -162,13 +157,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
                 </Text>
               </View>
               <PrimaryButton
-                text={
-                  isProUser
-                    ? "購入済み"
-                    : isPurchasing
-                    ? "購入中..."
-                    : "￥800円／無制限"
-                }
+                text={isProUser ? "購入済み" : "￥800円／無制限"}
                 icon={null}
                 onPress={handlePurchase}
                 disabled={isProUser}
