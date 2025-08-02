@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 8,
+    borderRadius: 20,
     marginBottom: 8,
     ...globalStyles.touch,
   },
