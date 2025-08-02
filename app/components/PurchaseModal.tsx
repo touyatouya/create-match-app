@@ -59,7 +59,7 @@ const PurchaseModal: React.FC<PurchaseModalProps> = ({ isOpen, onClose }) => {
 
       // ユーザーが課金済みか確認
       if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
-        setIsProUser(true);
+        // setIsProUser(true);
       }
     } catch (e: any) {
       if (!e.userCancelled) {
