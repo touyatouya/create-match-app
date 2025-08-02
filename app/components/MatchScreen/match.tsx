@@ -58,9 +58,9 @@ const Match: React.FC<MatchProps> = ({
     courts,
     setIsLoading,
     isProUser,
+    numOfGenerate,
+    setNumOfGenerate,
   } = useContext(AppContext);
-
-  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
 
   const selectSwapPlayer = (id: number) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
