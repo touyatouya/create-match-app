@@ -34,7 +34,8 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "cover",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
+          "enableFullScreenImage_legacy": true
         }
       ],
       [
