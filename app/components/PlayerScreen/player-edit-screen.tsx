@@ -4,7 +4,7 @@ import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { Foundation, Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
   Alert,
@@ -16,8 +16,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import CustomHeader from "./components/CustomHeader";
-import GenderToggle from "./components/GenderToggle";
+import CustomHeader from "../CustomHeader";
+import GenderToggle from "../GenderToggle";
 
 const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers } = useContext(AppContext);
@@ -30,8 +30,6 @@ const PlayerEditScreen: React.FC = () => {
   const id = Number(playerId);
 
   const player = players.find((player) => player.id === id);
-
-  const router = useRouter();
 
   const playerName = player?.name;
 
