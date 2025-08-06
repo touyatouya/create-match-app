@@ -19,8 +19,8 @@ export const createMatch = (
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  // setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>
 ): void => {
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
@@ -78,7 +78,7 @@ export const createMatch = (
   countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
   setSwapPlayer(null);
   setDispRound(prevGameRounds + 1);
-  setNumOfGenerate((prev) => prev + 1);
+  // setNumOfGenerate((prev) => prev + 1);
 };
 
 // スコアの高いコート構成を選ぶ関数
@@ -94,7 +94,7 @@ export function selectBestGameRounds(
 ): GameRound {
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
-    500,
+    300,
     courts
   );
 
@@ -136,7 +136,7 @@ export function selectBestGameRounds(
     };
 
     // 計算量削減のため500個に制限
-    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 500);
+    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 300);
 
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {

@@ -9,13 +9,13 @@ import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {
   filteredPlayers: Player[];
-  setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  // setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   isEdit: boolean;
   isAddingRef: React.RefObject<boolean>;
 }
 const PlayerTable: React.FC<PlayerTableProps> = ({
   filteredPlayers,
-  setDefaultOrderPlayers,
+  // setDefaultOrderPlayers,
   isEdit,
   isAddingRef,
 }) => {
@@ -63,9 +63,9 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       })
     );
 
-    setDefaultOrderPlayers((prev) => {
-      return prev.filter((player) => player.id !== id);
-    });
+    // setDefaultOrderPlayers((prev) => {
+    //   return prev.filter((player) => player.id !== id);
+    // });
 
     const filterPlayers = filters.flatMap((filter) => [...filter.players]);
     if (filterPlayers.includes(id)) {
@@ -89,7 +89,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       data={filteredPlayers}
       onDragEnd={({ data }) => {
         setPlayers(data);
-        setDefaultOrderPlayers(data);
+        // setDefaultOrderPlayers(data);
         savePlayerInfo(
           data.map((player) => {
             return {

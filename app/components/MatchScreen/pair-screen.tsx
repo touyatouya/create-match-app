@@ -11,7 +11,7 @@ import Loading from "../Loading";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
-import RewardAdButton from "../rewardAdButton";
+// import RewardAdButton from "../rewardAdButton";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;
@@ -27,10 +27,10 @@ const PairScreen: React.FC = () => {
     players,
     pairs,
     setPairs,
-    isPairUnlocked,
-    setIsPairUnlocked,
+    // isPairUnlocked,
+    // setIsPairUnlocked,
     isLoading,
-    isProUser,
+    // isProUser,
   } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -170,15 +170,15 @@ const PairScreen: React.FC = () => {
           onDismiss={() => setSnackbarVisible(false)}
           onPressLabel={() => setSnackbarVisible(false)}
         />
-        {isProUser || pairs.length < 3 || isPairUnlocked ? (
-          <PrimaryButton onPress={createPair} text="ペア作成" />
-        ) : (
+        {/* {isProUser || pairs.length < 3 || isPairUnlocked ? ( */}
+        <PrimaryButton onPress={createPair} text="ペア作成" />
+        {/* ) : (
           <RewardAdButton
             onPress={() => setIsPairUnlocked(true)}
             text="動画を見て更にペアを作る"
             setSnackbarVisible={setSnackbarVisible}
           />
-        )}
+        )} */}
       </View>
       {isLoading && <Loading />}
     </>

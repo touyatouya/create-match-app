@@ -3,22 +3,21 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
-import { AntDesign, Feather, FontAwesome } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BannerAdSize } from "react-native-google-mobile-ads";
 import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
-import MyAdmob from "./components/MyAdmob";
+// import MyAdmob from "./components/MyAdmob";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
-import FilterButtons from "./components/PlayerScreen/filterButtons";
+// import FilterButtons from "./components/PlayerScreen/filterButtons";
 import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
-import PurchaseModal from "./components/PurchaseModal";
+// import PurchaseModal from "./components/PurchaseModal";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -26,16 +25,16 @@ const PlayerScreen: React.FC = () => {
     setPlayers,
     setPairs,
     setFilters,
-    isProUser,
+    // isProUser,
     courts,
     setCourts,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
+  // const [expanded, setExpanded] = useState(false);
+  // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
   const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
-  const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
+  // const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
 
   const isAddingRef = useRef(false);
 
@@ -60,7 +59,7 @@ const PlayerScreen: React.FC = () => {
           });
         }
         setPlayers(players);
-        setDefaultOrderPlayers(players);
+        // setDefaultOrderPlayers(players);
       }
 
       const filtersData = await AsyncStorage.getItem("filters");
@@ -135,7 +134,7 @@ const PlayerScreen: React.FC = () => {
         headerRight={() =>
           isEdit || (
             <>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => setIsOpenPurchaseModal(true)}
                 style={globalStyles.headerLeft}
               >
@@ -144,7 +143,7 @@ const PlayerScreen: React.FC = () => {
                   size={24}
                   color={ColorPalette.normalIcon}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => setAddModalVisible(true)}
                 style={globalStyles.headerRight}
@@ -172,15 +171,15 @@ const PlayerScreen: React.FC = () => {
           )
         }
       />
-      <PurchaseModal
+      {/* <PurchaseModal
         isOpen={isOpenPurchaseModal}
         onClose={() => setIsOpenPurchaseModal(false)}
-      />
+      /> */}
       <View style={styles.container}>
         <AddPlayerModal
           isOpen={isAddModalVisible}
           onClose={() => setAddModalVisible(false)}
-          setDefaultOrderPlayers={setDefaultOrderPlayers}
+          // setDefaultOrderPlayers={setDefaultOrderPlayers}
           isAddingRef={isAddingRef}
         />
         <Text
@@ -257,12 +256,12 @@ const PlayerScreen: React.FC = () => {
             label="絞り込み"
           />
         </View> */}
-        {expanded && (
+        {/* {expanded && (
           <FilterButtons
             filteredFilters={filteredFilters}
             setFilteredFilters={setFilteredFilters}
           />
-        )}
+        )} */}
         {/* <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} /> */}
         <PlayerTableHeader
           filteredPlayers={filteredPlayers}
@@ -272,7 +271,7 @@ const PlayerScreen: React.FC = () => {
         <View style={{ flex: 1 }}>
           <PlayerTable
             filteredPlayers={filteredPlayers}
-            setDefaultOrderPlayers={setDefaultOrderPlayers}
+            // setDefaultOrderPlayers={setDefaultOrderPlayers}
             isEdit={isEdit}
             isAddingRef={isAddingRef}
           />
@@ -287,7 +286,7 @@ const PlayerScreen: React.FC = () => {
           disabled={joinedPlayer.length < courts.length * 4}
         />
       </View>
-      {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />}
+      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
     </View>
   );
 };
