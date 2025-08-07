@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "create-match-app",
+    "name": "ダブルス組み合わせ生成",
     "slug": "create-match-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,7 +12,8 @@
       "bundleIdentifier": "com.touyatouya.creatematchapp",
       "supportsTablet": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleLocalizations": ["ja"]
       }
     },
     "android": {
