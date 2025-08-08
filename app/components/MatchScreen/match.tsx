@@ -429,14 +429,50 @@ const Match: React.FC<MatchProps> = ({
           <View style={{ ...globalStyles.touch }}></View>
         )}
         {dispRound > 0 && (
-          <Text
+          <View
             style={{
-              fontSize: FONT_SIZE.subheading,
-              marginHorizontal: 8,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            {dispRound}巡目
-          </Text>
+            {gameRounds[dispRound] == null && (
+              <View style={{ ...globalStyles.touch }}></View>
+            )}
+            <Text
+              style={{
+                fontSize: FONT_SIZE.subheading,
+                marginHorizontal: 8,
+              }}
+            >
+              {dispRound}巡目
+            </Text>
+            {gameRounds[dispRound] == null && (
+              <TouchableOpacity
+                style={{
+                  ...globalStyles.touch,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => {
+                  setGameRounds((prev) => prev.slice(0, -1));
+                  setPlayers((prev) => {
+                    return prev.map((player) => {
+                      return {
+                        ...player,
+                        isRest: false,
+                        matchCount: 0,
+                      };
+                    });
+                  });
+                  setSwapPlayer(null);
+                  setDispRound((prev) => prev - 1);
+                }}
+              >
+                <AntDesign name="delete" size={24} color="black" />
+              </TouchableOpacity>
+            )}
+          </View>
         )}
         {gameRounds[dispRound] != null ? (
           <TouchableOpacity
