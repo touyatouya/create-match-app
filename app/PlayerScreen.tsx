@@ -11,9 +11,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
 import { Filter, Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
-// import MyAdmob from "./components/MyAdmob";
+import MyAdmob from "./components/MyAdmob";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
 // import FilterButtons from "./components/PlayerScreen/filterButtons";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
@@ -287,6 +288,7 @@ const PlayerScreen: React.FC = () => {
         />
       </View>
       {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </View>
   );
 };

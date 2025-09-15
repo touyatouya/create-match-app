@@ -4,6 +4,7 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BannerAdSize } from "react-native-google-mobile-ads";
 import { GenderPreferenceSetting } from "../types";
 import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
 import CustomHeader from "./components/CustomHeader";
@@ -11,7 +12,7 @@ import Disclosure from "./components/Disclosure";
 import Loading from "./components/Loading";
 import GenderSetting from "./components/MatchScreen/genderSetting";
 import PairSetting from "./components/MatchScreen/pairSetting";
-// import MyAdmob from "./components/MyAdmob";
+import MyAdmob from "./components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
   const {
@@ -115,6 +116,7 @@ const MatchScreen: React.FC = () => {
         onPressLabel={() => setSnackbarVisible(false)}
       />
       {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );
 };
