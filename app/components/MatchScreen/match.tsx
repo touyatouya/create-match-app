@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { requestReview } from "@/utils/requestReview";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import {
@@ -56,6 +57,7 @@ const Match: React.FC<MatchProps> = ({
     setGameRounds,
     pairs,
     courts,
+    isLoading,
     setIsLoading,
     // isProUser,
     numOfGenerate,
@@ -369,12 +371,19 @@ const Match: React.FC<MatchProps> = ({
     if (dispRound > 0) {
       setIsLoading(false);
     }
-  }, [dispRound, setIsLoading]);
+  }, [dispRound, setIsLoading]); // 6回目の組み合わせ生成後にレビュー依頼
+
+  useEffect(() => {
+    if (gameRounds.length === 6 && !isLoading) {
+      requestReview();
+    }
+  }, [gameRounds.length, isLoading]);
 
   return (
     <View style={{ flex: 1 }}>
       {/* {isProUser || numOfGenerate < 5 ? ( */}
-      {numOfGenerate < 5 ? (
+      {/* 5の倍数でリワード広告を流すボタンにする */}
+      {numOfGenerate === 0 || numOfGenerate % 5 !== 0 ? (
         <PrimaryButton
           text="新しい組み合わせを生成"
           icon={
@@ -402,7 +411,6 @@ const Match: React.FC<MatchProps> = ({
         />
       ) : (
         <RewardAdButton
-          onPress={() => setNumOfGenerate(0)}
           text="動画を見て更に組み合わせを作る"
           setSnackbarVisible={setSnackbarVisible}
         />

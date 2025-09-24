@@ -7,12 +7,12 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import {
   RewardedAd,
   RewardedAdEventType,
+  TestIds,
 } from "react-native-google-mobile-ads";
 
-// const adUnitId = __DEV__ ? TestIds.REWARDED : TestIds.REWARDED;
-// : "ca-app-pub-1546884469851348/5787433088";
-
-const adUnitId = "ca-app-pub-1546884469851348/5787433088";
+const adUnitId = __DEV__
+  ? TestIds.REWARDED
+  : "ca-app-pub-1546884469851348/5787433088";
 interface PrimaryRewardAdButtonProps {
   onPress?: () => void;
   text: string;
@@ -92,10 +92,8 @@ const RewardAdButton: React.FC<PrimaryRewardAdButtonProps> = ({
       onPress={() => {
         if (loaded) {
           handlePress();
-          onPress && onPress();
         }
       }}
-      disabled={!loaded}
     >
       <Text style={styles.buttonText}>
         {loaded ? text : "動画を読み込み中..."}
