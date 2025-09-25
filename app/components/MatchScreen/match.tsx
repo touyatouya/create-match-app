@@ -60,8 +60,8 @@ const Match: React.FC<MatchProps> = ({
     isLoading,
     setIsLoading,
     // isProUser,
-    numOfGenerate,
-    setNumOfGenerate,
+    numOfPress,
+    setNumOfPress,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number) => {
@@ -381,9 +381,9 @@ const Match: React.FC<MatchProps> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {/* {isProUser || numOfGenerate < 5 ? ( */}
+      {/* {isProUser || numOfPress < 5 ? ( */}
       {/* 5の倍数でリワード広告を流すボタンにする */}
-      {numOfGenerate === 0 || numOfGenerate % 5 !== 0 ? (
+      {numOfPress === 0 || numOfPress % 5 !== 0 ? (
         <PrimaryButton
           text="新しい組み合わせを生成"
           icon={
@@ -404,13 +404,14 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
-                setNumOfGenerate
+                setNumOfPress
               );
             }, 0);
           }}
         />
       ) : (
         <RewardAdButton
+          onPress={() => setNumOfPress((prev) => prev + 1)}
           text="動画を見て更に組み合わせを作る"
           setSnackbarVisible={setSnackbarVisible}
         />

@@ -20,8 +20,8 @@ type AppContextType = {
   setIsRestUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
   isProUser: boolean;
   setIsProUser: React.Dispatch<React.SetStateAction<boolean>>;
-  numOfGenerate: number;
-  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>;
+  numOfPress: number;
+  setNumOfPress: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -43,8 +43,8 @@ export const AppContext = createContext<AppContextType>({
   setIsRestUnlocked: () => {},
   isProUser: false,
   setIsProUser: () => {},
-  numOfGenerate: 0,
-  setNumOfGenerate: () => {},
+  numOfPress: 0,
+  setNumOfPress: () => {},
 });
 
 type AppContextProps = {
@@ -61,7 +61,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [isPairUnlocked, setIsPairUnlocked] = React.useState<boolean>(false);
   const [isRestUnlocked, setIsRestUnlocked] = React.useState<boolean>(false);
   const [isProUser, setIsProUser] = React.useState<boolean>(false);
-  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
+  const [numOfPress, setNumOfPress] = React.useState<number>(0);
 
   return (
     <AppContext.Provider
@@ -84,8 +84,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setIsRestUnlocked,
         isProUser,
         setIsProUser,
-        numOfGenerate,
-        setNumOfGenerate,
+        numOfPress,
+        setNumOfPress,
       }}
     >
       {children}
