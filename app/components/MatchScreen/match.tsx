@@ -2,7 +2,6 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { requestReview } from "@/utils/requestReview";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import {
@@ -57,11 +56,10 @@ const Match: React.FC<MatchProps> = ({
     setGameRounds,
     pairs,
     courts,
-    isLoading,
     setIsLoading,
     // isProUser,
-    numOfPress,
-    setNumOfPress,
+    numOfGenerate,
+    setNumOfGenerate,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number) => {
@@ -371,19 +369,12 @@ const Match: React.FC<MatchProps> = ({
     if (dispRound > 0) {
       setIsLoading(false);
     }
-  }, [dispRound, setIsLoading]); // 6回目の組み合わせ生成後にレビュー依頼
-
-  useEffect(() => {
-    if (gameRounds.length === 6 && !isLoading) {
-      requestReview();
-    }
-  }, [gameRounds.length, isLoading]);
+  }, [dispRound, setIsLoading]);
 
   return (
     <View style={{ flex: 1 }}>
-      {/* {isProUser || numOfPress < 5 ? ( */}
-      {/* 5の倍数でリワード広告を流すボタンにする */}
-      {numOfPress === 0 || numOfPress % 5 !== 0 ? (
+      {/* {isProUser || numOfGenerate < 5 ? ( */}
+      {numOfGenerate < 5 ? (
         <PrimaryButton
           text="新しい組み合わせを生成"
           icon={
@@ -404,14 +395,14 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
-                setNumOfPress
+                setNumOfGenerate
               );
             }, 0);
           }}
         />
       ) : (
         <RewardAdButton
-          onPress={() => setNumOfPress((prev) => prev + 1)}
+          onPress={() => setNumOfGenerate(0)}
           text="動画を見て更に組み合わせを作る"
           setSnackbarVisible={setSnackbarVisible}
         />
