@@ -92,6 +92,23 @@ export function selectBestGameRounds(
   players: Player[],
   genderSetting: GenderPreferenceSetting
 ): GameRound {
+  const totalNeeded = courts.length * 4;
+  const neededOptionalCount = totalNeeded - requiredPlayers.length;
+
+  // 必須参加者が多すぎる場合はランダムに減らす
+  if (requiredPlayers.length > totalNeeded) {
+    requiredPlayers = requiredPlayers
+      .sort(() => Math.random() - 0.5)
+      .slice(0, neededOptionalCount);
+  }
+
+  // 任意参加者が多すぎる場合はランダムに減らす
+  if (optionalPlayers.length > neededOptionalCount) {
+    optionalPlayers = optionalPlayers
+      .sort(() => Math.random() - 0.5)
+      .slice(0, neededOptionalCount);
+  }
+
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
     300,
@@ -135,7 +152,7 @@ export function selectBestGameRounds(
       return results;
     };
 
-    // 計算量削減のため500個に制限
+    // 計算量削減のため300個に制限
     const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 300);
 
     for (const courtTeams of allCourtTeamCombinations) {
