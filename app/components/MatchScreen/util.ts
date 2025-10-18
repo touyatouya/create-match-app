@@ -107,7 +107,7 @@ export function selectBestGameRounds(
 
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
-    100,
+    50,
     courts
   );
 
@@ -298,7 +298,7 @@ const countFacedBefore = (
  */
 const getRandomGroupPartitions = (
   players: number[],
-  trials = 100,
+  trials = 50,
   courts: Court[]
 ): number[][][] => {
   const results: number[][][] = [];
