@@ -83,7 +83,7 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
         >
           <Text style={[styles.headerText]}>性別</Text>
           <AntDesign
-            name={isSortedGender === "asc" ? "arrowup" : "arrowdown"}
+            name={isSortedGender === "asc" ? "arrow-up" : "arrow-down"}
             size={14}
             color={ColorPalette.normalIcon}
           />
@@ -100,7 +100,7 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
         >
           <Text style={[styles.headerText]}>試合数</Text>
           <AntDesign
-            name={isSortedMatchCount === "asc" ? "arrowup" : "arrowdown"}
+            name={isSortedMatchCount === "asc" ? "arrow-up" : "arrow-down"}
             size={14}
             color={ColorPalette.normalIcon}
           />

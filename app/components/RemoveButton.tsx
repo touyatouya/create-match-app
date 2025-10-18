@@ -18,7 +18,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({ onPress }) => (
       },
     ]}
   >
-    <AntDesign name="minuscircle" size={24} color={ColorPalette.error} />
+    <AntDesign name="minus-circle" size={24} color={ColorPalette.error} />
   </TouchableOpacity>
 );
 

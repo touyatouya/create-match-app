@@ -76,7 +76,7 @@ const TextInput = forwardRef<Ref, TextInputProps>(
             {value.length > 0 && (
               <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
                 <AntDesign
-                  name="closecircle"
+                  name="close-circle"
                   size={20}
                   color={ColorPalette.emptyText}
                 />

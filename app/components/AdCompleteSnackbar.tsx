@@ -36,7 +36,7 @@ const AdCompleteSnackbar: React.FC<AdCompleteSnackbarProps> = ({
           columnGap: 10,
         }}
       >
-        <AntDesign name="checkcircleo" size={24} color="white" />
+        <AntDesign name="check-circle" size={24} color="white" />
         <Text style={styles.text}>{message}</Text>
       </View>
     </Snackbar>

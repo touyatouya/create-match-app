@@ -82,7 +82,7 @@ const FilterButtons: React.FC<FilterButtonsProps> = ({
                   </Text>
                   {isSelectedFilter && (
                     <AntDesign
-                      name="closecircle"
+                      name="close-circle"
                       size={16}
                       color={ColorPalette.whiteIcon}
                     />
