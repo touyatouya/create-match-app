@@ -285,7 +285,17 @@ const countFacedBefore = (
   );
 };
 
-// 12人を3グループに分割（各グループ4人）
+/**
+ * 指定されたプレイヤーをランダムにグループ分けし、ユニークなグループ構成を生成します。
+ *
+ * @param {number[]} players - グループ分けするプレイヤーのIDリスト。
+ * @param {number} [trials=100] - 試行回数。生成するグループ構成の最大数。
+ * @param {Court[]} courts - 使用するコートのリスト。各コートに4人ずつ割り当てられる。
+ * @returns {number[][][]} - グループ分けされたプレイヤーIDのリスト。各グループはコートごとに分割される。
+ *
+ * @example
+ * // 出力例: [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
+ */
 const getRandomGroupPartitions = (
   players: number[],
   trials = 100,
