@@ -105,50 +105,35 @@ export function selectBestGameRounds(
     optionalPlayers = shuffle(optionalPlayers).slice(0, neededOptionalCount);
   }
 
+  // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
     50,
     courts
   );
 
-  // ランダムに並び替え
-  const limitedPartitions = partitions.sort(() => Math.random() - 0.5);
-
   let bestSets: GameRound[] = [];
   let bestScore = -Infinity;
 
-  for (const courtSet of limitedPartitions) {
+  // // courtSetは、[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
+  for (const courtSet of partitions) {
+    // allTeamSplitSetsは、[
+    //   [{teamA: [1,2], teamB: [3,4]}, {teamA: [1,3], teamB: [2,4]}, ...],
+    //   [{teamA: [5,6], teamB: [7,8]}, {teamA: [5,7], teamB: [6,8]}, ...],
+    //   ...
+    // ]
+    // 各コートの4人グループを2人ずつのチームに分割するすべての組み合わせを取得
     const allTeamSplitSets = courtSet.map((group) =>
       group.length === 4 ? getTeamSplits(group) : [{ teamA: [], teamB: [] }]
     );
 
-    const combineLimited = (
-      sets: {
-        teamA: number[];
-        teamB: number[];
-      }[][],
-      limit: number
-    ): {
-      teamA: number[];
-      teamB: number[];
-    }[][] => {
-      const results: { teamA: number[]; teamB: number[] }[][] = [];
-      const total = sets.reduce((acc, curr) => acc * curr.length, 1);
-      const maxTry = Math.min(total, limit);
-
-      const getRandomIndex = (n: number) => Math.floor(Math.random() * n);
-
-      for (let i = 0; i < maxTry; i++) {
-        const combo = sets.map(
-          (options) => options[getRandomIndex(options.length)]
-        );
-        results.push(combo);
-      }
-
-      return results;
-    };
-
     // 計算量削減のため100個に制限
+    // allCourtTeamCombinationsは、[
+    //   [{teamA: [1,2], teamB: [3,4]}, {teamA: [5,6], teamB: [7,8]}, {teamA: [9,10], teamB: [11,12]}],
+    //   [{teamA: [1,3], teamB: [2,4]}, {teamA: [5,6], teamB: [7,8]}, {teamA: [9,10], teamB: [11,12]}],
+    //   ...
+    // ]
+    // 各コートから1つずつチーム分けを選んだ組み合わせを取得
     const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 100);
 
     for (const courtTeams of allCourtTeamCombinations) {
@@ -162,16 +147,6 @@ export function selectBestGameRounds(
           teamB: team.teamB,
         })),
       };
-
-      // 必須プレイヤーが全員含まれていなければスキップ
-      const allPlayersInThisSet = courtTeams.flatMap((team) => [
-        ...team.teamA,
-        ...team.teamB,
-      ]);
-      const isAllRequiredPresent = requiredPlayers.every((rp) =>
-        allPlayersInThisSet.includes(rp)
-      );
-      if (!isAllRequiredPresent) continue;
 
       // すべてのペアが同じチーム、両方とも休憩、片方休憩のいずれかになっているかをチェック
       const areAllPairsValid = pairs.every((pair) => {
@@ -341,13 +316,76 @@ export const shuffle = <T>(array: T[]): T[] => {
   return arr;
 };
 
-// 各4人グループをチーム分け（2人＋2人のダブルス）
+/**
+ * 各セットから1つずつ選択して、可能な組み合わせを生成します。
+ * 組み合わせの数は指定された制限値以内に抑えられます。
+ *
+ * @param {{ teamA: number[]; teamB: number[] }[][]} sets - 各セットの選択肢の配列。
+ * @param {number} limit - 生成する組み合わせの最大数。
+ * @returns {{ teamA: number[]; teamB: number[] }[][]} - 生成された組み合わせの配列。
+ *
+ * @example
+ * const sets = [
+ *   [{ teamA: [1, 2], teamB: [3, 4] }, { teamA: [1, 3], teamB: [2, 4] }],
+ *   [{ teamA: [5, 6], teamB: [7, 8] }, { teamA: [5, 7], teamB: [6, 8] }]
+ * ];
+ * const combinations = combineLimited(sets, 3);
+ * // 出力例: [
+ * //   [{ teamA: [1, 2], teamB: [3, 4] }, { teamA: [5, 6], teamB: [7, 8] }],
+ * //   [{ teamA: [1, 3], teamB: [2, 4] }, { teamA: [5, 6], teamB: [7, 8] }],
+ * //   [{ teamA: [1, 2], teamB: [3, 4] }, { teamA: [5, 7], teamB: [6, 8] }]
+ * // ]
+ */
+const combineLimited = (
+  sets: {
+    teamA: number[];
+    teamB: number[];
+  }[][],
+  limit: number
+): {
+  teamA: number[];
+  teamB: number[];
+}[][] => {
+  const results: { teamA: number[]; teamB: number[] }[][] = [];
+  // 組み合わせの総数を計算
+  const total = sets.reduce((acc, curr) => acc * curr.length, 1);
+  // 生成する組み合わせの数を制限
+  const maxTry = Math.min(total, limit);
+
+  const getRandomIndex = (n: number) => Math.floor(Math.random() * n);
+
+  for (let i = 0; i < maxTry; i++) {
+    const combo = sets.map(
+      (options) => options[getRandomIndex(options.length)]
+    );
+    results.push(combo);
+  }
+
+  return results;
+};
+
+/**
+ * 4人グループを2人ずつのチームに分割するすべての組み合わせを生成します。
+ *
+ * @param {number[]} group - 4人のプレイヤーIDの配列。
+ * @returns {{ teamA: number[]; teamB: number[] }[]} - チームAとチームBに分割されたすべての組み合わせ。
+ *
+ * @example
+ * // 出力例: [
+ * //   { teamA: [1, 2], teamB: [3, 4] },
+ * //   { teamA: [1, 3], teamB: [2, 4] },
+ * //   { teamA: [1, 4], teamB: [2, 3] },
+ * //   ...
+ * // ]
+ */
 export const getTeamSplits = (
   group: number[]
 ): { teamA: number[]; teamB: number[] }[] => {
+  // parisは、[[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]のような形
   const pairs = getCombinations(group, 2);
   const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
 
+  // 各ペアに対して、残りの2人をもう一方のチームに割り当てる
   for (const teamA of pairs) {
     const teamB = group.filter((p) => !teamA.includes(p));
     teamPairs.push({ teamA, teamB });
@@ -429,25 +467,37 @@ export const scoreGender = (
   return score;
 };
 
-// n個の中からk個を選ぶすべての組み合わせ
-export function getCombinations<T>(arr: T[], k: number): T[][] {
-  if (k === 0) return [[]]; // ベースケース：0個選ぶ → 空の組み合わせ [[]]
-  if (arr.length < k) return []; // 要素数が足りなければ不可能 → []
+/**
+ * 配列から指定された数の要素を選ぶすべての組み合わせを生成します。
+ *
+ * @template T - 配列の要素の型。
+ * @param {T[]} arr - 組み合わせを生成する元の配列。
+ * @param {number} k - 選択する要素の数。
+ * @returns {T[][]} - 生成されたすべての組み合わせの配列。
+ *
+ * @example
+ * const items = [1, 2, 3];
+ * const combinations = getCombinations(items, 2);
+ * console.log(combinations);
+ * // 出力例: [[1, 2], [1, 3], [2, 3]]
+ */
+export const getCombinations = <T>(arr: T[], k: number): T[][] => {
+  if (k === 0) return [[]]; // 0個選ぶ → 空の組み合わせ
+  if (arr.length < k) return []; // 足りなければ []
 
-  const [first, ...rest] = arr; // 配列の先頭要素と残りに分割
+  const [first, ...rest] = arr;
 
-  // 1. first を使う組み合わせ
+  // first を使う組み合わせ
   const withFirst = getCombinations(rest, k - 1).map((comb) => [
     first,
     ...comb,
   ]);
 
-  // 2. first を使わない組み合わせ
+  // first を使わない組み合わせ
   const withoutFirst = getCombinations(rest, k);
 
-  // 両方を統合して返す
   return [...withFirst, ...withoutFirst];
-}
+};
 
 export const getPlayerName = (id: number, players: Player[]) => {
   return players.find((player) => player.id === id)?.name;
