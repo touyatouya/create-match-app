@@ -97,21 +97,17 @@ export function selectBestGameRounds(
 
   // 必須参加者が多すぎる場合はランダムに減らす
   if (requiredPlayers.length > totalNeeded) {
-    requiredPlayers = requiredPlayers
-      .sort(() => Math.random() - 0.5)
-      .slice(0, neededOptionalCount);
+    requiredPlayers = shuffle(requiredPlayers).slice(0, totalNeeded);
   }
 
   // 任意参加者が多すぎる場合はランダムに減らす
   if (optionalPlayers.length > neededOptionalCount) {
-    optionalPlayers = optionalPlayers
-      .sort(() => Math.random() - 0.5)
-      .slice(0, neededOptionalCount);
+    optionalPlayers = shuffle(optionalPlayers).slice(0, neededOptionalCount);
   }
 
   const partitions = getRandomGroupPartitions(
     [...requiredPlayers, ...optionalPlayers],
-    300,
+    100,
     courts
   );
 
@@ -152,8 +148,8 @@ export function selectBestGameRounds(
       return results;
     };
 
-    // 計算量削減のため300個に制限
-    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 300);
+    // 計算量削減のため100個に制限
+    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 100);
 
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {
@@ -298,26 +294,41 @@ const getRandomGroupPartitions = (
   const results: number[][][] = [];
   const seen = new Set<string>();
 
+  // 十分な人数がいない場合は空配列を返す
+  if (players.length < courts.length * 4) return results;
+
   for (let i = 0; i < trials; i++) {
-    const shuffled = [...players].sort(() => Math.random() - 0.5);
+    const shuffled = shuffle(players);
+
+    // [[1,2,3,4], [5,6,7,8], [9,10,11,12]]のようにコート数*4人ずつのグループに分ける
     const groups = Array.from({ length: courts.length }, (_, idx) =>
       shuffled.slice(idx * 4, (idx + 1) * 4)
     );
 
-    if (groups.every((g) => g.length === 4)) {
-      const key = groups
-        .map((g) => [...g].sort((a, b) => a - b).join(","))
-        .sort()
-        .join("|");
+    // "1,2,3,4|5,6,7,8|9,10,11,12" というユニークキーを作る
+    // これにより、「順番が違うだけの同じ組み合わせ」を除外できる
+    const key = groups
+      .map((g) => [...g].sort((a, b) => a - b).join(","))
+      .sort()
+      .join("|");
 
-      if (!seen.has(key)) {
-        seen.add(key);
-        results.push(groups);
-      }
+    if (!seen.has(key)) {
+      seen.add(key);
+      results.push(groups);
     }
   }
 
   return results;
+};
+
+// 1/n!の確率で配列をシャッフル
+export const shuffle = <T>(array: T[]): T[] => {
+  const arr = [...array]; // 元の配列は破壊しない
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 };
 
 // 各4人グループをチーム分け（2人＋2人のダブルス）
