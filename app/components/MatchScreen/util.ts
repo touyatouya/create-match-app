@@ -6,7 +6,7 @@ import {
   Match as MatchType,
   Pair,
   Player,
-} from "@/types";
+} from "../../../types";
 
 export const createMatch = (
   players: Player[],
@@ -93,23 +93,132 @@ export function selectBestGameRounds(
   genderSetting: GenderPreferenceSetting
 ): GameRound {
   const totalNeeded = courts.length * 4;
-  const neededOptionalCount = totalNeeded - requiredPlayers.length;
+  const neededOptionalCount = totalNeeded - requiredPlayers.length; // 任意参加者の中にペアがいる場合は、優先して入れる。
 
   // 必須参加者が多すぎる場合はランダムに減らす
-  if (requiredPlayers.length > totalNeeded) {
-    requiredPlayers = shuffle(requiredPlayers).slice(0, totalNeeded);
+  // 必須参加者と任意参加者の中にペアがいる場合は、優先して入れる。
+  // 必須参加者の中にペアがいる場合は優先して選択
+  const prioritizedOptinalPlayers: number[] = [];
+  const nextPrioritizedOptinalPlayers: number[] = [];
+  let finalOptinalPlayers: number[] = [];
+  // let joinedPairs: Pair[] = [];
+
+  for (const requiredPlayer of requiredPlayers) {
+    // 必須参加者：任意参加者のペアを見つける
+    for (const pair of pairs) {
+      if (
+        pair.player1 === requiredPlayer &&
+        optionalPlayers.includes(pair.player2)
+      ) {
+        prioritizedOptinalPlayers.push(pair.player2);
+      } else if (
+        pair.player2 === requiredPlayer &&
+        optionalPlayers.includes(pair.player1)
+      ) {
+        prioritizedOptinalPlayers.push(pair.player1);
+      }
+    }
   }
 
-  // 任意参加者が多すぎる場合はランダムに減らす
-  if (optionalPlayers.length > neededOptionalCount) {
-    optionalPlayers = shuffle(optionalPlayers).slice(0, neededOptionalCount);
+  // 必須参加者と優先任意参加者の合計が多すぎる場合、優先任意参加者をランダムに減らす
+  if (requiredPlayers.length + prioritizedOptinalPlayers.length > totalNeeded) {
+    finalOptinalPlayers = shuffle(prioritizedOptinalPlayers).slice(
+      0,
+      neededOptionalCount
+    );
+    // 必須参加者と優先任意参加者の合計がぴったりの場合
+  } else if (
+    requiredPlayers.length + prioritizedOptinalPlayers.length ===
+    totalNeeded
+  ) {
+    finalOptinalPlayers = prioritizedOptinalPlayers;
+    // 必須参加者と優先任意参加者の合計が足りない場合、任意参加者からペアを優先して追加
+  } else if (
+    requiredPlayers.length + prioritizedOptinalPlayers.length <
+    totalNeeded
+  ) {
+    for (const optionalPlayer of optionalPlayers) {
+      // 任意参加者同士のペアを見つける
+      for (const pair of pairs) {
+        if (
+          pair.player1 === optionalPlayer &&
+          optionalPlayers.includes(pair.player2)
+        ) {
+          nextPrioritizedOptinalPlayers.push(pair.player2);
+        } else if (
+          pair.player2 === optionalPlayer &&
+          optionalPlayers.includes(pair.player1)
+        ) {
+          nextPrioritizedOptinalPlayers.push(pair.player1);
+        }
+      }
+    }
+
+    // 必須参加者と優先任意参加者と次優先任意参加者の合計が多すぎる場合、次優先任意参加者をランダムに減らす
+    if (
+      requiredPlayers.length +
+        prioritizedOptinalPlayers.length +
+        nextPrioritizedOptinalPlayers.length >
+      totalNeeded
+    ) {
+      const selectedNextPrioritizedOptinalPlayers = shuffle(
+        nextPrioritizedOptinalPlayers
+      ).slice(
+        0,
+        totalNeeded -
+          (requiredPlayers.length + prioritizedOptinalPlayers.length)
+      );
+      finalOptinalPlayers = [
+        ...prioritizedOptinalPlayers,
+        ...selectedNextPrioritizedOptinalPlayers,
+      ];
+      // 必須参加者と優先任意参加者と次優先任意参加者の合計がぴったりの場合
+    } else if (
+      requiredPlayers.length +
+        prioritizedOptinalPlayers.length +
+        nextPrioritizedOptinalPlayers.length ===
+      totalNeeded
+    ) {
+      finalOptinalPlayers = [
+        ...prioritizedOptinalPlayers,
+        ...nextPrioritizedOptinalPlayers,
+      ];
+      // 必須参加者と優先任意参加者と次優先任意参加者の合計が足りない場合
+    } else {
+      finalOptinalPlayers = [
+        ...prioritizedOptinalPlayers,
+        ...nextPrioritizedOptinalPlayers,
+        ...shuffle(
+          optionalPlayers.filter(
+            (p) =>
+              !prioritizedOptinalPlayers.includes(p) &&
+              !nextPrioritizedOptinalPlayers.includes(p)
+          )
+        ).slice(
+          0,
+          totalNeeded -
+            (requiredPlayers.length +
+              prioritizedOptinalPlayers.length +
+              nextPrioritizedOptinalPlayers.length)
+        ),
+      ];
+    }
   }
+
+  // 参加者の中のペアを抽出
+  const joinedPlayers = [...requiredPlayers, ...finalOptinalPlayers];
+  const joinedPairs = pairs.filter(
+    (pair) =>
+      joinedPlayers.includes(pair.player1) &&
+      joinedPlayers.includes(pair.player2)
+  );
 
   // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
-    [...requiredPlayers, ...optionalPlayers],
+    [...requiredPlayers, ...finalOptinalPlayers],
     50,
-    courts
+    courts,
+    joinedPairs
   );
 
   let bestSets: GameRound[] = [];
@@ -124,7 +233,15 @@ export function selectBestGameRounds(
     // ]
     // 各コートの4人グループを2人ずつのチームに分割するすべての組み合わせを取得
     const allTeamSplitSets = courtSet.map((group) =>
-      group.length === 4 ? getTeamSplits(group) : [{ teamA: [], teamB: [] }]
+      group.length === 4
+        ? getTeamSplits(
+            group,
+            joinedPairs.filter(
+              (pair) =>
+                group.includes(pair.player1) && group.includes(pair.player2)
+            )
+          )
+        : [{ teamA: [], teamB: [] }]
     );
 
     // 計算量削減のため100個に制限
@@ -147,39 +264,6 @@ export function selectBestGameRounds(
           teamB: team.teamB,
         })),
       };
-
-      // すべてのペアが同じチーム、両方とも休憩、片方休憩のいずれかになっているかをチェック
-      const areAllPairsValid = pairs.every((pair) => {
-        const isPlayer1 = courtTeams.find(
-          (team) =>
-            team.teamA.includes(pair.player1) ||
-            team.teamB.includes(pair.player1)
-        );
-
-        const isPlayer2 = courtTeams.find(
-          (team) =>
-            team.teamA.includes(pair.player2) ||
-            team.teamB.includes(pair.player2)
-        );
-
-        if (!isPlayer1 && !isPlayer2) return true; // どちらもいない場合はOK
-        if (isPlayer1 && !isPlayer2) return true; // 片方しかいない場合はOK
-        if (!isPlayer1 && isPlayer2) return true; // 片方しかいない場合はOK
-
-        return courtTeams.some((team) => {
-          const aHas1 = team.teamA.includes(pair.player1);
-          const aHas2 = team.teamA.includes(pair.player2);
-          const bHas1 = team.teamB.includes(pair.player1);
-          const bHas2 = team.teamB.includes(pair.player2);
-
-          const sameInA = aHas1 && aHas2;
-          const sameInB = bHas1 && bHas2;
-
-          return sameInA || sameInB;
-        });
-      });
-
-      if (!areAllPairsValid) continue;
 
       const totalScore = courtTeams.reduce((acc, team) => {
         return (
@@ -274,7 +358,8 @@ const countFacedBefore = (
 const getRandomGroupPartitions = (
   players: number[],
   trials = 50,
-  courts: Court[]
+  courts: Court[],
+  pairs: Pair[] = []
 ): number[][][] => {
   const results: number[][][] = [];
   const seen = new Set<string>();
@@ -283,12 +368,46 @@ const getRandomGroupPartitions = (
   if (players.length < courts.length * 4) return results;
 
   for (let i = 0; i < trials; i++) {
-    const shuffled = shuffle(players);
-
-    // [[1,2,3,4], [5,6,7,8], [9,10,11,12]]のようにコート数*4人ずつのグループに分ける
-    const groups = Array.from({ length: courts.length }, (_, idx) =>
-      shuffled.slice(idx * 4, (idx + 1) * 4)
+    console.log("pairs", pairs);
+    console.log("players", players);
+    // [[player1, player2], [player3, player4], ...]の形に変換
+    const pairPlayers: number[][] = pairs.map((pair) => [
+      pair.player1,
+      pair.player2,
+    ]);
+    // [player1, player2, ...]の形に変換
+    const unPairPlayers: number[] = players.filter(
+      (player) =>
+        !pairs.some(
+          (pair) => pair.player1 === player || pair.player2 === player
+        )
     );
+
+    let groups: number[][] = []; // コートごとのグループを格納する配列　[[player1, player2, player3, player4], ...]
+    while (groups.length < courts.length) {
+      let court: number[] = []; // 1コート分のプレイヤーを格納する配列 [player1, player2, player3, player4]
+      while (court.length < 4) {
+        const random = Math.random() - 0.5;
+        // ペアがいなくなった、またはコートが3つ目の場合、またはランダム値が0以下の場合は、ペアではないプレイヤーをコートに追加
+        if (
+          pairPlayers.length === 0 ||
+          court.length === 3 ||
+          (unPairPlayers[0] != null && random <= 0)
+        ) {
+          const headPlayer = unPairPlayers.shift();
+          court.push(headPlayer!);
+          // ペアがいる場合、またはランダム値が0より大きい場合は、ペアのプレイヤーをコートに追加
+        } else if (pairPlayers[0] != null && random > 0) {
+          const headPlayer = pairPlayers.shift();
+          court.push(...headPlayer!);
+        }
+      }
+      // コートに4人揃ったらgroupsに追加
+      if (court.length === 4) {
+        groups.push(court);
+        court = [];
+      }
+    }
 
     // "1,2,3,4|5,6,7,8|9,10,11,12" というユニークキーを作る
     // これにより、「順番が違うだけの同じ組み合わせ」を除外できる
@@ -379,19 +498,43 @@ const combineLimited = (
  * // ]
  */
 export const getTeamSplits = (
-  group: number[]
+  group: number[],
+  pairs: Pair[] = []
 ): { teamA: number[]; teamB: number[] }[] => {
-  // parisは、[[1,2], [1,3], [1,4], [2,3], [2,4], [3,4]]のような形
-  const pairs = getCombinations(group, 2);
-  const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
+  if (pairs.length === 2) {
+    // ペアが2組いる場合、ペア同士でチームを分ける
+    const pair1 = pairs[0];
+    const pair2 = pairs[1];
+    return [
+      {
+        teamA: [pair1.player1, pair1.player2],
+        teamB: [pair2.player1, pair2.player2],
+      },
+    ];
+  } else if (pairs.length === 1) {
+    // ペアが1組いる場合、ペアとペアでない人でチームを分ける
+    const pairPlayers = pairs.flatMap((pair) => [pair.player1, pair.player2]);
+    const unPairPlayers = group.filter((p) => !pairPlayers.includes(p));
+    const pair = pairs[0];
+    return [
+      {
+        teamA: [pair.player1, pair.player2],
+        teamB: [unPairPlayers[0], unPairPlayers[1]],
+      },
+    ];
+  } else {
+    // ペアがいない場合、すべての組み合わせを生成
+    const comb = getCombinations(group, 2);
+    const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
 
-  // 各ペアに対して、残りの2人をもう一方のチームに割り当てる
-  for (const teamA of pairs) {
-    const teamB = group.filter((p) => !teamA.includes(p));
-    teamPairs.push({ teamA, teamB });
+    // 各ペアに対して、残りの2人をもう一方のチームに割り当てる
+    for (const teamA of comb) {
+      const teamB = group.filter((p) => !teamA.includes(p));
+      teamPairs.push({ teamA, teamB });
+    }
+
+    return teamPairs;
   }
-
-  return teamPairs;
 };
 
 // なるべく異なる人と試合すると高得点
