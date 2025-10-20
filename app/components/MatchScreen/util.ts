@@ -368,8 +368,6 @@ const getRandomGroupPartitions = (
   if (players.length < courts.length * 4) return results;
 
   for (let i = 0; i < trials; i++) {
-    console.log("pairs", pairs);
-    console.log("players", players);
     // [[player1, player2], [player3, player4], ...]の形に変換
     const pairPlayers: number[][] = pairs.map((pair) => [
       pair.player1,
