@@ -3,7 +3,6 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import React, { useCallback, useContext, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { BannerAdSize } from "react-native-google-mobile-ads";
 import { GenderPreferenceSetting } from "../types";
 import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
 import CustomHeader from "./components/CustomHeader";
@@ -12,7 +11,7 @@ import Loading from "./components/Loading";
 import GenderSetting from "./components/MatchScreen/genderSetting";
 import Match from "./components/MatchScreen/match";
 import PairSetting from "./components/MatchScreen/pairSetting";
-import MyAdmob from "./components/MyAdmob";
+import MyAdmob, { BannerAdSize } from "./components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
   const {
