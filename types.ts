@@ -8,11 +8,11 @@ export interface Player {
   rank: Rank;
 }
 
-export interface Filter {
-  id: number;
-  name: string;
-  players: number[];
-}
+// export interface Filter {
+//   id: number;
+//   name: string;
+//   players: number[];
+// }
 
 export enum Gender {
   男性 = "男性",

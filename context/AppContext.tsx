@@ -1,4 +1,4 @@
-import { Court, Filter, GameRound, Pair, Player } from "@/types";
+import { Court, GameRound, Pair, Player } from "@/types";
 import React, { createContext, ReactNode } from "react";
 
 type AppContextType = {
@@ -10,8 +10,8 @@ type AppContextType = {
   setGameRounds: React.Dispatch<React.SetStateAction<GameRound[]>>;
   pairs: Pair[];
   setPairs: React.Dispatch<React.SetStateAction<Pair[]>>;
-  filters: Filter[];
-  setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
+  // filters: Filter[];
+  // setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isPairUnlocked: boolean;
@@ -33,8 +33,8 @@ export const AppContext = createContext<AppContextType>({
   setGameRounds: () => {},
   pairs: [],
   setPairs: () => {},
-  filters: [],
-  setFilters: () => {},
+  // filters: [],
+  // setFilters: () => {},
   isLoading: false,
   setIsLoading: () => {},
   isPairUnlocked: false,
@@ -56,7 +56,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [courts, setCourts] = React.useState<Court[]>([{ id: 0 }]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
-  const [filters, setFilters] = React.useState<Filter[]>([]);
+  // const [filters, setFilters] = React.useState<Filter[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isPairUnlocked, setIsPairUnlocked] = React.useState<boolean>(false);
   const [isRestUnlocked, setIsRestUnlocked] = React.useState<boolean>(false);
@@ -74,8 +74,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setGameRounds,
         pairs,
         setPairs,
-        filters,
-        setFilters,
+        // filters,
+        // setFilters,
         isLoading,
         setIsLoading,
         isPairUnlocked,

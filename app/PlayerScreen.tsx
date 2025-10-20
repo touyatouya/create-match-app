@@ -9,7 +9,7 @@ import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
-import { Filter, Player } from "../types";
+import { Player } from "../types";
 import CustomHeader from "./components/CustomHeader";
 import MyAdmob, { BannerAdSize } from "./components/MyAdmob";
 import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
@@ -24,7 +24,7 @@ const PlayerScreen: React.FC = () => {
     players,
     setPlayers,
     setPairs,
-    setFilters,
+    // setFilters,
     // isProUser,
     courts,
     setCourts,
@@ -33,7 +33,7 @@ const PlayerScreen: React.FC = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   // const [expanded, setExpanded] = useState(false);
   // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
-  const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
+  // const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
   // const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
 
   const isAddingRef = useRef(false);
@@ -62,41 +62,37 @@ const PlayerScreen: React.FC = () => {
         // setDefaultOrderPlayers(players);
       }
 
-      const filtersData = await AsyncStorage.getItem("filters");
-      let filtersLength: number = 0;
-      if (filtersData) filtersLength = JSON.parse(filtersData).length;
+      // const filtersData = await AsyncStorage.getItem("filters");
+      // let filtersLength: number = 0;
+      // if (filtersData) filtersLength = JSON.parse(filtersData).length;
 
-      if (filtersData && filtersLength > 0) {
-        const parsedFilters = JSON.parse(filtersData);
-        let filters: Filter[] = [];
-        for (let i = 0; i < parsedFilters.length; i++) {
-          filters.push({
-            id: parsedFilters[i].id,
-            name: parsedFilters[i].name,
-            players: parsedFilters[i].players,
-          });
-        }
-        setFilters(filters);
-      }
+      // if (filtersData && filtersLength > 0) {
+      //   const parsedFilters = JSON.parse(filtersData);
+      //   let filters: Filter[] = [];
+      //   for (let i = 0; i < parsedFilters.length; i++) {
+      //     filters.push({
+      //       id: parsedFilters[i].id,
+      //       name: parsedFilters[i].name,
+      //       players: parsedFilters[i].players,
+      //     });
+      //   }
+      //   setFilters(filters);
+      // }
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const filteredPlayers = players.filter((player) => {
-    if (filteredFilters.length === 0) return true;
-    return filteredFilters.flatMap((item) => item.players).includes(player.id);
-  });
+  // const filteredPlayers = players.filter((player) => {
+  //   if (filteredFilters.length === 0) return true;
+  //   return filteredFilters.flatMap((item) => item.players).includes(player.id);
+  // });
 
   const joinedPlayer = players.filter((player) => player.isJoin);
 
   const joinAllPlayer = () => {
     const updatedPlayers = players.map((player) => {
-      if (
-        filteredPlayers
-          .flatMap((filteredPlayer) => filteredPlayer.id)
-          .includes(player.id)
-      ) {
+      if (players.flatMap((p) => p.id).includes(player.id)) {
         return { ...player, isJoin: true };
       }
       return { ...player };
@@ -249,28 +245,14 @@ const PlayerScreen: React.FC = () => {
         >
           プレイヤー選択
         </Text>
-        {/* <View style={{ marginBottom: 8 }}>
-          <Disclosure
-            isOpen={expanded}
-            setIsOpen={setExpanded}
-            label="絞り込み"
-          />
-        </View> */}
-        {/* {expanded && (
-          <FilterButtons
-            filteredFilters={filteredFilters}
-            setFilteredFilters={setFilteredFilters}
-          />
-        )} */}
-        {/* <HeaderSortButtons defaultOrderPlayers={defaultOrderPlayers} /> */}
         <PlayerTableHeader
-          filteredPlayers={filteredPlayers}
+          filteredPlayers={players}
           joinAllPlayer={joinAllPlayer}
           noJoinAllPlayer={noJoinAllPlayer}
         />
         <View style={{ flex: 1 }}>
           <PlayerTable
-            filteredPlayers={filteredPlayers}
+            filteredPlayers={players}
             // setDefaultOrderPlayers={setDefaultOrderPlayers}
             isEdit={isEdit}
             isAddingRef={isAddingRef}
