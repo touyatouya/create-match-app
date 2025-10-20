@@ -93,117 +93,14 @@ export function selectBestGameRounds(
   genderSetting: GenderPreferenceSetting
 ): GameRound {
   const totalNeeded = courts.length * 4;
-  const neededOptionalCount = totalNeeded - requiredPlayers.length; // 任意参加者の中にペアがいる場合は、優先して入れる。
 
-  // 必須参加者が多すぎる場合はランダムに減らす
-  // 必須参加者と任意参加者の中にペアがいる場合は、優先して入れる。
-  // 必須参加者の中にペアがいる場合は優先して選択
-  const prioritizedOptinalPlayers: number[] = [];
-  const nextPrioritizedOptinalPlayers: number[] = [];
-  let finalOptinalPlayers: number[] = [];
-  // let joinedPairs: Pair[] = [];
-
-  for (const requiredPlayer of requiredPlayers) {
-    // 必須参加者：任意参加者のペアを見つける
-    for (const pair of pairs) {
-      if (
-        pair.player1 === requiredPlayer &&
-        optionalPlayers.includes(pair.player2)
-      ) {
-        prioritizedOptinalPlayers.push(pair.player2);
-      } else if (
-        pair.player2 === requiredPlayer &&
-        optionalPlayers.includes(pair.player1)
-      ) {
-        prioritizedOptinalPlayers.push(pair.player1);
-      }
-    }
-  }
-
-  // 必須参加者と優先任意参加者の合計が多すぎる場合、優先任意参加者をランダムに減らす
-  if (requiredPlayers.length + prioritizedOptinalPlayers.length > totalNeeded) {
-    finalOptinalPlayers = shuffle(prioritizedOptinalPlayers).slice(
-      0,
-      neededOptionalCount
-    );
-    // 必須参加者と優先任意参加者の合計がぴったりの場合
-  } else if (
-    requiredPlayers.length + prioritizedOptinalPlayers.length ===
+  // 最終的な任意参加者を決定
+  const finalOptinalPlayers = getFinalOptionalPlayers(
+    requiredPlayers,
+    optionalPlayers,
+    pairs,
     totalNeeded
-  ) {
-    finalOptinalPlayers = prioritizedOptinalPlayers;
-    // 必須参加者と優先任意参加者の合計が足りない場合、任意参加者からペアを優先して追加
-  } else if (
-    requiredPlayers.length + prioritizedOptinalPlayers.length <
-    totalNeeded
-  ) {
-    for (const optionalPlayer of optionalPlayers) {
-      // 任意参加者同士のペアを見つける
-      for (const pair of pairs) {
-        if (
-          pair.player1 === optionalPlayer &&
-          optionalPlayers.includes(pair.player2)
-        ) {
-          nextPrioritizedOptinalPlayers.push(pair.player2);
-        } else if (
-          pair.player2 === optionalPlayer &&
-          optionalPlayers.includes(pair.player1)
-        ) {
-          nextPrioritizedOptinalPlayers.push(pair.player1);
-        }
-      }
-    }
-
-    // 必須参加者と優先任意参加者と次優先任意参加者の合計が多すぎる場合、次優先任意参加者をランダムに減らす
-    if (
-      requiredPlayers.length +
-        prioritizedOptinalPlayers.length +
-        nextPrioritizedOptinalPlayers.length >
-      totalNeeded
-    ) {
-      const selectedNextPrioritizedOptinalPlayers = shuffle(
-        nextPrioritizedOptinalPlayers
-      ).slice(
-        0,
-        totalNeeded -
-          (requiredPlayers.length + prioritizedOptinalPlayers.length)
-      );
-      finalOptinalPlayers = [
-        ...prioritizedOptinalPlayers,
-        ...selectedNextPrioritizedOptinalPlayers,
-      ];
-      // 必須参加者と優先任意参加者と次優先任意参加者の合計がぴったりの場合
-    } else if (
-      requiredPlayers.length +
-        prioritizedOptinalPlayers.length +
-        nextPrioritizedOptinalPlayers.length ===
-      totalNeeded
-    ) {
-      finalOptinalPlayers = [
-        ...prioritizedOptinalPlayers,
-        ...nextPrioritizedOptinalPlayers,
-      ];
-      // 必須参加者と優先任意参加者と次優先任意参加者の合計が足りない場合
-    } else {
-      finalOptinalPlayers = [
-        ...prioritizedOptinalPlayers,
-        ...nextPrioritizedOptinalPlayers,
-        ...shuffle(
-          optionalPlayers.filter(
-            (p) =>
-              !prioritizedOptinalPlayers.includes(p) &&
-              !nextPrioritizedOptinalPlayers.includes(p)
-          )
-        ).slice(
-          0,
-          totalNeeded -
-            (requiredPlayers.length +
-              prioritizedOptinalPlayers.length +
-              nextPrioritizedOptinalPlayers.length)
-        ),
-      ];
-    }
-  }
+  );
 
   // 参加者の中のペアを抽出
   const joinedPlayers = [...requiredPlayers, ...finalOptinalPlayers];
@@ -286,6 +183,104 @@ export function selectBestGameRounds(
 
   return bestSets[Math.floor(Math.random() * bestSets.length)];
 }
+
+const getFinalOptionalPlayers = (
+  requiredPlayers: number[],
+  optionalPlayers: number[],
+  pairs: Pair[],
+  totalNeeded: number
+): number[] => {
+  // 優先される任意参加者を取得
+  const prioritized = findPairedPlayers(
+    optionalPlayers,
+    requiredPlayers,
+    pairs
+  );
+
+  // 必須参加者と優先任意参加者の合計が多すぎる場合、優先任意参加者をランダムに減らす
+  if (requiredPlayers.length + prioritized.length > totalNeeded) {
+    return shuffle(prioritized).slice(0, totalNeeded - requiredPlayers.length);
+  }
+  // 必須参加者と優先任意参加者の合計がぴったりの場合
+  if (requiredPlayers.length + prioritized.length === totalNeeded) {
+    return prioritized;
+  }
+
+  // 必須参加者と優先任意参加者の合計が足りない場合、任意参加者同士のペアを優先して追加
+  const nextPrioritized = findPairedPlayers(
+    optionalPlayers,
+    optionalPlayers,
+    pairs
+  );
+
+  // 必須参加者と優先任意参加者と次優先任意参加者の合計が多すぎる場合、次優先任意参加者をランダムに減らす
+  if (
+    requiredPlayers.length + prioritized.length + nextPrioritized.length >
+    totalNeeded
+  ) {
+    const selectedNext = shuffle(nextPrioritized).slice(
+      0,
+      totalNeeded - (requiredPlayers.length + prioritized.length)
+    );
+    return [...prioritized, ...selectedNext];
+  }
+  // 必須参加者と優先任意参加者と次優先任意参加者の合計がぴったりの場合
+  if (
+    requiredPlayers.length + prioritized.length + nextPrioritized.length ===
+    totalNeeded
+  ) {
+    return [...prioritized, ...nextPrioritized];
+  }
+  // 必須参加者と優先任意参加者と次優先任意参加者の合計が足りない場合
+  const remain = optionalPlayers.filter(
+    (p) => !prioritized.includes(p) && !nextPrioritized.includes(p)
+  );
+  return [
+    ...prioritized,
+    ...nextPrioritized,
+    ...shuffle(remain).slice(
+      0,
+      totalNeeded -
+        (requiredPlayers.length + prioritized.length + nextPrioritized.length)
+    ),
+  ];
+};
+
+/**
+ * playersAの中で、playersBとペアになっているプレイヤーIDを抽出します。
+ *
+ * @param {number[]} playersA - 対象となるプレイヤーIDの配列。
+ * @param {number[]} playersB - ペア相手として判定するプレイヤーIDの配列。
+ * @param {Pair[]} pairs - ペア情報の配列。
+ * @returns {number[]} - playersBとペアになっているplayersA側のプレイヤーID配列。
+ *
+ * @example
+ * const playersA = [1, 2, 3];
+ * const playersB = [4, 5];
+ * const pairs = [{ player1: 1, player2: 4 }, { player1: 2, player2: 5 }];
+ * const result = findPairedPlayers(playersA, playersB, pairs);
+ * // result: [1, 2]
+ */
+export const findPairedPlayers = (
+  playersA: number[],
+  playersB: number[],
+  pairs: Pair[]
+): number[] => {
+  const pairPlayers: number[] = [];
+
+  // playersAの中で、playersBとペアになっているプレイヤーを探す
+  for (const playerB of playersB) {
+    for (const pair of pairs) {
+      if (pair.player1 === playerB && playersA.includes(pair.player2)) {
+        pairPlayers.push(pair.player2);
+      } else if (pair.player2 === playerB && playersA.includes(pair.player1)) {
+        pairPlayers.push(pair.player1);
+      }
+    }
+  }
+
+  return pairPlayers;
+};
 
 export const countMatch = (
   newMatches: MatchType[],
