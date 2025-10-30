@@ -55,6 +55,7 @@
     "@types/react": "~19.1.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
+    "jsdom": "^27.0.1",
     "react-native-svg-transformer": "^1.5.1",
     "typescript": "~5.9.2",
     "vitest": "^4.0.3"
