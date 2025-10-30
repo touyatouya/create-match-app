@@ -1,21 +1,25 @@
+import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
+import { AntDesign } from "@expo/vector-icons";
 import { useContext, useRef } from "react";
 import { LayoutAnimation } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import ListEmptyText from "../ListEmptyText";
+import BaseButton from "../BaseButton";
 import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {
   filteredPlayers: Player[];
   isEdit: boolean;
   isAddingRef: React.RefObject<boolean>;
+  setAddModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const PlayerTable: React.FC<PlayerTableProps> = ({
   filteredPlayers,
   isEdit,
   isAddingRef,
+  setAddModalVisible,
 }) => {
   const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
 
@@ -68,7 +72,6 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       data={filteredPlayers}
       onDragEnd={({ data }) => {
         setPlayers(data);
-        // setDefaultOrderPlayers(data);
         savePlayerInfo(
           data.map((player) => {
             return {
@@ -91,9 +94,11 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       )}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
-      ListEmptyComponent={
-        <ListEmptyText
-          message={"プレイヤーがいません。\n 右上の＋から追加してください。"}
+      ListFooterComponent={
+        <BaseButton
+          onPress={() => setAddModalVisible(true)}
+          icon={<AntDesign name="plus" size={24} color={ColorPalette.link} />}
+          text="プレイヤー追加"
         />
       }
     />

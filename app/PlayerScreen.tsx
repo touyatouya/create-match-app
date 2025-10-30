@@ -208,7 +208,7 @@ const PlayerScreen: React.FC = () => {
         </View>
         <View style={styles.matchCard}>
           <View style={styles.textView}>
-            <Text style={styles.playerNum}>必要なプレイヤー：</Text>
+            <Text style={styles.playerNum}>人数：</Text>
             <Text
               style={[
                 styles.playerNum,
@@ -253,9 +253,9 @@ const PlayerScreen: React.FC = () => {
         <View style={{ flex: 1 }}>
           <PlayerTable
             filteredPlayers={players}
-            // setDefaultOrderPlayers={setDefaultOrderPlayers}
             isEdit={isEdit}
             isAddingRef={isAddingRef}
+            setAddModalVisible={setAddModalVisible}
           />
         </View>
         <PrimaryButton
