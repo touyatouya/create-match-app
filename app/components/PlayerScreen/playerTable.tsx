@@ -1,6 +1,6 @@
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
-import { saveFilters, savePlayerInfo } from "@/utils/saveStorage";
+import { savePlayerInfo } from "@/utils/saveStorage";
 import { useContext, useRef } from "react";
 import { LayoutAnimation } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
@@ -9,18 +9,15 @@ import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {
   filteredPlayers: Player[];
-  // setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   isEdit: boolean;
   isAddingRef: React.RefObject<boolean>;
 }
 const PlayerTable: React.FC<PlayerTableProps> = ({
   filteredPlayers,
-  // setDefaultOrderPlayers,
   isEdit,
   isAddingRef,
 }) => {
-  const { players, setPlayers, pairs, setPairs, filters, setFilters } =
-    useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
 
   const flatListRef = useRef<any>(null);
 
@@ -62,24 +59,6 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
         };
       })
     );
-
-    // setDefaultOrderPlayers((prev) => {
-    //   return prev.filter((player) => player.id !== id);
-    // });
-
-    const filterPlayers = filters.flatMap((filter) => [...filter.players]);
-    if (filterPlayers.includes(id)) {
-      const newFilters = filters
-        .map((filter) => {
-          return {
-            ...filter,
-            players: filter.players.filter((player) => player !== id),
-          };
-        })
-        .filter((filter) => filter.players.length > 0);
-      setFilters(newFilters);
-      saveFilters(newFilters);
-    }
   };
 
   return (
