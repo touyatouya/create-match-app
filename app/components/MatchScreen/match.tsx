@@ -319,9 +319,12 @@ const Match: React.FC<MatchProps> = ({
         >
           {item.name}
         </Text>
-        <Text style={styles.playerGender}>
-          <GenderIcon gender={item.gender} />
-        </Text>
+        <View style={styles.subInfo}>
+          <Text style={styles.getGameCount}>{item.matchCount}</Text>
+          <Text style={styles.playerGender}>
+            <GenderIcon gender={item.gender} />
+          </Text>
+        </View>
       </>
     );
   };
@@ -566,6 +569,17 @@ const styles = StyleSheet.create({
     borderColor: ColorPalette.borderline,
     paddingVertical: 16,
   },
+  subInfo: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    display: "flex",
+  },
+  getGameCount: {
+    flex: 1,
+    fontSize: FONT_SIZE.small,
+    marginRight: 8,
+  },
   matchCard: {
     backgroundColor: ColorPalette.background,
     borderRadius: 8,
@@ -593,6 +607,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   playerGender: {
+    flex: 1,
     marginRight: 8,
   },
   vsText: {
@@ -635,16 +650,19 @@ const styles = StyleSheet.create({
     ...globalStyles.touch,
   },
   restingSwapPlayerItem: {
+    flex: 1,
     backgroundColor: ColorPalette.thirdry,
     borderColor: ColorPalette.secondary,
   },
   restingPlayerName: {
+    flex: 4,
     marginLeft: 6,
     fontSize: FONT_SIZE.heading,
     color: ColorPalette.filterItemName,
     marginRight: 5,
   },
   restingSwapPlayerName: {
+    flex: 2,
     color: ColorPalette.blackText,
   },
 });

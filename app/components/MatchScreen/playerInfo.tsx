@@ -17,12 +17,19 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
     return players.find((player) => player.id === id)?.gender;
   };
 
+  const getGameCount = (id: number) => {
+    return players.find((player) => player.id === id)?.matchCount;
+  };
+
   return (
     <View style={styles.playerInfo}>
       <Text style={styles.playerName}>{getPlayerName(playerId, players)}</Text>
-      <Text style={styles.playerGender}>
-        <GenderIcon gender={getGender(playerId)} />
-      </Text>
+      <View style={styles.subInfo}>
+        <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
+        <Text style={styles.playerGender}>
+          <GenderIcon gender={getGender(playerId)} />
+        </Text>
+      </View>
     </View>
   );
 };
@@ -33,14 +40,29 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
+    display: "flex",
+  },
+  subInfo: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    display: "flex",
   },
   playerName: {
+    flex: 2.7,
     fontSize: FONT_SIZE.heading,
     color: ColorPalette.blackText,
     fontWeight: "500",
+    display: "flex",
+  },
+  getGameCount: {
+    flex: 1.7,
+    fontSize: FONT_SIZE.small,
   },
   playerGender: {
-    marginRight: 8,
+    flex: 1,
+    marginRight: 4,
   },
 });
 
