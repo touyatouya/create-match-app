@@ -1,53 +1,23 @@
+import {
+  initRemoteConfig,
+  isLatestVersion,
+  showUpdateDialog,
+} from "@/utils/initRemoteConfig";
 import { Redirect } from "expo-router";
+import { useEffect } from "react";
 // import Purchases from "react-native-purchases";
 
 export default function Index() {
-  // const [nonPersonalizedOnly, setNonPersonalizedOnly] = useState(true);
-  // const { isProUser, setIsProUser } = useContext(AppContext);
+  useEffect(() => {
+    const checkUpdate = async () => {
+      await initRemoteConfig();
 
-  // useEffect(() => {
-  //   // ATTとGDPRの同意状態を取得
-  //   AdsConsent.requestInfoUpdate({
-  //     debugGeography: AdsConsentDebugGeography.EEA, // EU圏としてテストする設定
-  //     testDeviceIdentifiers: ["TEST-DEVICE-HASHED-ID"], // 実機でテストする場合はハッシュIDを指定
-  //   }).then(async (consentInfo) => {
-  //     let status = consentInfo.status;
-  //     if (
-  //       consentInfo.isConsentFormAvailable &&
-  //       status === AdsConsentStatus.REQUIRED
-  //     ) {
-  //       // 同意状態が必要な場合はダイアログを表示する
-  //       const result = await AdsConsent.showForm();
-  //       status = result.status;
-  //     }
-
-  //     if (
-  //       consentInfo.status === AdsConsentStatus.OBTAINED ||
-  //       status === AdsConsentStatus.OBTAINED
-  //     ) {
-  //       // 同意が取得できた場合はNonPersonalizedOnlyをfalseにする(トラッキング取得する)
-  //       setNonPersonalizedOnly(false);
-  //     }
-  //   });
-
-  //   if (Platform.OS === "ios") {
-  //     Purchases.configure({ apiKey: "appl_prIIHpEdeQhERPxdfLqNKAmppYN" });
-  //   }
-
-  //   const exec = async () => {
-  //     try {
-  //       const customerInfo = await Purchases.getCustomerInfo();
-  //       if (typeof customerInfo.entitlements.active["pro"] !== "undefined") {
-  //         setIsProUser(true);
-  //       } else {
-  //         setIsProUser(false);
-  //       }
-  //     } catch (e) {
-  //       console.error("Error fetching customer info:", e);
-  //     }
-  //   };
-  //   exec();
-  // }, [setIsProUser]);
+      if (!isLatestVersion()) {
+        showUpdateDialog();
+      }
+    };
+    checkUpdate();
+  }, []);
 
   return <Redirect href="/PlayerScreen" />;
 }
