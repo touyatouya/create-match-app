@@ -14,13 +14,10 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "^2.1.2",
-    "@react-native-firebase/app": "^23.5.0",
-    "@react-native-firebase/remote-config": "^23.5.0",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
     "expo": "54.0.25",
-    "expo-application": "~7.0.7",
     "expo-blur": "~15.0.7",
     "expo-constants": "~18.0.10",
     "expo-dev-client": "~6.0.16",
