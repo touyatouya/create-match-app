@@ -1,7 +1,8 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import React, { useCallback, useContext, useState } from "react";
+import * as Analytics from "expo-firebase-analytics";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GenderPreferenceSetting } from "../types";
 import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
@@ -32,6 +33,12 @@ const MatchScreen: React.FC = () => {
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
   const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+
+  useEffect(() => {
+    Analytics.logEvent("screen_view", {
+      screen_name: "MatchScreen",
+    });
+  }, []);
 
   const resetGameRound = useCallback(() => {
     setGameRounds([]);

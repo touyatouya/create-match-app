@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+import * as Analytics from "expo-firebase-analytics";
 import {
   Court,
   GameRound,
@@ -8,7 +10,7 @@ import {
   Player,
 } from "../../../types";
 
-export const createMatch = (
+export const createMatch = async (
   players: Player[],
   setPlayers: (value: React.SetStateAction<Player[]>) => void,
   courts: Court[],
@@ -21,7 +23,7 @@ export const createMatch = (
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>
-): void => {
+): Promise<void> => {
   const sortedPlayer: Player[] = players
     .filter((player) => player.isJoin && !player.isRest)
     .sort((a, b) => a.matchCount - b.matchCount);
@@ -79,6 +81,18 @@ export const createMatch = (
   setSwapPlayer(null);
   setDispRound(prevGameRounds + 1);
   setNumOfGenerate((prev) => prev + 1);
+
+  await Analytics.logEvent("match_generated", {
+    player_count: players.length,
+    court_count: courts.length,
+    match_count: matches.length,
+    game_count: gameRounds.length,
+    pairs: pairs.length,
+    genderMen: genderSetting.men,
+    genderWoman: genderSetting.woman,
+    genderMix: genderSetting.mix,
+    version: Constants.expoConfig?.version,
+  });
 };
 
 // スコアの高いコート構成を選ぶ関数

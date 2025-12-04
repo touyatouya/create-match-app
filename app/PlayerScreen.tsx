@@ -18,6 +18,8 @@ import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
+import Constants from "expo-constants";
+import * as Analytics from "expo-firebase-analytics";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -28,6 +30,8 @@ const PlayerScreen: React.FC = () => {
     // isProUser,
     courts,
     setCourts,
+    gameRounds,
+    pairs,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
@@ -39,6 +43,10 @@ const PlayerScreen: React.FC = () => {
   const isAddingRef = useRef(false);
 
   useEffect(() => {
+    Analytics.logEvent("screen_view", {
+      screen_name: "PlayerScreen",
+    });
+
     const loadData = async () => {
       const playersData = await AsyncStorage.getItem("players");
       let playersDataLength: number = 0;
@@ -123,6 +131,32 @@ const PlayerScreen: React.FC = () => {
     });
   };
 
+  const toMatchScreen = async () => {
+    router.push({
+      pathname: "/MatchScreen",
+    });
+
+    await Analytics.logEvent("to_match_screen", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
+  const openAddPlayerModal = async () => {
+    setAddModalVisible(true);
+
+    await Analytics.logEvent("open_add_player_modal", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
   return (
     <View style={styles.page}>
       <CustomHeader
@@ -141,7 +175,7 @@ const PlayerScreen: React.FC = () => {
                 />
               </TouchableOpacity> */}
               <TouchableOpacity
-                onPress={() => setAddModalVisible(true)}
+                onPress={openAddPlayerModal}
                 style={globalStyles.headerRight}
               >
                 <AntDesign name="plus" size={24} color={ColorPalette.link} />
@@ -259,11 +293,7 @@ const PlayerScreen: React.FC = () => {
           />
         </View>
         <PrimaryButton
-          onPress={() =>
-            router.push({
-              pathname: "/MatchScreen",
-            })
-          }
+          onPress={toMatchScreen}
           text="組み合わせ生成画面へ"
           disabled={joinedPlayer.length < courts.length * 4}
         />

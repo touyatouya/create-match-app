@@ -19,6 +19,8 @@ import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
+import Constants from "expo-constants";
+import * as Analytics from "expo-firebase-analytics";
 import TextInput from "../../components/TextInput";
 import GenderToggle from "../GenderToggle";
 
@@ -35,14 +37,15 @@ const AddPlayerModal: React.FC<Props> = ({
   // setDefaultOrderPlayers,
   isAddingRef,
 }) => {
-  const { players, setPlayers } = useContext(AppContext);
+  const { players, setPlayers, courts, gameRounds, pairs } =
+    useContext(AppContext);
 
   const [name, setName] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.未設定);
 
   const textInputRef = useRef<TextInputOrigin>(null);
 
-  const addPlayer = (): void => {
+  const addPlayer = async (): Promise<void> => {
     if (name.trim() === "") return;
 
     const existingIds = players.map((player) => player.id);
@@ -75,6 +78,14 @@ const AddPlayerModal: React.FC<Props> = ({
       })
     );
     onClose();
+
+    await Analytics.logEvent("add_player", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
   };
 
   const resetInput = () => {
