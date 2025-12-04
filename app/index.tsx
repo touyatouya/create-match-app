@@ -1,4 +1,4 @@
-import { isVersionNewer } from "@/utils/checkUpdate";
+import { isVersionNewer } from "@/utils/isVersionNewer";
 import Constants from "expo-constants";
 import { Redirect } from "expo-router";
 import { getApp } from "firebase/app";
