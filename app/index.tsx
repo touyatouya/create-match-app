@@ -1,34 +1,45 @@
-import { checkForUpdate } from "@/utils/checkUpdate";
+import { isVersionNewer } from "@/utils/checkUpdate";
+import Constants from "expo-constants";
 import { Redirect } from "expo-router";
-import { useEffect, useState } from "react";
+import { getApp } from "firebase/app";
+import { getRemoteConfig, getValue } from "firebase/remote-config";
+import { useEffect } from "react";
 import { Alert, Linking } from "react-native";
 
 export default function Index() {
-  const [checked, setChecked] = useState(false);
-
   useEffect(() => {
-    const run = async () => {
-      const result = await checkForUpdate();
+    // Firebase アプリインスタンス取得（_layout.tsx で initialize 済み）
+    const app = getApp();
 
-      if (result?.updateAvailable) {
-        Alert.alert("アップデートのお知らせ", result.message, [
+    // Remote Config インスタンス取得
+    const remoteConfig = getRemoteConfig(app);
+
+    // Remote Config からフラグ取得
+    const latestVersion = getValue(remoteConfig, "latest_version").asString();
+    const storeUrl = getValue(remoteConfig, "store_url").asString();
+
+    const appVersion = Constants.expoConfig?.version || "1.5.0";
+    const needsUpdate = isVersionNewer(latestVersion, appVersion);
+
+    // アップデート必須の場合
+    if (needsUpdate) {
+      Alert.alert(
+        "アップデートのお知らせ",
+        `新しいバージョン（${latestVersion}）が公開されています。アプリを更新してください。`,
+        [
           {
-            text: "今すぐアップデート",
-            onPress: () => {
-              Linking.openURL(result.storeUrlIOS);
-            },
+            text: "あとで",
+            style: "cancel",
           },
-          { text: "後で", style: "cancel", onPress: () => setChecked(true) },
-        ]);
-      } else {
-        setChecked(true);
-      }
-    };
-
-    run();
+          {
+            text: "アップデートへ進む",
+            onPress: () => Linking.openURL(storeUrl),
+          },
+        ],
+        { cancelable: false }
+      );
+    }
   }, []);
-
-  if (!checked) return null; // 更新確認中は何も表示しない
 
   return <Redirect href="/PlayerScreen" />;
 }
