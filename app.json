@@ -10,6 +10,7 @@
     "newArchEnabled": true,
     "jsEngine": "jsc",
     "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.touyatouya.creatematchapp",
       "supportsTablet": true,
       "infoPlist": {
@@ -50,7 +51,17 @@
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-firebase/app",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static",
+            "buildReactNativeFromSource": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

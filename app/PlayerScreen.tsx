@@ -18,8 +18,8 @@ import PlayerTable from "./components/PlayerScreen/playerTable";
 import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "./components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
+import analytics from "@react-native-firebase/analytics";
 import Constants from "expo-constants";
-import * as Analytics from "expo-firebase-analytics";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -43,7 +43,7 @@ const PlayerScreen: React.FC = () => {
   const isAddingRef = useRef(false);
 
   useEffect(() => {
-    Analytics.logEvent("screen_view", {
+    analytics().logEvent("screen_view", {
       screen_name: "PlayerScreen",
     });
 
@@ -136,7 +136,7 @@ const PlayerScreen: React.FC = () => {
       pathname: "/MatchScreen",
     });
 
-    await Analytics.logEvent("to_match_screen", {
+    await analytics().logEvent("to_match_screen", {
       player_count: players.length,
       court_count: courts.length,
       game_count: gameRounds.length,
@@ -148,7 +148,7 @@ const PlayerScreen: React.FC = () => {
   const openAddPlayerModal = async () => {
     setAddModalVisible(true);
 
-    await Analytics.logEvent("open_add_player_modal", {
+    await analytics().logEvent("open_add_player_modal", {
       player_count: players.length,
       court_count: courts.length,
       game_count: gameRounds.length,

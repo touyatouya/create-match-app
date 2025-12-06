@@ -1,5 +1,5 @@
+import analytics from "@react-native-firebase/analytics";
 import Constants from "expo-constants";
-import * as Analytics from "expo-firebase-analytics";
 import {
   Court,
   GameRound,
@@ -82,7 +82,7 @@ export const createMatch = async (
   setDispRound(prevGameRounds + 1);
   setNumOfGenerate((prev) => prev + 1);
 
-  await Analytics.logEvent("match_generated", {
+  await analytics().logEvent("match_generated", {
     player_count: players.length,
     court_count: courts.length,
     match_count: matches.length,
