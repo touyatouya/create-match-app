@@ -1,44 +1,53 @@
 import { isVersionNewer } from "@/utils/isVersionNewer";
+import firestore from "@react-native-firebase/firestore";
 import Constants from "expo-constants";
 import { Redirect } from "expo-router";
-import { getApp } from "firebase/app";
-import { getRemoteConfig, getValue } from "firebase/remote-config";
 import { useEffect } from "react";
 import { Alert, Linking } from "react-native";
 
 export default function Index() {
   useEffect(() => {
-    // Firebase アプリインスタンス取得（_layout.tsx で initialize 済み）
-    const app = getApp();
+    const checkAppVersion = async () => {
+      try {
+        const doc = await firestore()
+          .collection("app_config")
+          .doc("version")
+          .get();
 
-    // Remote Config インスタンス取得
-    const remoteConfig = getRemoteConfig(app);
+        if (!doc.exists) return;
 
-    // Remote Config からフラグ取得
-    const latestVersion = getValue(remoteConfig, "latest_version").asString();
-    const storeUrl = getValue(remoteConfig, "store_url").asString();
+        const data = doc.data();
 
-    const appVersion = Constants.expoConfig?.version || "1.5.0";
-    const needsUpdate = isVersionNewer(latestVersion, appVersion);
+        if (!data) return;
 
-    // アップデート必須の場合
-    if (needsUpdate) {
-      Alert.alert(
-        "アップデートのお知らせ",
-        `新しいバージョン（${latestVersion}）が公開されています。アプリを更新してください。`,
-        [
-          {
-            text: "あとで",
-            style: "cancel",
-          },
-          {
-            text: "アップデートへ進む",
-            onPress: () => Linking.openURL(storeUrl),
-          },
-        ],
-        { cancelable: false }
-      );
-    }
+        const latest = data.latest_version;
+        const url = data.store_url_ios;
+
+        const current = Constants.expoConfig?.version; // アプリ側
+
+        if (!latest || !current) return;
+
+        if (isVersionNewer(latest, current)) {
+          // 更新が必要
+          Alert.alert(
+            "アップデートがあります",
+            "新しいバージョンが利用できます",
+            [
+              {
+                text: "アップデート",
+                onPress: () => {
+                  Linking.openURL(url);
+                },
+              },
+              { text: "閉じる", style: "cancel" },
+            ]
+          );
+        }
+      } catch (e) {
+        console.log("version check error:", e);
+      }
+    };
+    checkAppVersion();
   }, []);
 
   return <Redirect href="/PlayerScreen" />;
