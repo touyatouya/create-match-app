@@ -39,6 +39,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 8,
     ...globalStyles.touch,
+    minHeight: 60,
+    shadowColor: ColorPalette.blackText,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   buttonText: {
     color: ColorPalette.whiteText,
