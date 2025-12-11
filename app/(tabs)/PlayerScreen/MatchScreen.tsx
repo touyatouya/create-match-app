@@ -62,7 +62,9 @@ const MatchScreen: React.FC = () => {
             }}
           >
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() =>
+                router.push({ pathname: "/PlayerScreen/PairSettingScreen" })
+              }
               style={globalStyles.headerRight}
             >
               <FontAwesome5
@@ -116,24 +118,6 @@ const MatchScreen: React.FC = () => {
         disalbed={isLoading}
       />
       <View style={styles.container}>
-        {/* <View style={styles.detailSetting}>
-          <Disclosure
-            isOpen={expanded}
-            setIsOpen={setExpanded}
-            label="詳細設定"
-          />
-          {expanded && (
-            <>
-              <GenderSetting
-                genderSetting={genderSetting}
-                setGenderSetting={setGenderSetting}
-              />
-              <RestSetting />
-              <PairSetting />
-            </>
-          )}
-        </View> */}
-
         <Match
           swapPlayer={swapPlayer}
           setSwapPlayer={setSwapPlayer}

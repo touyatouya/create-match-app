@@ -4,9 +4,8 @@ import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import { Foundation } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 const GenderSettingScreen: React.FC = () => {
   const { genderSetting, setGenderSetting } = React.useContext(AppContext);
@@ -15,14 +14,6 @@ const GenderSettingScreen: React.FC = () => {
       <CustomHeader title="性別設定" isSlideScreen headerLeftText="試合" />
       <View style={styles.container}>
         <View style={MarchScreenStyles.detailSettingSection}>
-          <View style={MarchScreenStyles.settingTitle}>
-            <Foundation
-              name="male-female"
-              size={20}
-              color={ColorPalette.normalIcon}
-            />
-            <Text style={MarchScreenStyles.sectionText}>性別</Text>
-          </View>
           <View style={styles.item}>
             <View style={styles.itemBottomBorder}>
               <Toggle
