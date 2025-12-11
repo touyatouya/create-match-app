@@ -439,7 +439,7 @@ const Match: React.FC<MatchProps> = ({
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 8,
+          marginBottom: 2,
         }}
       >
         {gameRounds[dispRound - 2] != null ? (

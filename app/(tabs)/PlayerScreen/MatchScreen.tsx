@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingBottom: 16,
-    paddingTop: 8,
+    paddingTop: 2,
     backgroundColor: ColorPalette.pageBackground,
     borderTopWidth: 0.5,
     borderTopColor: ColorPalette.pageHeaderFooterBorder,
