@@ -2,8 +2,9 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
+import { MaterialIcons } from "@expo/vector-icons";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { GenderPreferenceSetting } from "../../../types";
 import AdCompleteSnackbar from "../../components/AdCompleteSnackbar";
 import CustomHeader from "../../components/CustomHeader";
@@ -81,7 +82,11 @@ const MatchScreen: React.FC = () => {
             }}
             style={globalStyles.headerRight}
           >
-            <Text style={globalStyles.headerText}>リセット</Text>
+            <MaterialIcons
+              name="delete-forever"
+              size={26}
+              color={ColorPalette.link}
+            />
           </TouchableOpacity>
         )}
         isSlideScreen
