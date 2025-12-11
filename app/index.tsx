@@ -9,14 +9,11 @@ export default function Index() {
   useEffect(() => {
     const checkAppVersion = async () => {
       try {
-        const doc = await firestore()
+        const data = await firestore()
           .collection("app_config")
           .doc("version")
-          .get();
-
-        if (!doc.exists) return;
-
-        const data = doc.data();
+          .get()
+          .then((doc) => doc.data());
 
         if (!data) return;
 
