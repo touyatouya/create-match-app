@@ -4,6 +4,7 @@ import { savePlayerInfo } from "@/utils/saveStorage";
 import { useContext, useRef } from "react";
 import { LayoutAnimation, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
+import ListEmptyText from "../ListEmptyText";
 import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {
@@ -93,6 +94,9 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       )}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
+      ListEmptyComponent={
+        <ListEmptyText message={"右下の＋からプレイヤーを追加してください"} />
+      }
       ListFooterComponent={<View style={{ height: 90 }}></View>}
     />
   );
