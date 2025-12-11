@@ -3,9 +3,9 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
 import { FontAwesome5, Foundation, MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
-import { GenderPreferenceSetting } from "../../../types";
 import AdCompleteSnackbar from "../../components/AdCompleteSnackbar";
 import CustomHeader from "../../components/CustomHeader";
 import Loading from "../../components/Loading";
@@ -18,16 +18,10 @@ const MatchScreen: React.FC = () => {
     gameRounds,
     setGameRounds,
     isLoading,
+    genderSetting,
     // isProUser
   } = useContext(AppContext);
 
-  const [genderSetting, setGenderSetting] = useState<GenderPreferenceSetting>({
-    men: false,
-    woman: false,
-    mix: false,
-  });
-
-  const [expanded, setExpanded] = useState(false);
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
   const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -78,7 +72,9 @@ const MatchScreen: React.FC = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => {}}
+              onPress={() =>
+                router.push({ pathname: "/PlayerScreen/GenderSettingScreen" })
+              }
               style={globalStyles.headerRight}
             >
               <Foundation
@@ -137,6 +133,7 @@ const MatchScreen: React.FC = () => {
             </>
           )}
         </View> */}
+
         <Match
           swapPlayer={swapPlayer}
           setSwapPlayer={setSwapPlayer}
