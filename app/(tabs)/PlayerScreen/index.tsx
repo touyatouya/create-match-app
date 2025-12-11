@@ -161,7 +161,7 @@ const PlayerScreen: React.FC = () => {
   return (
     <View style={styles.page}>
       <CustomHeader
-        title="試合"
+        title="試合準備"
         headerRight={() =>
           isEdit || (
             <>

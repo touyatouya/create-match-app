@@ -1,5 +1,5 @@
 import ColorPalette from "@/constants/color";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
@@ -22,9 +22,9 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="SettingScreen"
         options={{
-          tabBarLabel: "設定",
+          tabBarLabel: "メニュー",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={26} color={color} />
+            <Entypo name="dots-three-horizontal" size={26} color={color} />
           ),
           headerShown: false,
           tabBarStyle: {

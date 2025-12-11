@@ -2,7 +2,11 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
-import { FontAwesome5, Foundation, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome5,
+  Foundation,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -105,10 +109,10 @@ const MatchScreen: React.FC = () => {
               }}
               style={globalStyles.headerRight}
             >
-              <MaterialIcons
-                name="delete-forever"
+              <MaterialCommunityIcons
+                name="delete-alert-outline"
                 size={24}
-                color={ColorPalette.blackText}
+                color="black"
               />
             </TouchableOpacity>
           </View>

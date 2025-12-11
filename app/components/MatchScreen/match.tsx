@@ -497,7 +497,7 @@ const Match: React.FC<MatchProps> = ({
                   setDispRound((prev) => prev - 1);
                 }}
               >
-                <MaterialIcons name="delete" size={24} color="black" />
+                <MaterialIcons name="delete-outline" size={24} color="black" />
               </TouchableOpacity>
             )}
           </View>
