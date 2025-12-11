@@ -9,8 +9,8 @@ export default function TabsLayout() {
         name="PlayerScreen"
         options={{
           tabBarLabel: "試合",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="shuffle" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="shuffle" size={28} color={color} />
           ),
           headerShown: false,
           tabBarStyle: {
@@ -24,7 +24,7 @@ export default function TabsLayout() {
         options={{
           tabBarLabel: "設定",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+            <Ionicons name="settings-outline" size={26} color={color} />
           ),
           headerShown: false,
           tabBarStyle: {
