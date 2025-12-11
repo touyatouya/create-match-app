@@ -3,7 +3,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
-import { AntDesign } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Checkbox from "../CheckBox";
@@ -82,10 +82,12 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
           ]}
         >
           <Text style={[styles.headerText]}>性別</Text>
-          <AntDesign
-            name={isSortedGender === "asc" ? "arrow-up" : "arrow-down"}
-            size={14}
-            color={ColorPalette.normalIcon}
+          <MaterialIcons
+            name={
+              isSortedGender === "asc" ? "arrow-drop-up" : "arrow-drop-down"
+            }
+            size={20}
+            color={ColorPalette.greyIcon2}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -99,10 +101,12 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
           ]}
         >
           <Text style={[styles.headerText]}>試合数</Text>
-          <AntDesign
-            name={isSortedMatchCount === "asc" ? "arrow-up" : "arrow-down"}
-            size={14}
-            color={ColorPalette.normalIcon}
+          <MaterialIcons
+            name={
+              isSortedMatchCount === "asc" ? "arrow-drop-up" : "arrow-drop-down"
+            }
+            size={20}
+            color={ColorPalette.greyIcon2}
           />
         </TouchableOpacity>
       </View>
@@ -116,6 +120,7 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
 const styles = StyleSheet.create({
   headerRow: {
     backgroundColor: ColorPalette.playerTabelHeader,
+    borderBottomColor: ColorPalette.greyIcon1,
   },
   headerText: {
     fontWeight: 600,

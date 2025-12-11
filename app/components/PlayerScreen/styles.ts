@@ -10,6 +10,7 @@ export const playerScreenStyles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 4,
     borderRadius: 8,
+    borderBottomWidth: 1,
     shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,

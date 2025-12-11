@@ -29,6 +29,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
     <View
       style={[
         playerScreenStyles.row,
+        { borderBottomColor: ColorPalette.greyIcon1 },
         isJoin && { backgroundColor: ColorPalette.selected },
       ]}
     >
@@ -77,7 +78,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
           <Entypo
             name="chevron-right"
             size={24}
-            color={ColorPalette.greyIcon}
+            color={ColorPalette.greyIcon1}
           />
         </TouchableOpacity>
       )}
