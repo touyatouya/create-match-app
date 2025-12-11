@@ -109,50 +109,56 @@ const AddPlayerModal: React.FC<Props> = ({
         }}
       >
         <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-            style={styles.modalContainer}
-          >
-            <View style={styles.header}>
-              <TouchableOpacity
-                onPress={() => {
-                  resetInput();
-                  onClose();
-                }}
-                style={styles.headerButton}
-              >
-                <Text style={styles.headerButtonText}>キャンセル</Text>
-              </TouchableOpacity>
-              <View style={styles.modalTitleWrapper}>
-                <Text style={styles.title}>新規プレイヤー追加</Text>
-              </View>
-              <TouchableOpacity onPress={addPlayer} style={styles.headerButton}>
-                <Text
-                  style={[
-                    styles.headerButtonText,
-                    name.trim() === "" && { color: ColorPalette.muted },
-                  ]}
+          {/* 子要素でタッチを受け取って親への伝播を止める */}
+          <TouchableWithoutFeedback onPress={() => {}}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+              style={styles.modalContainer}
+            >
+              <View style={styles.header}>
+                <TouchableOpacity
+                  onPress={() => {
+                    resetInput();
+                    onClose();
+                  }}
+                  style={styles.headerButton}
                 >
-                  作成
-                </Text>
-              </TouchableOpacity>
-            </View>
+                  <Text style={styles.headerButtonText}>キャンセル</Text>
+                </TouchableOpacity>
+                <View style={styles.modalTitleWrapper}>
+                  <Text style={styles.title}>新規プレイヤー追加</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={addPlayer}
+                  style={styles.headerButton}
+                >
+                  <Text
+                    style={[
+                      styles.headerButtonText,
+                      name.trim() === "" && { color: ColorPalette.muted },
+                    ]}
+                  >
+                    作成
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <View style={styles.body}>
-              <Text>名前</Text>
-              <TextInput
-                ref={textInputRef}
-                placeholder="名前を入力"
-                value={name}
-                onChangeText={setName}
-                autoFocus
-                onSubmitEditing={() => setName}
-                clearInput={() => setName("")}
-              />
-              <Text>性別</Text>
-              <GenderToggle value={gender} setGender={setGender} />
-            </View>
-          </KeyboardAvoidingView>
+              <View style={styles.body}>
+                <Text>名前</Text>
+                <TextInput
+                  ref={textInputRef}
+                  placeholder="名前を入力"
+                  value={name}
+                  onChangeText={setName}
+                  autoFocus
+                  onSubmitEditing={() => setName}
+                  clearInput={() => setName("")}
+                />
+                <Text>性別</Text>
+                <GenderToggle value={gender} setGender={setGender} />
+              </View>
+            </KeyboardAvoidingView>
+          </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
