@@ -14,6 +14,16 @@ export default function TabsLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="SettingScreen"
+        options={{
+          tabBarLabel: "設定",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 }
