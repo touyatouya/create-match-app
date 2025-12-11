@@ -9,7 +9,7 @@ export default function TabsLayout() {
         options={{
           tabBarLabel: "試合",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+            <Ionicons name="shuffle" size={size} color={color} />
           ),
           headerShown: false,
         }}
