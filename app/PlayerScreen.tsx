@@ -293,7 +293,6 @@ const PlayerScreen: React.FC = () => {
             filteredPlayers={players}
             isEdit={isEdit}
             isAddingRef={isAddingRef}
-            setAddModalVisible={setAddModalVisible}
           />
           <FabModal
             isOpen={menuVisible}
