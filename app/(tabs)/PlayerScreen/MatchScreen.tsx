@@ -2,17 +2,14 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
-import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5, Foundation, MaterialIcons } from "@expo/vector-icons";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { GenderPreferenceSetting } from "../../../types";
 import AdCompleteSnackbar from "../../components/AdCompleteSnackbar";
 import CustomHeader from "../../components/CustomHeader";
-import Disclosure from "../../components/Disclosure";
 import Loading from "../../components/Loading";
-import GenderSetting from "../../components/MatchScreen/genderSetting";
 import Match from "../../components/MatchScreen/match";
-import PairSetting from "../../components/MatchScreen/pairSetting";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
@@ -62,39 +59,68 @@ const MatchScreen: React.FC = () => {
       <CustomHeader
         title="試合"
         headerRight={() => (
-          <TouchableOpacity
-            onPress={() => {
-              Alert.alert(
-                "確認",
-                "全ての組み合わせを削除しますがよろしいですか？",
-                [
-                  {
-                    text: "キャンセル",
-                    style: "cancel",
-                  },
-                  {
-                    text: "削除",
-                    onPress: resetGameRound,
-                    style: "destructive",
-                  },
-                ]
-              );
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 4,
             }}
-            style={globalStyles.headerRight}
           >
-            <MaterialIcons
-              name="delete-forever"
-              size={26}
-              color={ColorPalette.link}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {}}
+              style={globalStyles.headerRight}
+            >
+              <FontAwesome5
+                name="handshake"
+                size={24}
+                color={ColorPalette.blackText}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {}}
+              style={globalStyles.headerRight}
+            >
+              <Foundation
+                name="male-female"
+                size={24}
+                color={ColorPalette.blackText}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "確認",
+                  "全ての組み合わせを削除しますがよろしいですか？",
+                  [
+                    {
+                      text: "キャンセル",
+                      style: "cancel",
+                    },
+                    {
+                      text: "削除",
+                      onPress: resetGameRound,
+                      style: "destructive",
+                    },
+                  ]
+                );
+              }}
+              style={globalStyles.headerRight}
+            >
+              <MaterialIcons
+                name="delete-forever"
+                size={24}
+                color={ColorPalette.blackText}
+              />
+            </TouchableOpacity>
+          </View>
         )}
         isSlideScreen
         headerLeftText="試合準備"
         disalbed={isLoading}
       />
       <View style={styles.container}>
-        <View style={styles.detailSetting}>
+        {/* <View style={styles.detailSetting}>
           <Disclosure
             isOpen={expanded}
             setIsOpen={setExpanded}
@@ -106,11 +132,11 @@ const MatchScreen: React.FC = () => {
                 genderSetting={genderSetting}
                 setGenderSetting={setGenderSetting}
               />
-              {/* <RestSetting /> */}
+              <RestSetting />
               <PairSetting />
             </>
           )}
-        </View>
+        </View> */}
         <Match
           swapPlayer={swapPlayer}
           setSwapPlayer={setSwapPlayer}
