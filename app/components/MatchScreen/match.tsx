@@ -2,7 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { AntDesign, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import {
   LayoutAnimation,
@@ -497,7 +497,7 @@ const Match: React.FC<MatchProps> = ({
                   setDispRound((prev) => prev - 1);
                 }}
               >
-                <AntDesign name="delete" size={24} color="black" />
+                <MaterialIcons name="delete" size={24} color="black" />
               </TouchableOpacity>
             )}
           </View>
