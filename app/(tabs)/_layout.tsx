@@ -1,3 +1,4 @@
+import ColorPalette from "@/constants/color";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
@@ -12,6 +13,10 @@ export default function TabsLayout() {
             <Ionicons name="shuffle" size={size} color={color} />
           ),
           headerShown: false,
+          tabBarStyle: {
+            borderTopWidth: 0.5,
+            borderTopColor: ColorPalette.pageHeaderFooterBorder,
+          },
         }}
       />
       <Tabs.Screen
@@ -22,6 +27,10 @@ export default function TabsLayout() {
             <Ionicons name="settings-outline" size={size} color={color} />
           ),
           headerShown: false,
+          tabBarStyle: {
+            borderTopWidth: 0.5,
+            borderTopColor: ColorPalette.pageHeaderFooterBorder,
+          },
         }}
       />
     </Tabs>

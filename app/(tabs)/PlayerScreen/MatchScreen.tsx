@@ -128,7 +128,13 @@ const MatchScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: ColorPalette.pageBackground,
+    borderTopWidth: 0.5,
+    borderTopColor: ColorPalette.pageHeaderFooterBorder,
+  },
   detailSetting: {
     flexDirection: "column",
     alignItems: "flex-start",

@@ -2,6 +2,8 @@ const ColorPalette = {
   primary: "#007ACC",
   secondary: "#1479B9",
   thirdry: "#DFEFF9",
+  pageBackground: "#F7F7F7",
+  pageHeaderFooterBorder: "#D8D8D8",
   accent: "#B65F2C",
   successBackground: "#3C8C40",
   toggleBackground: "#f8f9fa",
