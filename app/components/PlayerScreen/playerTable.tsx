@@ -3,6 +3,8 @@ import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { AntDesign } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import { useContext, useRef } from "react";
 import { LayoutAnimation } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
@@ -21,7 +23,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   isAddingRef,
   setAddModalVisible,
 }) => {
-  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs, courts, gameRounds } =
+    useContext(AppContext);
 
   const flatListRef = useRef<any>(null);
 
@@ -65,6 +68,18 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
     );
   };
 
+  const openAddPlayerModal = async (): Promise<void> => {
+    setAddModalVisible(true);
+
+    await analytics().logEvent("open_add_player_modal_btn", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
   return (
     <DraggableFlatList
       onContentSizeChange={handleContentSizeChange}
@@ -96,7 +111,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       showsVerticalScrollIndicator={false}
       ListFooterComponent={
         <BaseButton
-          onPress={() => setAddModalVisible(true)}
+          onPress={openAddPlayerModal}
           icon={<AntDesign name="plus" size={24} color={ColorPalette.link} />}
           text="プレイヤー追加"
         />

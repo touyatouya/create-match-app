@@ -148,7 +148,7 @@ const PlayerScreen: React.FC = () => {
   const openAddPlayerModal = async () => {
     setAddModalVisible(true);
 
-    await analytics().logEvent("open_add_player_modal", {
+    await analytics().logEvent("open_add_player_modal_header", {
       player_count: players.length,
       court_count: courts.length,
       game_count: gameRounds.length,
