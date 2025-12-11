@@ -4,6 +4,7 @@ import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -15,37 +16,60 @@ const GenderSettingScreen: React.FC = () => {
       <View style={styles.container}>
         <View style={MarchScreenStyles.detailSettingSection}>
           <View style={styles.item}>
-            <View style={styles.itemBottomBorder}>
-              <Toggle
-                label="なるべく男子ダブルス"
-                checked={genderSetting.men}
-                onChange={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, men: !prev.men };
-                  })
-                }
+            <View style={[styles.itemBottomBorder, styles.row]}>
+              <MaterialCommunityIcons
+                name="human-male-male"
+                size={24}
+                color="black"
               />
+              <View style={{ flex: 1 }}>
+                <Toggle
+                  label="なるべく男子ダブルス"
+                  checked={genderSetting.men}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, men: !prev.men };
+                    })
+                  }
+                />
+              </View>
             </View>
-            <View style={styles.itemBottomBorder}>
-              <Toggle
-                label="なるべく女子ダブルス"
-                checked={genderSetting.woman}
-                onChange={() =>
-                  setGenderSetting((prev) => {
-                    return { ...prev, woman: !prev.woman };
-                  })
-                }
+            <View style={[styles.itemBottomBorder, styles.row]}>
+              <MaterialCommunityIcons
+                name="human-female-female"
+                size={24}
+                color="black"
               />
+              <View style={{ flex: 1 }}>
+                <Toggle
+                  label="なるべく女子ダブルス"
+                  checked={genderSetting.woman}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, woman: !prev.woman };
+                    })
+                  }
+                />
+              </View>
             </View>
-            <Toggle
-              label="なるべくミックスダブルス"
-              checked={genderSetting.mix}
-              onChange={() =>
-                setGenderSetting((prev) => {
-                  return { ...prev, mix: !prev.mix };
-                })
-              }
-            />
+            <View style={styles.row}>
+              <MaterialCommunityIcons
+                name="human-male-female"
+                size={24}
+                color="black"
+              />
+              <View style={{ flex: 1 }}>
+                <Toggle
+                  label="なるべくミックスダブルス"
+                  checked={genderSetting.mix}
+                  onChange={() =>
+                    setGenderSetting((prev) => {
+                      return { ...prev, mix: !prev.mix };
+                    })
+                  }
+                />
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -60,6 +84,11 @@ const styles = StyleSheet.create({
   itemBottomBorder: {
     borderBottomWidth: 1,
     borderBottomColor: ColorPalette.borderline,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    // justifyContent: "space-between",
   },
   detailSetting: {
     flexDirection: "column",
