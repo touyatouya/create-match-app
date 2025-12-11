@@ -9,17 +9,17 @@ import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
-import { Player } from "../types";
-import CustomHeader from "./components/CustomHeader";
-import MyAdmob, { BannerAdSize } from "./components/MyAdmob";
-import AddPlayerModal from "./components/PlayerScreen/addPlayerModal";
+import { Player } from "../../../types";
+import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
+import AddPlayerModal from "../../components/PlayerScreen/addPlayerModal";
 // import FilterButtons from "./components/PlayerScreen/filterButtons";
-import PlayerTable from "./components/PlayerScreen/playerTable";
-import PlayerTableHeader from "./components/PlayerScreen/playerTableHeader";
-import PrimaryButton from "./components/PrimaryButton";
+import PlayerTable from "../../components/PlayerScreen/playerTable";
+import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
+import PrimaryButton from "../../components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
 // import analytics from "@react-native-firebase/analytics";
-import FabModal from "./components/PlayerScreen/fabModal";
+import CustomHeader from "../../components/CustomHeader";
+import FabModal from "../../components/PlayerScreen/fabModal";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -135,9 +135,7 @@ const PlayerScreen: React.FC = () => {
   };
 
   const toMatchScreen = async () => {
-    router.push({
-      pathname: "/MatchScreen",
-    });
+    router.push({ pathname: "/PlayerScreen/MatchScreen" });
 
     //   await analytics().logEvent("to_match_screen", {
     //     player_count: players.length,
@@ -163,7 +161,7 @@ const PlayerScreen: React.FC = () => {
   return (
     <View style={styles.page}>
       <CustomHeader
-        title="試合準備"
+        title="試合"
         headerRight={() =>
           isEdit || (
             <>
@@ -366,7 +364,8 @@ const styles = StyleSheet.create({
   page: { flex: 1 },
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   courtTitle: {
     width: "100%",

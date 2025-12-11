@@ -1,3 +1,6 @@
+import CustomHeader from "@/app/components/CustomHeader";
+import GenderToggle from "@/app/components/GenderToggle";
+import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
@@ -16,8 +19,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import CustomHeader from "../CustomHeader";
-import GenderToggle from "../GenderToggle";
 
 const PlayerEditScreen: React.FC = () => {
   const { players, setPlayers } = useContext(AppContext);
@@ -220,6 +221,7 @@ const PlayerEditScreen: React.FC = () => {
           </View>
         </View>
       </View>
+      <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );
 };

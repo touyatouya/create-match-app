@@ -6,7 +6,9 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AppProvider>
-        <Stack />
+        <Stack
+          screenOptions={{ headerShown: false, animation: "slide_from_right" }}
+        />
       </AppProvider>
     </GestureHandlerRootView>
   );

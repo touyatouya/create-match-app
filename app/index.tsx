@@ -39,5 +39,5 @@ export default function Index() {
     // checkAppVersion();
   }, []);
 
-  return <Redirect href="/PlayerScreen" />;
+  return <Redirect href="/(tabs)/PlayerScreen" />;
 }

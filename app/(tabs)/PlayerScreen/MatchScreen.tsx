@@ -4,15 +4,15 @@ import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { GenderPreferenceSetting } from "../types";
-import AdCompleteSnackbar from "./components/AdCompleteSnackbar";
-import CustomHeader from "./components/CustomHeader";
-import Disclosure from "./components/Disclosure";
-import Loading from "./components/Loading";
-import GenderSetting from "./components/MatchScreen/genderSetting";
-import Match from "./components/MatchScreen/match";
-import PairSetting from "./components/MatchScreen/pairSetting";
-import MyAdmob, { BannerAdSize } from "./components/MyAdmob";
+import { GenderPreferenceSetting } from "../../../types";
+import AdCompleteSnackbar from "../../components/AdCompleteSnackbar";
+import CustomHeader from "../../components/CustomHeader";
+import Disclosure from "../../components/Disclosure";
+import Loading from "../../components/Loading";
+import GenderSetting from "../../components/MatchScreen/genderSetting";
+import Match from "../../components/MatchScreen/match";
+import PairSetting from "../../components/MatchScreen/pairSetting";
+import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
   const {
