@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   menuBox: {
     position: "absolute",
-    bottom: 110,
+    bottom: 210,
     right: 30,
     backgroundColor: ColorPalette.whiteIcon,
     borderRadius: 16,
