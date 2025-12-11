@@ -68,8 +68,8 @@ export default function MyAdmob({ size = BannerAdSize.BANNER }: Props) {
     return (
       <View
         style={{
-          height: 0,
-          backgroundColor: "#eee",
+          height: 50,
+          backgroundColor: "black",
           justifyContent: "center",
           alignItems: "center",
         }}
