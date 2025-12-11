@@ -27,6 +27,7 @@ const ColorPalette = {
   sectionTitie: "#333",
   danger: "#F44336",
   normalIcon: "black",
+  greyIcon: "#00000033",
   whiteIcon: "#f0f0f0",
   restIcon: "#edab12",
   link: "#007AFF",

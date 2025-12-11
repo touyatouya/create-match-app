@@ -1,7 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { globalStyles } from "@/styles/global";
 import { Player } from "@/types";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Checkbox from "../CheckBox";
@@ -74,7 +74,11 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
           }
           style={playerScreenStyles.endIconButton}
         >
-          <AntDesign name="right" size={24} color={ColorPalette.normalIcon} />
+          <Entypo
+            name="chevron-right"
+            size={24}
+            color={ColorPalette.greyIcon}
+          />
         </TouchableOpacity>
       )}
     </View>
