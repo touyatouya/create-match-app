@@ -297,6 +297,7 @@ const PlayerScreen: React.FC = () => {
             isOpen={menuVisible}
             setMenuVisible={setMenuVisible}
             setAddModalVisible={setAddModalVisible}
+            isAddingRef={isAddingRef}
           />
           <TouchableOpacity
             style={styles.fab}

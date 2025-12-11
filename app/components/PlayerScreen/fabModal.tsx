@@ -11,12 +11,14 @@ interface Props {
   isOpen: boolean;
   setMenuVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setAddModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  isAddingRef: React.RefObject<boolean>;
 }
 
 const FabModal: React.FC<Props> = ({
   isOpen,
   setMenuVisible,
   setAddModalVisible,
+  isAddingRef,
 }) => {
   const {
     players,
@@ -49,6 +51,7 @@ const FabModal: React.FC<Props> = ({
     const newPlayers = [...players, newPlayer];
     setPlayers(newPlayers);
     setMenuVisible(false);
+    isAddingRef.current = true;
 
     // await analytics().logEvent("add_player_anonymous", {
     //   player_count: players.length,
