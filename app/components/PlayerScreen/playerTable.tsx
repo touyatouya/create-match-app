@@ -2,7 +2,7 @@ import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { useContext, useRef } from "react";
-import { LayoutAnimation } from "react-native";
+import { LayoutAnimation, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import PlayerRow from "./playerRow";
 
@@ -49,14 +49,16 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
     const newPlayers = players.filter((player) => player.id !== id);
     setPlayers(newPlayers);
     savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          gender: player.gender,
-          rank: player.rank,
-        };
-      })
+      newPlayers
+        .filter((p) => !p.isAnonymous)
+        .map((player) => {
+          return {
+            id: player.id,
+            name: player.name,
+            gender: player.gender,
+            rank: player.rank,
+          };
+        })
     );
   };
 
@@ -68,14 +70,16 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       onDragEnd={({ data }) => {
         setPlayers(data);
         savePlayerInfo(
-          data.map((player) => {
-            return {
-              id: player.id,
-              name: player.name,
-              gender: player.gender,
-              rank: player.rank,
-            };
-          })
+          data
+            .filter((p) => !p.isAnonymous)
+            .map((player) => {
+              return {
+                id: player.id,
+                name: player.name,
+                gender: player.gender,
+                rank: player.rank,
+              };
+            })
         );
       }}
       renderItem={({ item, drag }) => (
@@ -89,6 +93,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       )}
       keyExtractor={(item) => item.id.toString()}
       showsVerticalScrollIndicator={false}
+      ListFooterComponent={<View style={{ height: 90 }}></View>}
     />
   );
 };

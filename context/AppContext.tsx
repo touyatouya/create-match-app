@@ -4,6 +4,8 @@ import React, { createContext, ReactNode } from "react";
 type AppContextType = {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  anonymousPlayerCount: number;
+  setAnonymousPlayerCount: React.Dispatch<React.SetStateAction<number>>;
   courts: Court[];
   setCourts: React.Dispatch<React.SetStateAction<Court[]>>;
   gameRounds: GameRound[];
@@ -27,6 +29,8 @@ type AppContextType = {
 export const AppContext = createContext<AppContextType>({
   players: [],
   setPlayers: () => {},
+  anonymousPlayerCount: 0,
+  setAnonymousPlayerCount: () => {},
   courts: [],
   setCourts: () => {},
   gameRounds: [],
@@ -53,6 +57,8 @@ type AppContextProps = {
 
 export const AppProvider = ({ children }: AppContextProps) => {
   const [players, setPlayers] = React.useState<Player[]>([]);
+  const [anonymousPlayerCount, setAnonymousPlayerCount] =
+    React.useState<number>(0);
   const [courts, setCourts] = React.useState<Court[]>([{ id: 0 }]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [pairs, setPairs] = React.useState<Pair[]>([]);
@@ -68,6 +74,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
       value={{
         players,
         setPlayers,
+        anonymousPlayerCount,
+        setAnonymousPlayerCount,
         courts,
         setCourts,
         gameRounds,

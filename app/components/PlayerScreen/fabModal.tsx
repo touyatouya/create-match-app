@@ -18,29 +18,33 @@ const FabModal: React.FC<Props> = ({
   setMenuVisible,
   setAddModalVisible,
 }) => {
-  const { players, setPlayers, courts, gameRounds, pairs } =
-    useContext(AppContext);
+  const {
+    players,
+    setPlayers,
+    anonymousPlayerCount,
+    setAnonymousPlayerCount,
+    courts,
+    gameRounds,
+    pairs,
+  } = useContext(AppContext);
 
   const addAnonymousPlayer = async (): Promise<void> => {
     const existingIds = players.map((player) => player.id);
     const newId = generateUniqId(existingIds);
 
-    // 既存の anonymousNumber の最大値を取得して +1 にする
-    const anonNums = players.map((p) => p.anonymousNumber ?? 0);
-    const maxAnon = anonNums.length > 0 ? Math.max(...anonNums) : 0;
-    const nextAnon = maxAnon + 1;
-
     const newPlayer: Player = {
       id: newId,
-      name: `プレイヤー${nextAnon}`,
+      name: (anonymousPlayerCount + 1).toString(),
       gender: Gender.未設定,
       matchCount: 0,
       isJoin: true,
       isRest: false,
       rank: Rank.未設定,
       isAnonymous: true,
-      anonymousNumber: nextAnon,
+      anonymousNumber: anonymousPlayerCount + 1,
     };
+
+    setAnonymousPlayerCount((prev) => prev + 1);
 
     const newPlayers = [...players, newPlayer];
     setPlayers(newPlayers);
@@ -70,7 +74,7 @@ const FabModal: React.FC<Props> = ({
     // });
   };
   return (
-    <Modal transparent visible={isOpen} animationType="fade">
+    <Modal transparent visible={isOpen} animationType="none">
       <TouchableOpacity
         style={styles.overlay}
         onPress={() => setMenuVisible(false)}
@@ -79,11 +83,11 @@ const FabModal: React.FC<Props> = ({
       {/* メニューカード */}
       <View style={styles.menuBox}>
         <TouchableOpacity style={styles.menuItem} onPress={addAnonymousPlayer}>
-          <Text style={styles.menuText}>匿名プレイヤーを追加</Text>
+          <Text style={styles.menuText}>番号でプレイヤー追加</Text>
         </TouchableOpacity>
         <View style={styles.separator} />
         <TouchableOpacity style={styles.menuItem} onPress={addNamedPlayer}>
-          <Text style={styles.menuText}>名前で追加</Text>
+          <Text style={styles.menuText}>名前でプレイヤー追加</Text>
         </TouchableOpacity>
       </View>
     </Modal>

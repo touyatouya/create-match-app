@@ -320,8 +320,8 @@ const PlayerScreen: React.FC = () => {
 const styles = StyleSheet.create({
   fab: {
     position: "absolute",
-    bottom: 30,
-    right: 30,
+    bottom: 20,
+    right: 20,
     backgroundColor: ColorPalette.primary,
     width: 60,
     height: 60,

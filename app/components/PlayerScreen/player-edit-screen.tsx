@@ -150,14 +150,16 @@ const PlayerEditScreen: React.FC = () => {
     });
 
     savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          gender: player.gender,
-          rank: player.rank,
-        };
-      })
+      newPlayers
+        .filter((p) => !p.isAnonymous)
+        .map((player) => {
+          return {
+            id: player.id,
+            name: player.name,
+            gender: player.gender,
+            rank: player.rank,
+          };
+        })
     );
   };
 
