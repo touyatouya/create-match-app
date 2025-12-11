@@ -213,17 +213,16 @@ const PlayerScreen: React.FC = () => {
           // setDefaultOrderPlayers={setDefaultOrderPlayers}
           isAddingRef={isAddingRef}
         />
-        <Text
-          style={{
-            fontSize: FONT_SIZE.subsubheading,
-            fontWeight: "bold",
-            marginBottom: 8,
-          }}
-        >
-          コート数
-        </Text>
-        <View style={styles.matchCard}>
-          <View style={styles.courtBlock}>
+        <View style={styles.court}>
+          <Text
+            style={{
+              fontSize: FONT_SIZE.subsubheading,
+              fontWeight: "bold",
+            }}
+          >
+            コート数
+          </Text>
+          <View style={styles.courtCard}>
             <TouchableOpacity style={styles.button} onPress={removeCourt}>
               <Feather
                 name="minus-circle"
@@ -241,46 +240,48 @@ const PlayerScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.matchCard}>
-          <View style={styles.textView}>
-            <Text style={styles.playerNum}>人数：</Text>
-            <Text
-              style={[
-                styles.playerNum,
-                {
-                  color:
-                    joinedPlayer.length / (courts.length * 4) >= 1
-                      ? ColorPalette.blackText
-                      : ColorPalette.error,
-                },
-              ]}
-            >
-              {joinedPlayer.length}
-            </Text>
-            <Text style={[styles.playerNum]}>／{courts.length * 4}人</Text>
-          </View>
-          <View style={styles.progress}>
-            <Progress.Bar
-              progress={joinedPlayer.length / (courts.length * 4)}
-              color={
-                joinedPlayer.length / (courts.length * 4) >= 1
-                  ? ColorPalette.primary
-                  : ColorPalette.progress
-              }
-              width={null}
-              height={3}
-            />
+        <View style={styles.player}>
+          <Text
+            style={{
+              fontSize: FONT_SIZE.subsubheading,
+              fontWeight: "bold",
+              flex: 1,
+            }}
+          >
+            プレイヤー選択
+          </Text>
+          <View style={styles.peopleCard}>
+            <View style={styles.textView}>
+              <Text
+                style={[
+                  styles.playerNum,
+                  {
+                    color:
+                      joinedPlayer.length / (courts.length * 4) >= 1
+                        ? ColorPalette.blackText
+                        : ColorPalette.error,
+                  },
+                ]}
+              >
+                {joinedPlayer.length}
+              </Text>
+              <Text style={[styles.playerNum]}>／{courts.length * 4}人</Text>
+            </View>
+            <View style={styles.progress}>
+              <Progress.Bar
+                progress={joinedPlayer.length / (courts.length * 4)}
+                color={
+                  joinedPlayer.length / (courts.length * 4) >= 1
+                    ? ColorPalette.primary
+                    : ColorPalette.progress
+                }
+                width={null}
+                height={3}
+              />
+            </View>
           </View>
         </View>
-        <Text
-          style={{
-            fontSize: FONT_SIZE.subsubheading,
-            fontWeight: "bold",
-            marginVertical: 8,
-          }}
-        >
-          プレイヤー選択
-        </Text>
+
         <PlayerTableHeader
           filteredPlayers={players}
           joinAllPlayer={joinAllPlayer}
@@ -318,6 +319,20 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  court: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 15,
+    marginBottom: 8,
+  },
+  player: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
   fab: {
     position: "absolute",
     bottom: 20,
@@ -333,50 +348,40 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
-  textView: { flexDirection: "row", alignItems: "center" },
-  matchCard: {
-    backgroundColor: ColorPalette.background,
-    borderRadius: 8,
-    padding: 6,
-    marginBottom: 8,
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    alignItems: "center",
-  },
-  progress: { width: "100%", paddingHorizontal: 16 },
-  courtBlock: {
-    justifyContent: "center",
-    alignItems: "center",
+  textView: {
     flexDirection: "row",
-    columnGap: 2,
+    alignItems: "center",
+    alignSelf: "flex-end",
   },
+  courtCard: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  peopleCard: {
+    alignItems: "center",
+    flex: 1.2,
+  },
+  progress: { width: "100%" },
   count: {
     justifyContent: "center",
     alignItems: "center",
     fontSize: FONT_SIZE.subsubheading,
     color: ColorPalette.blackText,
-    width: 40,
+    width: 20,
     textAlign: "center",
   },
   button: {
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    shadowColor: ColorPalette.cardShadow,
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
     ...globalStyles.touch,
   },
   page: { flex: 1 },
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 6,
     backgroundColor: ColorPalette.pageBackground,
     borderTopWidth: 0.5,
     borderTopColor: ColorPalette.pageHeaderFooterBorder,
@@ -387,7 +392,6 @@ const styles = StyleSheet.create({
   playerNum: {
     fontSize: FONT_SIZE.body,
     flexShrink: 1,
-    marginBottom: 4,
   },
   joinedPlayer: {
     fontSize: FONT_SIZE.subheading,

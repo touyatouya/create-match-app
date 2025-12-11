@@ -8,7 +8,7 @@ export const playerScreenStyles = StyleSheet.create({
     backgroundColor: ColorPalette.background,
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 5,
+    marginVertical: 4.5,
     borderRadius: 8,
     borderBottomWidth: 1,
     shadowColor: ColorPalette.cardShadow,

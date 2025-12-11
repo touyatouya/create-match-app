@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
   headerRow: {
     backgroundColor: ColorPalette.playerTabelHeader,
     borderBottomColor: ColorPalette.greyIcon1,
+    marginVertical: 0,
   },
   headerText: {
     fontWeight: 600,
