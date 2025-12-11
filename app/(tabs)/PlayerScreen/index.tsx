@@ -264,10 +264,11 @@ const PlayerScreen: React.FC = () => {
               progress={joinedPlayer.length / (courts.length * 4)}
               color={
                 joinedPlayer.length / (courts.length * 4) >= 1
-                  ? ColorPalette.success
+                  ? ColorPalette.primary
                   : ColorPalette.progress
               }
               width={null}
+              height={3}
             />
           </View>
         </View>
@@ -320,13 +321,16 @@ const styles = StyleSheet.create({
   fab: {
     position: "absolute",
     bottom: 20,
-    right: 20,
+    right: 40,
     backgroundColor: ColorPalette.primary,
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: ColorPalette.blackText,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
     elevation: 4,
   },
   textView: { flexDirection: "row", alignItems: "center" },
