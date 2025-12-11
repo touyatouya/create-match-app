@@ -34,14 +34,14 @@ const styles = StyleSheet.create({
     minWidth: 24,
     minHeight: 24,
     borderWidth: 2,
-    borderColor: ColorPalette.primary,
+    borderColor: ColorPalette.checked,
     backgroundColor: ColorPalette.background,
     borderRadius: 4,
     justifyContent: "center",
     alignItems: "center",
   },
   checked: {
-    backgroundColor: ColorPalette.primary,
+    backgroundColor: ColorPalette.checked,
   },
   checkmark: {
     color: ColorPalette.whiteIcon,

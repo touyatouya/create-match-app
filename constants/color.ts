@@ -9,6 +9,7 @@ const ColorPalette = {
   toggleBackground: "#f8f9fa",
   background: "white",
   selected: "#9bd0f3ff",
+  checked: "#4A90E2",
   men: "#0060a1",
   women: "#9B0000",
   text: "#212121",
