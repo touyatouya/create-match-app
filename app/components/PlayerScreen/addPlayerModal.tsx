@@ -59,6 +59,8 @@ const AddPlayerModal: React.FC<Props> = ({
       isJoin: true,
       isRest: false,
       rank: Rank.未設定,
+      isAnonymous: false,
+      anonymousNumber: null,
     };
 
     const newPlayers = [...players, newPlayer];
@@ -68,14 +70,16 @@ const AddPlayerModal: React.FC<Props> = ({
     isAddingRef.current = true;
 
     savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          gender: player.gender,
-          rank: player.rank,
-        };
-      })
+      newPlayers
+        .filter((p) => !p.isAnonymous)
+        .map((player) => {
+          return {
+            id: player.id,
+            name: player.name,
+            gender: player.gender,
+            rank: player.rank,
+          };
+        })
     );
     onClose();
 

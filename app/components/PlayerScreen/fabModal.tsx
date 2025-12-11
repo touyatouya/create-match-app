@@ -1,0 +1,123 @@
+import React, { useContext } from "react";
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+import ColorPalette from "@/constants/color";
+import { AppContext } from "@/context/AppContext";
+import { Gender, Player, Rank } from "@/types";
+import { generateUniqId } from "@/utils/createId";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
+
+interface Props {
+  isOpen: boolean;
+  setMenuVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setAddModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const FabModal: React.FC<Props> = ({
+  isOpen,
+  setMenuVisible,
+  setAddModalVisible,
+}) => {
+  const { players, setPlayers, courts, gameRounds, pairs } =
+    useContext(AppContext);
+
+  const addAnonymousPlayer = async (): Promise<void> => {
+    const existingIds = players.map((player) => player.id);
+    const newId = generateUniqId(existingIds);
+
+    // 既存の anonymousNumber の最大値を取得して +1 にする
+    const anonNums = players.map((p) => p.anonymousNumber ?? 0);
+    const maxAnon = anonNums.length > 0 ? Math.max(...anonNums) : 0;
+    const nextAnon = maxAnon + 1;
+
+    const newPlayer: Player = {
+      id: newId,
+      name: `プレイヤー${nextAnon}`,
+      gender: Gender.未設定,
+      matchCount: 0,
+      isJoin: true,
+      isRest: false,
+      rank: Rank.未設定,
+      isAnonymous: true,
+      anonymousNumber: nextAnon,
+    };
+
+    const newPlayers = [...players, newPlayer];
+    setPlayers(newPlayers);
+    setMenuVisible(false);
+
+    await analytics().logEvent("add_player_anonymous", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
+  const addNamedPlayer = async () => {
+    setAddModalVisible(true);
+    setMenuVisible(false);
+
+    await analytics().logEvent("open_add_player_modal_btn", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+  return (
+    <Modal transparent visible={isOpen} animationType="fade">
+      <TouchableOpacity
+        style={styles.overlay}
+        onPress={() => setMenuVisible(false)}
+      />
+
+      {/* メニューカード */}
+      <View style={styles.menuBox}>
+        <TouchableOpacity style={styles.menuItem} onPress={addAnonymousPlayer}>
+          <Text style={styles.menuText}>匿名プレイヤーを追加</Text>
+        </TouchableOpacity>
+        <View style={styles.separator} />
+        <TouchableOpacity style={styles.menuItem} onPress={addNamedPlayer}>
+          <Text style={styles.menuText}>名前で追加</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+  },
+  menuBox: {
+    position: "absolute",
+    bottom: 110,
+    right: 30,
+    backgroundColor: ColorPalette.whiteIcon,
+    borderRadius: 16,
+    paddingVertical: 8,
+    width: 200,
+    shadowColor: ColorPalette.blackText,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  menuItem: {
+    padding: 14,
+  },
+  menuText: {
+    fontSize: 16,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: ColorPalette.separator,
+  },
+});
+
+export default FabModal;

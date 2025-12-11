@@ -50,6 +50,7 @@ const ColorPalette = {
     background: "#121212",
     text: "#FFFFFF",
   },
+  separator: "#eee",
 };
 
 export default ColorPalette;

@@ -6,6 +6,8 @@ export interface Player {
   isRest: boolean;
   isJoin: boolean;
   rank: Rank;
+  isAnonymous: boolean;
+  anonymousNumber: number | null;
 }
 
 // export interface Filter {

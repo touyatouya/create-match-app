@@ -3,7 +3,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -20,6 +20,7 @@ import PrimaryButton from "./components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
 import analytics from "@react-native-firebase/analytics";
 import Constants from "expo-constants";
+import FabModal from "./components/PlayerScreen/fabModal";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -35,6 +36,7 @@ const PlayerScreen: React.FC = () => {
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   // const [expanded, setExpanded] = useState(false);
   // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
   // const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
@@ -64,6 +66,8 @@ const PlayerScreen: React.FC = () => {
             isJoin: false,
             isRest: false,
             rank: parsedPlayers[i].rank,
+            isAnonymous: false,
+            anonymousNumber: null,
           });
         }
         setPlayers(players);
@@ -291,6 +295,17 @@ const PlayerScreen: React.FC = () => {
             isAddingRef={isAddingRef}
             setAddModalVisible={setAddModalVisible}
           />
+          <FabModal
+            isOpen={menuVisible}
+            setMenuVisible={setMenuVisible}
+            setAddModalVisible={setAddModalVisible}
+          />
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={() => setMenuVisible(true)}
+          >
+            <Ionicons name="add" size={32} color="#fff" />
+          </TouchableOpacity>
         </View>
         <PrimaryButton
           onPress={toMatchScreen}
@@ -305,6 +320,18 @@ const PlayerScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  fab: {
+    position: "absolute",
+    bottom: 30,
+    right: 30,
+    backgroundColor: ColorPalette.primary,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 4,
+  },
   textView: { flexDirection: "row", alignItems: "center" },
   matchCard: {
     backgroundColor: ColorPalette.background,

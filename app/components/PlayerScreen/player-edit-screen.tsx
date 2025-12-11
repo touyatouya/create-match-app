@@ -78,6 +78,8 @@ const PlayerEditScreen: React.FC = () => {
           return {
             ...player,
             name: newPlayerName,
+            isAnonymous: false,
+            anonymousNumber: null,
           };
         }
         return { ...player };
@@ -86,14 +88,16 @@ const PlayerEditScreen: React.FC = () => {
     });
 
     savePlayerInfo(
-      newPlayers.map((player) => {
-        return {
-          id: player.id,
-          name: player.name,
-          gender: player.gender,
-          rank: player.rank,
-        };
-      })
+      newPlayers
+        .filter((p) => !p.isAnonymous)
+        .map((player) => {
+          return {
+            id: player.id,
+            name: player.name,
+            gender: player.gender,
+            rank: player.rank,
+          };
+        })
     );
   };
 
@@ -117,11 +121,14 @@ const PlayerEditScreen: React.FC = () => {
           return {
             ...player,
             name: newPlayerName,
+            isAnonymous: false,
+            anonymousNumber: null,
           };
         }
         return { ...player };
       });
     });
+
     textInputRef.current?.blur();
   };
 
