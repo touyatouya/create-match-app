@@ -1,7 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GenderPreferenceSetting } from "../types";
@@ -35,9 +35,9 @@ const MatchScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "MatchScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "MatchScreen",
+    // });
   }, []);
 
   const resetGameRound = useCallback(() => {

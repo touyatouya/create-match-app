@@ -51,17 +51,7 @@
         }
       ],
       "expo-font",
-      "expo-web-browser",
-      "@react-native-firebase/app",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static",
-            "buildReactNativeFromSource": true
-          }
-        }
-      ]
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
