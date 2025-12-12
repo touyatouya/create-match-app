@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 // import analytics from "@react-native-firebase/analytics";
+import { saveOpenApp } from "@/utils/storeReview";
 import {
   FontAwesome5,
   Foundation,
@@ -34,6 +35,7 @@ const MatchScreen: React.FC = () => {
     // analytics().logEvent("screen_view", {
     //   screen_name: "MatchScreen",
     // });
+    saveOpenApp();
   }, []);
 
   const resetGameRound = useCallback(() => {

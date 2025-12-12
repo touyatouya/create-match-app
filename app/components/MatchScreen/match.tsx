@@ -2,7 +2,13 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import {
+  getOpenAppCount,
+  markReviewRequersted,
+  shouldShowReviewRequest,
+} from "@/utils/storeReview";
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
   LayoutAnimation,
@@ -414,9 +420,9 @@ const Match: React.FC<MatchProps> = ({
         icon={
           <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
         }
-        onPress={() => {
+        onPress={async () => {
           setIsLoading(true);
-          setTimeout(() => {
+          await setTimeout(() => {
             createMatch(
               players,
               setPlayers,
@@ -432,6 +438,18 @@ const Match: React.FC<MatchProps> = ({
               setNumOfGenerate
             );
           }, 0);
+
+          const openAppCount = await getOpenAppCount();
+          const canShow = await shouldShowReviewRequest();
+          if (
+            matches.length >= 12 &&
+            openAppCount >= 5 &&
+            canShow &&
+            (await StoreReview.hasAction())
+          ) {
+            StoreReview.requestReview();
+            markReviewRequersted();
+          }
         }}
       />
       <View
