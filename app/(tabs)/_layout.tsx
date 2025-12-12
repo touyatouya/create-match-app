@@ -20,7 +20,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="SettingScreen"
+        name="MenuScreen"
         options={{
           tabBarLabel: "メニュー",
           tabBarIcon: ({ color, size }) => (

@@ -10,7 +10,7 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const SettingScreen: React.FC = () => {
+const MenuScreen: React.FC = () => {
   const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
 
   useEffect(() => {
@@ -215,9 +215,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     columnGap: 12,
     height: 44,
-    // marqVertical: 8,
-    // flex: 1,
-    // justifyContent: "space-between",
   },
   detailSetting: {
     flexDirection: "column",
@@ -228,4 +225,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SettingScreen;
+export default MenuScreen;
