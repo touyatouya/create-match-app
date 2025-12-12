@@ -1,13 +1,14 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-// import analytics from "@react-native-firebase/analytics";
 import { saveOpenApp } from "@/utils/storeReview";
 import {
   FontAwesome5,
   Foundation,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -24,7 +25,10 @@ const MatchScreen: React.FC = () => {
     setGameRounds,
     isLoading,
     genderSetting,
-    // isProUser
+    // isProUser,
+    players,
+    courts,
+    pairs,
   } = useContext(AppContext);
 
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
@@ -32,13 +36,13 @@ const MatchScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "MatchScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "MatchScreen",
+    });
     saveOpenApp();
   }, []);
 
-  const resetGameRound = useCallback(() => {
+  const resetGameRound = useCallback(async () => {
     setGameRounds([]);
     setPlayers((prev) => {
       return prev.map((player) => {
@@ -51,6 +55,16 @@ const MatchScreen: React.FC = () => {
     });
     setSwapPlayer(null);
     setDispRound(0);
+
+    await analytics().logEvent("reset_game", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
   }, [setGameRounds, setPlayers]);
 
   return (

@@ -7,6 +7,8 @@ import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { Foundation, Ionicons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
@@ -21,7 +23,8 @@ import {
 } from "react-native";
 
 const PlayerEditScreen: React.FC = () => {
-  const { players, setPlayers } = useContext(AppContext);
+  const { players, setPlayers, courts, gameRounds, pairs } =
+    useContext(AppContext);
   const [newPlayerName, setNewPlayerName] = React.useState("");
 
   const textInputRef = useRef<TextInput>(null);
@@ -38,6 +41,10 @@ const PlayerEditScreen: React.FC = () => {
     if (playerName != null) {
       setNewPlayerName(playerName);
     }
+
+    analytics().logEvent("screen_view", {
+      screen_name: "PlayerEditScreen",
+    });
   }, [playerName]);
 
   const checkNameEmpty = () => {
@@ -57,7 +64,7 @@ const PlayerEditScreen: React.FC = () => {
     textInputRef.current?.blur();
   };
 
-  const updatePlayerName = () => {
+  const updatePlayerName = async () => {
     if (newPlayerName === "" || newPlayerName == null) {
       Alert.alert("名前を入力してください", "", [
         {
@@ -100,6 +107,16 @@ const PlayerEditScreen: React.FC = () => {
           };
         })
     );
+
+    await analytics().logEvent("update_player_name", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
   };
 
   const updatePlayerNameAndBlur = () => {
@@ -135,7 +152,7 @@ const PlayerEditScreen: React.FC = () => {
 
   const inputAccessoryViewID = "uniqueID2";
 
-  const setSelectedGender = (gender: Gender) => {
+  const setSelectedGender = async (gender: Gender) => {
     let newPlayers: Player[] = [];
     setPlayers((players) => {
       newPlayers = players.map((player) => {
@@ -162,6 +179,16 @@ const PlayerEditScreen: React.FC = () => {
           };
         })
     );
+
+    await analytics().logEvent("set_gender", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
   };
 
   return (

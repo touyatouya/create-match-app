@@ -19,7 +19,8 @@ import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import TextInput from "../../components/TextInput";
 import GenderToggle from "../GenderToggle";
 
@@ -82,13 +83,13 @@ const AddPlayerModal: React.FC<Props> = ({
     );
     onClose();
 
-    // await analytics().logEvent("add_player", {
-    //   player_count: players.length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("add_player_name", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
   };
 
   const resetInput = () => {

@@ -4,12 +4,20 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const SettingScreen: React.FC = () => {
-  const { genderSetting, setGenderSetting } = React.useContext(AppContext);
+  const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
+
+  useEffect(() => {
+    analytics().logEvent("screen_view", {
+      screen_name: "MenuScreen",
+    });
+  }, []);
   return (
     <>
       <CustomHeader title="設定" isSlideScreen />
@@ -21,6 +29,17 @@ const SettingScreen: React.FC = () => {
               try {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
+
+              await analytics().logEvent("contact_us", {
+                court_count: courts.length,
+                game_count: gameRounds.length,
+                player_count: players.length,
+                anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                  .length,
+                pairs: pairs.length,
+                version: Constants.expoConfig?.version,
+              });
             }}
             style={[styles.row]}
           >
@@ -65,6 +84,17 @@ const SettingScreen: React.FC = () => {
               try {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
+
+              await analytics().logEvent("suggest_new", {
+                court_count: courts.length,
+                game_count: gameRounds.length,
+                player_count: players.length,
+                anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                  .length,
+                pairs: pairs.length,
+                version: Constants.expoConfig?.version,
+              });
             }}
             style={[styles.row]}
           >
@@ -110,6 +140,17 @@ const SettingScreen: React.FC = () => {
               try {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
+
+              await analytics().logEvent("how_to_use", {
+                court_count: courts.length,
+                game_count: gameRounds.length,
+                player_count: players.length,
+                anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                  .length,
+                pairs: pairs.length,
+                version: Constants.expoConfig?.version,
+              });
             }}
             style={[styles.row]}
           >

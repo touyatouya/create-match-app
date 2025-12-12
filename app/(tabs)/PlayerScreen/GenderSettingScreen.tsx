@@ -5,11 +5,74 @@ import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import React from "react";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
+import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
 const GenderSettingScreen: React.FC = () => {
-  const { genderSetting, setGenderSetting } = React.useContext(AppContext);
+  const {
+    genderSetting,
+    setGenderSetting,
+    players,
+    courts,
+    gameRounds,
+    pairs,
+  } = React.useContext(AppContext);
+
+  useEffect(() => {
+    analytics().logEvent("screen_view", {
+      screen_name: "GenderSettingScreen",
+    });
+  }, []);
+
+  const onChangeMan = async () => {
+    setGenderSetting((prev) => {
+      return { ...prev, men: !prev.men };
+    });
+
+    await analytics().logEvent("change_man", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
+  const onChangeWoman = async () => {
+    setGenderSetting((prev) => {
+      return { ...prev, woman: !prev.woman };
+    });
+
+    await analytics().logEvent("change_woman", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
+
+  const onChangeMix = async () => {
+    setGenderSetting((prev) => {
+      return { ...prev, mix: !prev.mix };
+    });
+
+    await analytics().logEvent("change_mix", {
+      player_count: players.length,
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+      pairs: pairs.length,
+      version: Constants.expoConfig?.version,
+    });
+  };
   return (
     <>
       <CustomHeader title="性別設定" isSlideScreen headerLeftText="試合" />
@@ -26,11 +89,7 @@ const GenderSettingScreen: React.FC = () => {
                 <Toggle
                   label="なるべく男子ダブルス"
                   checked={genderSetting.men}
-                  onChange={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, men: !prev.men };
-                    })
-                  }
+                  onChange={onChangeMan}
                 />
               </View>
             </View>
@@ -44,11 +103,7 @@ const GenderSettingScreen: React.FC = () => {
                 <Toggle
                   label="なるべく女子ダブルス"
                   checked={genderSetting.woman}
-                  onChange={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, woman: !prev.woman };
-                    })
-                  }
+                  onChange={onChangeWoman}
                 />
               </View>
             </View>
@@ -62,11 +117,7 @@ const GenderSettingScreen: React.FC = () => {
                 <Toggle
                   label="なるべくミックスダブルス"
                   checked={genderSetting.mix}
-                  onChange={() =>
-                    setGenderSetting((prev) => {
-                      return { ...prev, mix: !prev.mix };
-                    })
-                  }
+                  onChange={onChangeMix}
                 />
               </View>
             </View>

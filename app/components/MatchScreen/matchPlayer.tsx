@@ -1,6 +1,10 @@
 import ColorPalette from "@/constants/color";
+import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
+import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
 
@@ -19,6 +23,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   partnerId,
   isSwap,
 }) => {
+  const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
   return (
     <>
       {isSwap ? (
@@ -28,8 +33,18 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             styles.playerButton,
             isSwap && swapPlayer === playerId && styles.swapPlayerButton,
           ]}
-          onPress={() => {
+          onPress={async () => {
             isSwap && swapPlayer !== partnerId && selectSwapPlayer(playerId);
+
+            await analytics().logEvent("swap_player", {
+              player_count: players.length,
+              anonymous_player_: players.filter((p) => p.isAnonymous).length,
+              noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+              court_count: courts.length,
+              game_count: gameRounds.length,
+              pairs: pairs.length,
+              version: Constants.expoConfig?.version,
+            });
           }}
         >
           <PlayerInfo playerId={playerId} />

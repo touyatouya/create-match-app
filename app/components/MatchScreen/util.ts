@@ -1,4 +1,5 @@
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import {
   Court,
   GameRound,
@@ -81,17 +82,17 @@ export const createMatch = async (
   setDispRound(prevGameRounds + 1);
   setNumOfGenerate((prev) => prev + 1);
 
-  // await analytics().logEvent("match_generated", {
-  //   player_count: players.length,
-  //   court_count: courts.length,
-  //   match_count: matches.length,
-  //   game_count: gameRounds.length,
-  //   pairs: pairs.length,
-  //   genderMen: genderSetting.men,
-  //   genderWoman: genderSetting.woman,
-  //   genderMix: genderSetting.mix,
-  //   version: Constants.expoConfig?.version,
-  // });
+  await analytics().logEvent("match_generated", {
+    player_count: players.length,
+    court_count: courts.length,
+    match_count: matches.length,
+    game_count: gameRounds.length,
+    pairs: pairs.length,
+    genderMen: genderSetting.men,
+    genderWoman: genderSetting.woman,
+    genderMix: genderSetting.mix,
+    version: Constants.expoConfig?.version,
+  });
 };
 
 // スコアの高いコート構成を選ぶ関数
