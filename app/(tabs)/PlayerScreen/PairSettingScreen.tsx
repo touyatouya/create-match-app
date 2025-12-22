@@ -10,8 +10,8 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
-import Constants from "expo-constants";
+// import analytics from "@react-native-firebase/analytics";
+// import Constants from "expo-constants";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, SectionList, StyleSheet, Text, View } from "react-native";
 import { Pair, Player } from "../../../types";
@@ -40,9 +40,9 @@ const PairSettingScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "PairSettingScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "PairSettingScreen",
+    // });
   }, []);
 
   const selectPlayer = (id: number) =>
@@ -82,29 +82,29 @@ const PairSettingScreen: React.FC = () => {
     });
     setPair([]);
 
-    await analytics().logEvent("create_pair", {
-      player_count: players.length,
-      anonymous_player_: players.filter((p) => p.isAnonymous).length,
-      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("create_pair", {
+    //   player_count: players.length,
+    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   const removePair = async (id: number) => {
     setPairs((prev) => prev.filter((pair) => pair.id !== id));
 
-    await analytics().logEvent("remove_pair", {
-      player_count: players.length,
-      anonymous_player_: players.filter((p) => p.isAnonymous).length,
-      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("remove_pair", {
+    //   player_count: players.length,
+    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   const NotPaierPlayer = players.filter(

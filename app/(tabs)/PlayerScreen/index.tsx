@@ -17,8 +17,7 @@ import PlayerTable from "../../components/PlayerScreen/playerTable";
 import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "../../components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
-import analytics from "@react-native-firebase/analytics";
-import Constants from "expo-constants";
+// import analytics from "@react-native-firebase/analytics";
 import CustomHeader from "../../components/CustomHeader";
 import FabModal from "../../components/PlayerScreen/fabModal";
 
@@ -45,9 +44,9 @@ const PlayerScreen: React.FC = () => {
   const isAddingRef = useRef(false);
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "PlayerScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "PlayerScreen",
+    // });
 
     const loadData = async () => {
       const playersData = await AsyncStorage.getItem("players");
@@ -138,25 +137,25 @@ const PlayerScreen: React.FC = () => {
   const toMatchScreen = async () => {
     router.push({ pathname: "/PlayerScreen/MatchScreen" });
 
-    await analytics().logEvent("to_match_screen", {
-      player_count: players.length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("to_match_screen", {
+    //   player_count: players.length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   const openAddPlayerModal = async () => {
     setAddModalVisible(true);
 
-    await analytics().logEvent("open_add_player_modal_header", {
-      player_count: players.length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("open_add_player_modal_header", {
+    //   player_count: players.length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   return (
@@ -304,13 +303,13 @@ const PlayerScreen: React.FC = () => {
             style={styles.fab}
             onPress={async () => {
               setMenuVisible(true);
-              await analytics().logEvent("open_fab_menu", {
-                player_count: players.length,
-                court_count: courts.length,
-                game_count: gameRounds.length,
-                pairs: pairs.length,
-                version: Constants.expoConfig?.version,
-              });
+              // await analytics().logEvent("open_fab_menu", {
+              //   player_count: players.length,
+              //   court_count: courts.length,
+              //   game_count: gameRounds.length,
+              //   pairs: pairs.length,
+              //   version: Constants.expoConfig?.version,
+              // });
             }}
           >
             <Ionicons name="add" size={32} color="#fff" />

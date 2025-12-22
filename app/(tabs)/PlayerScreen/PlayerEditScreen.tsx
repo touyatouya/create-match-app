@@ -7,8 +7,8 @@ import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { Foundation, Ionicons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
-import Constants from "expo-constants";
+// import analytics from "@react-native-firebase/analytics";
+// import Constants from "expo-constants";
 import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
@@ -42,9 +42,9 @@ const PlayerEditScreen: React.FC = () => {
       setNewPlayerName(playerName);
     }
 
-    analytics().logEvent("screen_view", {
-      screen_name: "PlayerEditScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "PlayerEditScreen",
+    // });
   }, [playerName]);
 
   const checkNameEmpty = () => {
@@ -108,15 +108,15 @@ const PlayerEditScreen: React.FC = () => {
         })
     );
 
-    await analytics().logEvent("update_player_name", {
-      player_count: players.length,
-      anonymous_player_: players.filter((p) => p.isAnonymous).length,
-      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("update_player_name", {
+    //   player_count: players.length,
+    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   const updatePlayerNameAndBlur = () => {
@@ -180,15 +180,15 @@ const PlayerEditScreen: React.FC = () => {
         })
     );
 
-    await analytics().logEvent("set_gender", {
-      player_count: players.length,
-      anonymous_player_: players.filter((p) => p.isAnonymous).length,
-      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("set_gender", {
+    //   player_count: players.length,
+    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   };
 
   return (

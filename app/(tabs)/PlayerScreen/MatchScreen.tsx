@@ -7,8 +7,8 @@ import {
   Foundation,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
-import Constants from "expo-constants";
+// import analytics from "@react-native-firebase/analytics";
+// import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -36,9 +36,9 @@ const MatchScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "MatchScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "MatchScreen",
+    // });
     saveOpenApp();
   }, []);
 
@@ -56,15 +56,15 @@ const MatchScreen: React.FC = () => {
     setSwapPlayer(null);
     setDispRound(0);
 
-    await analytics().logEvent("reset_game", {
-      player_count: players.length,
-      anonymous_player_: players.filter((p) => p.isAnonymous).length,
-      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-      court_count: courts.length,
-      game_count: gameRounds.length,
-      pairs: pairs.length,
-      version: Constants.expoConfig?.version,
-    });
+    // await analytics().logEvent("reset_game", {
+    //   player_count: players.length,
+    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    //   court_count: courts.length,
+    //   game_count: gameRounds.length,
+    //   pairs: pairs.length,
+    //   version: Constants.expoConfig?.version,
+    // });
   }, [setGameRounds, setPlayers]);
 
   return (

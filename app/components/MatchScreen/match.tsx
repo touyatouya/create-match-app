@@ -8,8 +8,8 @@ import {
   shouldShowReviewRequest,
 } from "@/utils/storeReview";
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
-import Constants from "expo-constants";
+// import analytics from "@react-native-firebase/analytics";
+// import Constants from "expo-constants";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
@@ -353,15 +353,15 @@ const Match: React.FC<MatchProps> = ({
               )) &&
               selectSwapPlayer(item.id);
 
-            await analytics().logEvent("swap_rest_player", {
-              player_count: players.length,
-              anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-              court_count: courts.length,
-              game_count: gameRounds.length,
-              pairs: pairs.length,
-              version: Constants.expoConfig?.version,
-            });
+            // await analytics().logEvent("swap_rest_player", {
+            //   player_count: players.length,
+            //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+            //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+            //   court_count: courts.length,
+            //   game_count: gameRounds.length,
+            //   pairs: pairs.length,
+            //   version: Constants.expoConfig?.version,
+            // });
           }}
         >
           {restPlayerInfo({ item })}
@@ -526,13 +526,13 @@ const Match: React.FC<MatchProps> = ({
                   setSwapPlayer(null);
                   setDispRound((prev) => prev - 1);
 
-                  await analytics().logEvent("delete_game", {
-                    player_count: players.length,
-                    court_count: courts.length,
-                    game_count: gameRounds.length,
-                    pairs: pairs.length,
-                    version: Constants.expoConfig?.version,
-                  });
+                  // await analytics().logEvent("delete_game", {
+                  //   player_count: players.length,
+                  //   court_count: courts.length,
+                  //   game_count: gameRounds.length,
+                  //   pairs: pairs.length,
+                  //   version: Constants.expoConfig?.version,
+                  // });
                 }}
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />
