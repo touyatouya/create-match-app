@@ -5,8 +5,7 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
-// import analytics from "@react-native-firebase/analytics";
-// import Constants from "expo-constants";
+import analytics from "@react-native-firebase/analytics";
 
 interface Props {
   isOpen: boolean;
@@ -54,28 +53,17 @@ const FabModal: React.FC<Props> = ({
     setMenuVisible(false);
     isAddingRef.current = true;
 
-    // await analytics().logEvent("add_player_anonymous", {
-    //   player_count: players.length,
-    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("add_player_anonymous", {
+      anonymous_player_: players.filter((p) => p.isAnonymous).length,
+      noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    });
   };
 
   const addNamedPlayer = async () => {
     setAddModalVisible(true);
     setMenuVisible(false);
 
-    // await analytics().logEvent("open_add_player_modal_fab", {
-    //   player_count: players.length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("open_add_player_modal_fab");
   };
   return (
     <Modal transparent visible={isOpen} animationType="none">

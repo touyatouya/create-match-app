@@ -8,8 +8,7 @@ import {
   shouldShowReviewRequest,
 } from "@/utils/storeReview";
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
-// import Constants from "expo-constants";
+import analytics from "@react-native-firebase/analytics";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
@@ -534,7 +533,19 @@ const Match: React.FC<MatchProps> = ({
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => setDispRound((prev) => prev - 1)}
+            onPress={async () => {
+              setDispRound((prev) => prev - 1);
+
+              await analytics().logEvent("prev_gameRound", {
+                player_count: players.length,
+                anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                  .length,
+                court_count: courts.length,
+                game_count: gameRounds.length,
+                match_count: matches.length,
+              });
+            }}
           >
             <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>
@@ -581,13 +592,7 @@ const Match: React.FC<MatchProps> = ({
                   setSwapPlayer(null);
                   setDispRound((prev) => prev - 1);
 
-                  // await analytics().logEvent("delete_game", {
-                  //   player_count: players.length,
-                  //   court_count: courts.length,
-                  //   game_count: gameRounds.length,
-                  //   pairs: pairs.length,
-                  //   version: Constants.expoConfig?.version,
-                  // });
+                  await analytics().logEvent("delete_game");
                 }}
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />
@@ -602,7 +607,19 @@ const Match: React.FC<MatchProps> = ({
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => setDispRound((prev) => prev + 1)}
+            onPress={async () => {
+              setDispRound((prev) => prev + 1);
+
+              await analytics().logEvent("_gameRound", {
+                player_count: players.length,
+                anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                  .length,
+                court_count: courts.length,
+                game_count: gameRounds.length,
+                match_count: matches.length,
+              });
+            }}
           >
             <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
           </TouchableOpacity>

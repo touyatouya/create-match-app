@@ -2,20 +2,17 @@ import CustomHeader from "@/app/components/CustomHeader";
 import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
-import { AppContext } from "@/context/AppContext";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuScreen: React.FC = () => {
-  const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
-
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "MenuScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "MenuScreen",
+    });
   }, []);
 
   return (
@@ -30,16 +27,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              // await analytics().logEvent("contact_us", {
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              //   player_count: players.length,
-              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-              //     .length,
-              //   pairs: pairs.length,
-              //   version: Constants.expoConfig?.version,
-              // });
+              await analytics().logEvent("contact_us");
             }}
             style={[styles.row]}
           >
@@ -85,16 +73,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              // await analytics().logEvent("suggest_new", {
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              //   player_count: players.length,
-              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-              //     .length,
-              //   pairs: pairs.length,
-              //   version: Constants.expoConfig?.version,
-              // });
+              await analytics().logEvent("suggest_new");
             }}
             style={[styles.row]}
           >
@@ -141,16 +120,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              // await analytics().logEvent("how_to_use", {
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              //   player_count: players.length,
-              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-              //     .length,
-              //   pairs: pairs.length,
-              //   version: Constants.expoConfig?.version,
-              // });
+              await analytics().logEvent("how_to_use");
             }}
             style={[styles.row]}
           >

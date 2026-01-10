@@ -5,25 +5,17 @@ import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
-// import Constants from "expo-constants";
+import analytics from "@react-native-firebase/analytics";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
 const GenderSettingScreen: React.FC = () => {
-  const {
-    genderSetting,
-    setGenderSetting,
-    players,
-    courts,
-    gameRounds,
-    pairs,
-  } = React.useContext(AppContext);
+  const { genderSetting, setGenderSetting } = React.useContext(AppContext);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "GenderSettingScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "GenderSettingScreen",
+    });
   }, []);
 
   const onChangeMan = async () => {
@@ -31,15 +23,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, men: !prev.men };
     });
 
-    // await analytics().logEvent("change_man", {
-    //   player_count: players.length,
-    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("change_man");
   };
 
   const onChangeWoman = async () => {
@@ -47,15 +31,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, woman: !prev.woman };
     });
 
-    // await analytics().logEvent("change_woman", {
-    //   player_count: players.length,
-    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("change_woman");
   };
 
   const onChangeMix = async () => {
@@ -63,15 +39,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, mix: !prev.mix };
     });
 
-    // await analytics().logEvent("change_mix", {
-    //   player_count: players.length,
-    //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-    //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    //   pairs: pairs.length,
-    //   version: Constants.expoConfig?.version,
-    // });
+    await analytics().logEvent("change_mix");
   };
   return (
     <>
@@ -139,7 +107,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent: "space-between",
   },
   detailSetting: {
     flexDirection: "column",
