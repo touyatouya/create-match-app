@@ -29,7 +29,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
       <View style={styles.subInfo}>
         <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
         <Text style={styles.playerGender}>
-          <GenderIcon gender={getGender(playerId)} size={20} />
+          <GenderIcon gender={getGender(playerId)} size={18} />
         </Text>
       </View>
     </View>

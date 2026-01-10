@@ -69,16 +69,26 @@ const Match: React.FC<MatchProps> = ({
     setNumOfGenerate,
   } = useContext(AppContext);
 
-  const selectSwapPlayer = (id: number) => {
+  const selectSwapPlayer = (id: number, partnerId?: number | null) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setSwapPlayer((prev) => {
       let newSwapPlayer: number | null = null;
+      const isRestPlayerPrev = restPlayers.some(
+        (restPlayer) => restPlayer.id === prev
+      );
+      const isRestPlayerId = restPlayers.some(
+        (restPlayer) => restPlayer.id === id
+      );
       if (prev === id) {
         newSwapPlayer = null;
       } else if (prev != null) {
-        if (restPlayers.some((restPlayer) => restPlayer.id === prev)) {
+        if (partnerId != null && prev === partnerId) {
+          return id;
+        } else if (isRestPlayerId && isRestPlayerPrev) {
+          return id;
+        } else if (isRestPlayerPrev) {
           changePlayableRestPlayer(id, prev);
-        } else if (restPlayers.some((restPlayer) => restPlayer.id === id)) {
+        } else if (isRestPlayerId) {
           changePlayableRestPlayer(prev, id);
         } else {
           changePlayer(prev, id);
@@ -384,14 +394,7 @@ const Match: React.FC<MatchProps> = ({
             styles.restingPlayerItem,
             swapPlayer === player.id && styles.restingSwapPlayerItem,
           ]}
-          onPress={() => {
-            (swapPlayer == null ||
-              swapPlayer === player.id ||
-              !restPlayers.some(
-                (restPlayer) => restPlayer.id === swapPlayer
-              )) &&
-              selectSwapPlayer(player.id);
-          }}
+          onPress={() => selectSwapPlayer(player.id)}
         >
           {content}
         </TouchableOpacity>
@@ -549,7 +552,7 @@ const Match: React.FC<MatchProps> = ({
             )}
             <Text
               style={{
-                fontSize: FONT_SIZE.subheading,
+                fontSize: FONT_SIZE.subsubheading,
                 marginHorizontal: 8,
               }}
             >
@@ -677,8 +680,8 @@ const styles = StyleSheet.create({
   matchCard: {
     backgroundColor: ColorPalette.background,
     borderRadius: 8,
-    padding: 8,
-    marginBottom: 8,
+    padding: 6,
+    marginBottom: 4,
     shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -686,7 +689,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   courtName: {
-    fontSize: FONT_SIZE.small,
+    fontSize: FONT_SIZE.tiny,
     fontWeight: "bold",
     marginBottom: 4,
     color: ColorPalette.sectionTitie,
@@ -698,7 +701,7 @@ const styles = StyleSheet.create({
   },
   team: {
     flex: 1,
-    gap: 8,
+    gap: 4,
   },
   playerGender: {
     flex: 1,
@@ -714,19 +717,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 4,
   },
   restingTitle: {
     flexDirection: "row",
     alignItems: "center",
   },
   restingSectionTitle: {
-    fontSize: FONT_SIZE.subsubheading,
+    fontSize: FONT_SIZE.body,
     fontWeight: "bold",
     color: ColorPalette.sectionTitie,
   },
   restingCount: {
-    fontSize: FONT_SIZE.subheading,
+    fontSize: FONT_SIZE.subsubheading,
     fontWeight: "600",
   },
   restingPlayerItem: {
@@ -735,9 +738,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     backgroundColor: ColorPalette.restPlayerBackground,
     paddingHorizontal: 12,
-    paddingVertical: 4,
     borderRadius: 20,
-    marginBottom: 4,
     borderWidth: 1,
     borderColor: ColorPalette.borderline,
     ...globalStyles.touch,

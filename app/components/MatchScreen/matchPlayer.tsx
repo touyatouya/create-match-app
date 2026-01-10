@@ -11,7 +11,7 @@ import { default as PlayerInfo } from "./playerInfo";
 interface MatchPlayerProps {
   swapPlayer: number | null;
   playerId: number;
-  selectSwapPlayer: (id: number) => void;
+  selectSwapPlayer: (id: number, partnerId?: number | null) => void;
   partnerId: number | undefined;
   isSwap: boolean;
 }
@@ -34,7 +34,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             isSwap && swapPlayer === playerId && styles.swapPlayerButton,
           ]}
           onPress={async () => {
-            isSwap && swapPlayer !== partnerId && selectSwapPlayer(playerId);
+            isSwap && selectSwapPlayer(playerId, partnerId);
 
             // await analytics().logEvent("swap_player", {
             //   player_count: players.length,
@@ -51,7 +51,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
           {isSwap && (
             <Ionicons
               name="swap-horizontal"
-              size={16}
+              size={14}
               color={ColorPalette.secondary}
             />
           )}
@@ -71,8 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: ColorPalette.background,
-    paddingVertical: 6,
-    paddingHorizontal: 6,
+    paddingHorizontal: 8,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: ColorPalette.borderline,

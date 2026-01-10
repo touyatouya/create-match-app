@@ -122,7 +122,7 @@ const MenuScreen: React.FC = () => {
                   },
                 ]}
               >
-                新機能の提案
+                新機能の提案・改善点の要望
               </Text>
 
               <Entypo
