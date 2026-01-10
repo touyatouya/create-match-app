@@ -31,7 +31,7 @@ import PrimaryButton from "../PrimaryButton";
 import MatchPlayer from "./matchPlayer";
 import { countMatch, createMatch } from "./util";
 
-type SectionDataItem = MatchType | Player;
+type SectionDataItem = MatchType | Player | Player[];
 
 type Section = {
   title: string;
@@ -155,6 +155,17 @@ const Match: React.FC<MatchProps> = ({
     (player) => player.isJoin && !playablePlayerIds.has(player.id)
   );
 
+  // 追加: restPlayers を 2 件ずつの行に分割するヘルパー
+  const chunkArray = (arr: Player[], size = 2) => {
+    const chunks: Player[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+    }
+    return chunks;
+  };
+
+  const restRows = chunkArray(restPlayers, 2);
+
   const changePlayer = (targetPlayerId: number, selectedPlayerId: number) => {
     setGameRounds((prevGameRounds) => {
       let sourceSetIndex = -1,
@@ -260,8 +271,14 @@ const Match: React.FC<MatchProps> = ({
         playablePlayerTeam: "teamA" | "teamB" = "teamA",
         playablePlayerIndex = -1;
 
+      // 対象の巡目インデックス（dispRound が範囲外のとき安全にクランプ）
+      const targetRoundIndex = Math.max(
+        0,
+        Math.min(prevGameRounds.length - 1, dispRound - 1)
+      );
+
       // プレイ中プレイヤーの位置を探す
-      const courts = prevGameRounds[prevGameRounds.length - 1].matches;
+      const courts = prevGameRounds[targetRoundIndex].matches;
       for (let match_i = 0; match_i < courts.length; match_i++) {
         const match = courts[match_i];
 
@@ -284,7 +301,7 @@ const Match: React.FC<MatchProps> = ({
       }
 
       newGameRounds = prevGameRounds.map((gameRound, gameRound_i) => {
-        if (gameRound_i === prevGameRounds.length - 1) {
+        if (gameRound_i === targetRoundIndex) {
           return {
             ...gameRound,
             matches: gameRound.matches.map((match) => {
@@ -313,63 +330,96 @@ const Match: React.FC<MatchProps> = ({
     const matches: MatchType[] = newGameRounds.flatMap(
       (gameRound) => gameRound.matches
     );
-    countMatch([...matches], players, setPlayers);
+    const newPlayers = [...players];
+    const idxRest = newPlayers.findIndex((p) => p.id === restPlayerId);
+    const idxPlayable = newPlayers.findIndex((p) => p.id === playablePlayerId);
+
+    if (idxRest !== -1 && idxPlayable !== -1) {
+      const restPlayer = { ...newPlayers[idxRest], isRest: true };
+      const playablePlayer = { ...newPlayers[idxPlayable], isRest: false };
+
+      // rest 側の位置を保持するために配列要素を入れ替える
+      newPlayers[idxRest] = playablePlayer;
+      newPlayers[idxPlayable] = restPlayer;
+
+      setPlayers(newPlayers);
+    }
+    countMatch([...matches], newPlayers, setPlayers);
   };
-  //restingSwapPlayerName
-  const restPlayerInfo = ({ item }: { item: Player }) => {
-    return (
+
+  const renderRestCell = (player: Player) => {
+    const content = (
       <>
         <Text
           style={[
             styles.restingPlayerName,
-            swapPlayer === item.id && styles.restingSwapPlayerName,
+            swapPlayer === player.id && styles.restingSwapPlayerName,
           ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
-          {item.name}
+          {player.name}
         </Text>
         <View style={styles.subInfo}>
-          <Text style={styles.getGameCount}>{item.matchCount}</Text>
+          <Text style={styles.getGameCount}>{player.matchCount}</Text>
           <Text style={styles.playerGender}>
-            <GenderIcon gender={item.gender} />
+            <GenderIcon gender={player.gender} size={18} />
           </Text>
+          {dispRound === gameRounds.length && (
+            <Ionicons
+              name="swap-horizontal"
+              size={14}
+              color={ColorPalette.secondary}
+            />
+          )}
         </View>
       </>
     );
-  };
 
-  const renderRestingPlayer = ({ item }: { item: Player }) => (
-    <>
-      {dispRound === gameRounds.length ? (
+    if (dispRound === gameRounds.length) {
+      return (
         <TouchableOpacity
+          key={player.id}
           style={[
             styles.restingPlayerItem,
-            swapPlayer === item.id && styles.restingSwapPlayerItem,
+            swapPlayer === player.id && styles.restingSwapPlayerItem,
           ]}
-          onPress={async () => {
+          onPress={() => {
             (swapPlayer == null ||
-              swapPlayer === item.id ||
+              swapPlayer === player.id ||
               !restPlayers.some(
                 (restPlayer) => restPlayer.id === swapPlayer
               )) &&
-              selectSwapPlayer(item.id);
-
-            // await analytics().logEvent("swap_rest_player", {
-            //   player_count: players.length,
-            //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-            //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-            //   court_count: courts.length,
-            //   game_count: gameRounds.length,
-            //   pairs: pairs.length,
-            //   version: Constants.expoConfig?.version,
-            // });
+              selectSwapPlayer(player.id);
           }}
         >
-          {restPlayerInfo({ item })}
+          {content}
         </TouchableOpacity>
-      ) : (
-        <View style={styles.restingPlayerItem}>{restPlayerInfo({ item })}</View>
-      )}
-    </>
+      );
+    } else {
+      return (
+        <View key={player.id} style={styles.restingPlayerItem}>
+          {content}
+        </View>
+      );
+    }
+  };
+
+  const renderRestingRow = ({ item }: { item: Player[] }) => (
+    <View style={styles.restingRow}>
+      {item.map((player, idx) => (
+        <View
+          key={player.id}
+          style={[
+            styles.restingCell,
+            idx === 0 ? { marginRight: 6 } : { marginLeft: 6 },
+          ]}
+        >
+          {renderRestCell(player)}
+        </View>
+      ))}
+      {item.length === 1 && <View style={styles.restingCell} />}
+    </View>
   );
 
   const sections: Section[] = [
@@ -380,7 +430,7 @@ const Match: React.FC<MatchProps> = ({
     },
     {
       title: "休憩中のプレイヤー",
-      data: restPlayers,
+      data: restRows,
       type: "rest",
     },
   ];
@@ -558,14 +608,20 @@ const Match: React.FC<MatchProps> = ({
       {gameRounds[dispRound - 1] != null && (
         <SectionList
           sections={sections}
-          keyExtractor={(item, index) => item.id.toString() + index}
+          keyExtractor={(item, index) =>
+            Array.isArray(item)
+              ? `restRow-${index}`
+              : "id" in item
+              ? `${item.id}-${index}`
+              : `${index}`
+          }
           renderItem={({ item, index, section }) => {
             if (section.type === "match") {
               const match = item as MatchType;
               return renderMatch({ item: match, index: index }); // 例: カード表示など
             } else if (section.type === "rest") {
-              const restPlayer = item as Player;
-              return renderRestingPlayer({ item: restPlayer }); // 例: 名前だけ表示など
+              const restRow = item as Player[];
+              return renderRestingRow({ item: restRow });
             }
             return null;
           }}
@@ -577,9 +633,9 @@ const Match: React.FC<MatchProps> = ({
                 <View style={styles.restingHeader}>
                   <View style={styles.restingTitle}>
                     <Ionicons
-                      name="cafe"
+                      name="cafe-outline"
                       size={24}
-                      color={ColorPalette.restIcon}
+                      color={ColorPalette.blackText}
                     />
                     <Text style={styles.restingSectionTitle}>
                       休憩中のプレイヤー
@@ -608,15 +664,15 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   subInfo: {
-    flex: 1,
+    flex: 1.7,
     flexDirection: "row",
     alignItems: "center",
     display: "flex",
   },
   getGameCount: {
     flex: 1,
-    fontSize: FONT_SIZE.small,
-    marginRight: 8,
+    marginRight: 2,
+    fontSize: FONT_SIZE.tiny,
   },
   matchCard: {
     backgroundColor: ColorPalette.background,
@@ -646,7 +702,7 @@ const styles = StyleSheet.create({
   },
   playerGender: {
     flex: 1,
-    marginRight: 8,
+    marginRight: 2,
   },
   vsText: {
     fontSize: FONT_SIZE.tiny,
@@ -675,33 +731,40 @@ const styles = StyleSheet.create({
   },
   restingPlayerItem: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: ColorPalette.restPlayerBackground,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 4,
     borderRadius: 20,
     marginBottom: 4,
     borderWidth: 1,
     borderColor: ColorPalette.borderline,
-    flex: 1,
     ...globalStyles.touch,
   },
   restingSwapPlayerItem: {
-    flex: 1,
     backgroundColor: ColorPalette.thirdry,
     borderColor: ColorPalette.secondary,
   },
   restingPlayerName: {
     flex: 4,
     marginLeft: 6,
-    fontSize: FONT_SIZE.heading,
+    fontSize: FONT_SIZE.small,
     color: ColorPalette.filterItemName,
     marginRight: 5,
   },
   restingSwapPlayerName: {
-    flex: 2,
+    flex: 4,
     color: ColorPalette.blackText,
+  },
+  restingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  restingCell: {
+    flex: 1,
   },
 });
 

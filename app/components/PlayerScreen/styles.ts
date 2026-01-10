@@ -20,7 +20,7 @@ export const playerScreenStyles = StyleSheet.create({
   cellName: {
     flex: 2,
     paddingHorizontal: 4,
-    fontSize: FONT_SIZE.subheading,
+    fontSize: FONT_SIZE.subsubheading,
   },
   cellGender: {
     flex: 1,
