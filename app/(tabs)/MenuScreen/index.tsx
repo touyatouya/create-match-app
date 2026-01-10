@@ -19,7 +19,7 @@ const MenuScreen: React.FC = () => {
   }, []);
   return (
     <>
-      <CustomHeader title="設定" isSlideScreen />
+      <CustomHeader title="設定" isSlideScreen disalbed />
       <View style={styles.container}>
         <View style={styles.detailSettingSection}>
           <TouchableOpacity
