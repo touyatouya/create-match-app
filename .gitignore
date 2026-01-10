@@ -26,7 +26,6 @@ npm-debug.*
 yarn-debug.*
 yarn-error.*
 .yarnrc
-GoogleService-Info.plist
 .coderabbit.yaml
 
 # macOS
