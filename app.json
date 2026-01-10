@@ -2,7 +2,7 @@
   "expo": {
     "name": "ダブルス組み合わせ生成",
     "slug": "create-match-app",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "creatematchapp",
