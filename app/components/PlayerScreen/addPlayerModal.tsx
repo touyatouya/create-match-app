@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -125,6 +126,7 @@ const AddPlayerModal: React.FC<Props> = ({
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() => {
+                Keyboard.dismiss();
                 resetInput();
                 onClose();
               }}
@@ -135,7 +137,13 @@ const AddPlayerModal: React.FC<Props> = ({
             <View style={styles.modalTitleWrapper}>
               <Text style={styles.title}>新規プレイヤー追加</Text>
             </View>
-            <TouchableOpacity onPress={addPlayer} style={styles.headerButton}>
+            <TouchableOpacity
+              onPress={() => {
+                Keyboard.dismiss();
+                addPlayer();
+              }}
+              style={styles.headerButton}
+            >
               <Text
                 style={[
                   styles.headerButtonText,
@@ -155,7 +163,7 @@ const AddPlayerModal: React.FC<Props> = ({
               value={name}
               onChangeText={setName}
               autoFocus
-              onSubmitEditing={() => setName}
+              onSubmitEditing={() => Keyboard.dismiss()}
               clearInput={() => setName("")}
             />
             <Text>性別</Text>
