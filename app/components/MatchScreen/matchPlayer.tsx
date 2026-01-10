@@ -51,7 +51,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
           {isSwap && (
             <Ionicons
               name="swap-horizontal"
-              size={18}
+              size={16}
               color={ColorPalette.secondary}
             />
           )}
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: ColorPalette.background,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
     borderRadius: 6,
     borderWidth: 1,
     borderColor: ColorPalette.borderline,

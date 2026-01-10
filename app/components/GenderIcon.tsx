@@ -3,7 +3,12 @@ import { Gender } from "@/types";
 import { Foundation } from "@expo/vector-icons";
 import { View } from "react-native";
 
-const GenderIcon: React.FC<{ gender: Gender | undefined }> = ({ gender }) => {
+interface GenderIconProps {
+  gender: Gender | undefined;
+  size?: number;
+}
+
+const GenderIcon: React.FC<GenderIconProps> = ({ gender, size = 24 }) => {
   if (gender === Gender.男性) {
     return (
       <View style={{ width: "100%" }}>
@@ -13,7 +18,7 @@ const GenderIcon: React.FC<{ gender: Gender | undefined }> = ({ gender }) => {
             alignSelf: "center",
           }}
           name="male"
-          size={24}
+          size={size}
           color={ColorPalette.men}
         />
       </View>
@@ -27,7 +32,7 @@ const GenderIcon: React.FC<{ gender: Gender | undefined }> = ({ gender }) => {
             alignSelf: "center",
           }}
           name="female"
-          size={24}
+          size={size}
           color={ColorPalette.women}
         />
       </View>

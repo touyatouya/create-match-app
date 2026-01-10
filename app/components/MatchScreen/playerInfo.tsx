@@ -23,11 +23,13 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
 
   return (
     <View style={styles.playerInfo}>
-      <Text style={styles.playerName}>{getPlayerName(playerId, players)}</Text>
+      <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">
+        {getPlayerName(playerId, players)}
+      </Text>
       <View style={styles.subInfo}>
         <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
         <Text style={styles.playerGender}>
-          <GenderIcon gender={getGender(playerId)} />
+          <GenderIcon gender={getGender(playerId)} size={20} />
         </Text>
       </View>
     </View>
@@ -51,14 +53,14 @@ const styles = StyleSheet.create({
   },
   playerName: {
     flex: 2.7,
-    fontSize: FONT_SIZE.heading,
+    fontSize: FONT_SIZE.body,
     color: ColorPalette.blackText,
     fontWeight: "500",
     display: "flex",
   },
   getGameCount: {
     flex: 1.7,
-    fontSize: FONT_SIZE.small,
+    fontSize: FONT_SIZE.tiny,
   },
   playerGender: {
     flex: 1,
