@@ -421,7 +421,9 @@ const Match: React.FC<MatchProps> = ({
           {renderRestCell(player)}
         </View>
       ))}
-      {item.length === 1 && <View style={styles.restingCell} />}
+      {item.length === 1 && (
+        <View style={[styles.restingCell, { marginLeft: 6 }]} />
+      )}
     </View>
   );
 

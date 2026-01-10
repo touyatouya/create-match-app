@@ -17,6 +17,7 @@ const MenuScreen: React.FC = () => {
     //   screen_name: "MenuScreen",
     // });
   }, []);
+
   return (
     <>
       <CustomHeader title="設定" isSlideScreen disalbed />
