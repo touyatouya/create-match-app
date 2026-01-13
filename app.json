@@ -2,7 +2,7 @@
   "expo": {
     "name": "ダブルス組み合わせ生成",
     "slug": "create-match-app",
-    "version": "1.9.0",
+    "version": "1.10.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "creatematchapp",
@@ -20,7 +20,6 @@
       "appStoreUrl": "https://apps.apple.com/jp/app/%E3%83%80%E3%83%96%E3%83%AB%E3%82%B9%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E7%94%9F%E6%88%90/id6748458935"
     },
     "android": {
-      "package": "com.touya.doubles",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -54,6 +53,7 @@
       ],
       "expo-font",
       "expo-web-browser",
+      "@react-native-firebase/app",
       [
         "expo-build-properties",
         {
