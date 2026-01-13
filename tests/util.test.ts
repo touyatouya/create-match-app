@@ -19,6 +19,8 @@ const makePlayers = (n: number): Player[] => {
     matchCount: 0,
     gender: Gender.未設定,
     rank: Rank.未設定,
+    isAnonymous: false,
+    anonymousNumber: null,
   }));
 };
 
