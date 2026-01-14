@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "creatematchapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "jsEngine": "jsc",
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
@@ -53,7 +53,6 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "@react-native-firebase/app",
       [
         "expo-build-properties",
         {
