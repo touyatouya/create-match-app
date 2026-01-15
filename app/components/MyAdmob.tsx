@@ -1,4 +1,4 @@
-import firestore from "@react-native-firebase/firestore";
+// import firestore from "@react-native-firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 
@@ -44,20 +44,20 @@ export default function MyAdmob({ size = BannerAdSize.BANNER }: Props) {
   const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
-    const checkAdsEnabled = async () => {
-      try {
-        const data = await firestore()
-          .collection("app_config")
-          .doc("admob")
-          .get()
-          .then((doc) => doc.data());
-        if (!data) return;
-        setEnabled(data.ads_enabled);
-      } catch (e) {
-        console.log("AdMob config fetch error:", e);
-      }
-    };
-    checkAdsEnabled();
+    // const checkAdsEnabled = async () => {
+    //   try {
+    //     const data = await firestore()
+    //       .collection("app_config")
+    //       .doc("admob")
+    //       .get()
+    //       .then((doc) => doc.data());
+    //     if (!data) return;
+    //     setEnabled(data.ads_enabled);
+    //   } catch (e) {
+    //     console.log("AdMob config fetch error:", e);
+    //   }
+    // };
+    // checkAdsEnabled();
   }, []);
 
   if (!enabled) return null;

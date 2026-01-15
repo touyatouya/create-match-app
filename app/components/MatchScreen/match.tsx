@@ -8,7 +8,7 @@ import {
   shouldShowReviewRequest,
 } from "@/utils/storeReview";
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
@@ -536,15 +536,15 @@ const Match: React.FC<MatchProps> = ({
             onPress={async () => {
               setDispRound((prev) => prev - 1);
 
-              await analytics().logEvent("prev_gameRound", {
-                player_count: players.length,
-                anonymous_player_: players.filter((p) => p.isAnonymous).length,
-                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-                  .length,
-                court_count: courts.length,
-                game_count: gameRounds.length,
-                match_count: matches.length,
-              });
+              // await analytics().logEvent("prev_gameRound", {
+              //   player_count: players.length,
+              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+              //     .length,
+              //   court_count: courts.length,
+              //   game_count: gameRounds.length,
+              //   match_count: matches.length,
+              // });
             }}
           >
             <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
@@ -592,7 +592,7 @@ const Match: React.FC<MatchProps> = ({
                   setSwapPlayer(null);
                   setDispRound((prev) => prev - 1);
 
-                  await analytics().logEvent("delete_game");
+                  // await analytics().logEvent("delete_game");
                 }}
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />
@@ -610,15 +610,15 @@ const Match: React.FC<MatchProps> = ({
             onPress={async () => {
               setDispRound((prev) => prev + 1);
 
-              await analytics().logEvent("_gameRound", {
-                player_count: players.length,
-                anonymous_player_: players.filter((p) => p.isAnonymous).length,
-                noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-                  .length,
-                court_count: courts.length,
-                game_count: gameRounds.length,
-                match_count: matches.length,
-              });
+              // await analytics().logEvent("_gameRound", {
+              //   player_count: players.length,
+              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+              //     .length,
+              //   court_count: courts.length,
+              //   game_count: gameRounds.length,
+              //   match_count: matches.length,
+              // });
             }}
           >
             <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
