@@ -7,7 +7,7 @@ import {
   Foundation,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -35,9 +35,9 @@ const MatchScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "MatchScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "MatchScreen",
+    // });
     saveOpenApp();
   }, []);
 
@@ -55,7 +55,7 @@ const MatchScreen: React.FC = () => {
     setSwapPlayer(null);
     setDispRound(0);
 
-    await analytics().logEvent("reset_game");
+    // await analytics().logEvent("reset_game");
   }, [setGameRounds, setPlayers]);
 
   return (
