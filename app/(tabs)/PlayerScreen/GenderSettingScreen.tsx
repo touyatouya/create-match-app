@@ -5,7 +5,7 @@ import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -13,9 +13,9 @@ const GenderSettingScreen: React.FC = () => {
   const { genderSetting, setGenderSetting } = React.useContext(AppContext);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "GenderSettingScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "GenderSettingScreen",
+    });
   }, []);
 
   const onChangeMan = async () => {
@@ -23,7 +23,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, men: !prev.men };
     });
 
-    // await analytics().logEvent("change_man");
+    await analytics().logEvent("change_man");
   };
 
   const onChangeWoman = async () => {
@@ -31,7 +31,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, woman: !prev.woman };
     });
 
-    // await analytics().logEvent("change_woman");
+    await analytics().logEvent("change_woman");
   };
 
   const onChangeMix = async () => {
@@ -39,7 +39,7 @@ const GenderSettingScreen: React.FC = () => {
       return { ...prev, mix: !prev.mix };
     });
 
-    // await analytics().logEvent("change_mix");
+    await analytics().logEvent("change_mix");
   };
   return (
     <>

@@ -7,7 +7,7 @@ import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { Foundation, Ionicons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useRef } from "react";
 import {
@@ -41,9 +41,9 @@ const PlayerEditScreen: React.FC = () => {
       setNewPlayerName(playerName);
     }
 
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "PlayerEditScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "PlayerEditScreen",
+    });
   }, [playerName]);
 
   const checkNameEmpty = () => {
@@ -107,7 +107,7 @@ const PlayerEditScreen: React.FC = () => {
         })
     );
 
-    // await analytics().logEvent("update_player_name");
+    await analytics().logEvent("update_player_name");
   };
 
   const updatePlayerNameAndBlur = () => {
@@ -171,7 +171,7 @@ const PlayerEditScreen: React.FC = () => {
         })
     );
 
-    // await analytics().logEvent("set_gender");
+    await analytics().logEvent("set_gender");
   };
 
   return (

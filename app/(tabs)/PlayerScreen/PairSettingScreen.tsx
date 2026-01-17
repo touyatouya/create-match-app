@@ -10,7 +10,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert, SectionList, StyleSheet, Text, View } from "react-native";
 import { Pair, Player } from "../../../types";
@@ -39,9 +39,9 @@ const PairSettingScreen: React.FC = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "PairSettingScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "PairSettingScreen",
+    });
   }, []);
 
   const selectPlayer = (id: number) =>
@@ -81,13 +81,13 @@ const PairSettingScreen: React.FC = () => {
     });
     setPair([]);
 
-    // await analytics().logEvent("create_pair");
+    await analytics().logEvent("create_pair");
   };
 
   const removePair = async (id: number) => {
     setPairs((prev) => prev.filter((pair) => pair.id !== id));
 
-    // await analytics().logEvent("remove_pair");
+    await analytics().logEvent("remove_pair");
   };
 
   const NotPaierPlayer = players.filter(
