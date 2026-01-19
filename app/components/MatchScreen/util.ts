@@ -1,9 +1,11 @@
 // import analytics from "@react-native-firebase/analytics";
+import { generateUniqId } from "@/utils/createId";
 import {
   Court,
   GameRound,
   Gender,
   GenderPreferenceSetting,
+  GenerateMode,
   Match as MatchType,
   Pair,
   Player,
@@ -17,14 +19,32 @@ export const createMatch = async (
   setGameRounds: (value: React.SetStateAction<GameRound[]>) => void,
   pairs: Pair[],
   matches: MatchType[],
+  dispRound: number,
+  genareteMode: GenerateMode,
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>
+  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>,
 ): Promise<void> => {
+  const notFinishedMatches =
+    genareteMode === GenerateMode.REPLACEE_ALL
+      ? matches.filter((match) => !match.isFinished)
+      : matches.filter((match) => !match.canInsertNext);
+
+  const playingPlayer = notFinishedMatches.flatMap((match) => [
+    ...match.teamA,
+    ...match.teamB,
+  ]);
   const sortedPlayer: Player[] = players
-    .filter((player) => player.isJoin && !player.isRest)
+    .filter(
+      (player) =>
+        player.isJoin &&
+        !player.isRest &&
+        (playingPlayer == null ||
+          playingPlayer.length === 0 ||
+          !playingPlayer.includes(player.id)),
+    )
     .sort((a, b) => a.matchCount - b.matchCount);
 
   let separatedPlayers: Player[][] = [];
@@ -41,6 +61,32 @@ export const createMatch = async (
     separatedPlayers[matchCountSeparete_i].push(sortedPlayer[player_i]);
   }
 
+  const playingCourtIds = gameRounds
+    .flatMap((gameRound) => gameRound.matches)
+    .filter((match) =>
+      genareteMode === GenerateMode.REPLACEE_ALL
+        ? !match.isFinished
+        : !match.canInsertNext,
+    )
+    .flatMap((match) => match.courtId);
+
+  const avaibleCourts =
+    genareteMode === GenerateMode.FILL_ENPTY
+      ? courts.filter(
+          (court) =>
+            playingCourtIds == null ||
+            playingCourtIds.length === 0 ||
+            !playingCourtIds.includes(court.id),
+        )
+      : courts;
+
+  const totalNeeded =
+    avaibleCourts.length * 4 -
+    gameRounds
+      .flatMap((round) => round.matches)
+      .filter((match) => match.teamA.length + match.teamB.length < 4)
+      .flatMap((match) => [...match.teamA, ...match.teamB]).length;
+
   // priorityPlayersには、試合回数がnormalPlayersより1以上少なく、コート数×4人より少ない人数が入る
   let priorityPlayers: Player[] = [];
   let normalPlayers: Player[] = [];
@@ -51,30 +97,54 @@ export const createMatch = async (
     }
     normalPlayers = [...separatedPlayers[i]];
 
-    if (priorityPlayers.length + normalPlayers.length >= courts.length * 4)
-      break;
+    if (priorityPlayers.length + normalPlayers.length >= totalNeeded) break;
   }
 
+  // console.log("creating match with players:", players);
   const gameRound: GameRound = selectBestGameRounds(
     priorityPlayers.map((player) => player.id),
     normalPlayers.map((player) => player.id),
-    courts,
+    avaibleCourts,
     gameRounds,
     pairs,
     matches,
     players,
-    genderSetting
+    genderSetting,
   );
 
   if (gameRound == null) return;
 
   let prevGameRounds = gameRounds.length;
   setGameRounds((prev) => {
-    return [...prev, gameRound];
+    if (genareteMode === GenerateMode.REPLACEE_ALL) {
+      const updatedPrev = prev.map((gameRound) => {
+        return {
+          ...gameRound,
+          matches: gameRound.matches.map((match) => ({
+            ...match,
+            isFinished: true,
+            canInsertNext: true,
+          })),
+        };
+      });
+      return [...updatedPrev, gameRound];
+    } else {
+      const updatedPrev = prev.map((gameRound) => {
+        return {
+          ...gameRound,
+          matches: gameRound.matches.map((match) => ({
+            ...match,
+            isFinished: match.canInsertNext,
+            canInsertNext: match.canInsertNext,
+          })),
+        };
+      });
+      return [...updatedPrev, gameRound];
+    }
   });
 
   const preMatches: MatchType[] = gameRounds.flatMap(
-    (gameRound) => gameRound.matches
+    (gameRound) => gameRound.matches,
   );
   countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
   setSwapPlayer(null);
@@ -101,36 +171,54 @@ export function selectBestGameRounds(
   requiredPlayers: number[],
   optionalPlayers: number[],
   courts: Court[],
-  gameRounds: GameRound[],
+  initialGameRounds: GameRound[],
   pairs: Pair[],
   matches: MatchType[],
   players: Player[],
-  genderSetting: GenderPreferenceSetting
+  genderSetting: GenderPreferenceSetting,
 ): GameRound {
-  const totalNeeded = courts.length * 4;
+  const selectedPlayers = initialGameRounds
+    .flatMap((round) => round.matches)
+    .filter((match) => match.teamA.length + match.teamB.length < 4)
+    .flatMap((match) => [...match.teamA, ...match.teamB]);
+
+  // console.log(
+  //   "a",
+  //   requiredPlayers,
+  //   optionalPlayers,
+  //   courts.length,
+  //   selectedPlayers
+  // );
+
+  const totalNeeded = courts.length * 4 - selectedPlayers.length;
 
   // 最終的な任意参加者を決定
   const finalOptinalPlayers = getFinalOptionalPlayers(
     requiredPlayers,
     optionalPlayers,
     pairs,
-    totalNeeded
+    totalNeeded,
   );
 
   // 参加者の中のペアを抽出
-  const joinedPlayers = [...requiredPlayers, ...finalOptinalPlayers];
+  const joinedPlayers = [
+    ...selectedPlayers,
+    ...requiredPlayers,
+    ...finalOptinalPlayers,
+  ];
   const joinedPairs = pairs.filter(
     (pair) =>
       joinedPlayers.includes(pair.player1) &&
-      joinedPlayers.includes(pair.player2)
+      joinedPlayers.includes(pair.player2),
   );
 
   // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
-    [...requiredPlayers, ...finalOptinalPlayers],
+    [...selectedPlayers, ...requiredPlayers, ...finalOptinalPlayers],
     50,
     courts,
-    joinedPairs
+    joinedPairs,
+    initialGameRounds,
   );
 
   let bestSets: GameRound[] = [];
@@ -144,17 +232,34 @@ export function selectBestGameRounds(
     //   ...
     // ]
     // 各コートの4人グループを2人ずつのチームに分割するすべての組み合わせを取得
-    const allTeamSplitSets = courtSet.map((group) =>
-      group.length === 4
+    const allTeamSplitSets = courtSet.map((group) => {
+      const initilialCourtMatch = initialGameRounds
+        .flatMap((round) => round.matches)
+        .filter((match) => match.teamA.length + match.teamB.length < 4)
+        .find((match) =>
+          match.teamA
+            .concat(match.teamB)
+            .some((player) => group.includes(player)),
+        );
+
+      const iniitialCourtSplit = {
+        teamA: initilialCourtMatch?.teamA as number[],
+        teamB: initilialCourtMatch?.teamB as number[],
+      };
+
+      return group.length === 4
         ? getTeamSplits(
             group,
             joinedPairs.filter(
               (pair) =>
-                group.includes(pair.player1) && group.includes(pair.player2)
-            )
+                group.includes(pair.player1) && group.includes(pair.player2),
+            ),
+            iniitialCourtSplit != null
+              ? iniitialCourtSplit
+              : { teamA: [], teamB: [] },
           )
-        : [{ teamA: [], teamB: [] }]
-    );
+        : [{ teamA: [], teamB: [] }];
+    });
 
     // 計算量削減のため100個に制限
     // allCourtTeamCombinationsは、[
@@ -168,12 +273,17 @@ export function selectBestGameRounds(
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {
         id:
-          gameRounds.length > 0 ? gameRounds[gameRounds.length - 1].id + 1 : 0,
+          initialGameRounds.length > 0
+            ? initialGameRounds[initialGameRounds.length - 1].id + 1
+            : 0,
         matches: courtTeams.map((team, index) => ({
-          id: index,
+          id: generateUniqId(matches.map((m) => m.id)),
           courtId: courts[index].id,
           teamA: team.teamA,
           teamB: team.teamB,
+          isFinished: false,
+          canInsertNext: false,
+          finishRound: null,
         })),
       };
 
@@ -203,13 +313,13 @@ const getFinalOptionalPlayers = (
   requiredPlayers: number[],
   optionalPlayers: number[],
   pairs: Pair[],
-  totalNeeded: number
+  totalNeeded: number,
 ): number[] => {
   // 優先される任意参加者を取得
   const prioritized = findPairedPlayers(
     optionalPlayers,
     requiredPlayers,
-    pairs
+    pairs,
   );
 
   // 必須参加者と優先任意参加者の合計が多すぎる場合、優先任意参加者をランダムに減らす
@@ -225,7 +335,7 @@ const getFinalOptionalPlayers = (
   const nextPrioritized = findPairedPlayers(
     optionalPlayers,
     optionalPlayers,
-    pairs
+    pairs,
   );
 
   // 必須参加者と優先任意参加者と次優先任意参加者の合計が多すぎる場合、次優先任意参加者をランダムに減らす
@@ -235,7 +345,7 @@ const getFinalOptionalPlayers = (
   ) {
     const selectedNext = shuffle(nextPrioritized).slice(
       0,
-      totalNeeded - (requiredPlayers.length + prioritized.length)
+      totalNeeded - (requiredPlayers.length + prioritized.length),
     );
     return [...prioritized, ...selectedNext];
   }
@@ -248,7 +358,7 @@ const getFinalOptionalPlayers = (
   }
   // 必須参加者と優先任意参加者と次優先任意参加者の合計が足りない場合
   const remain = optionalPlayers.filter(
-    (p) => !prioritized.includes(p) && !nextPrioritized.includes(p)
+    (p) => !prioritized.includes(p) && !nextPrioritized.includes(p),
   );
   return [
     ...prioritized,
@@ -256,7 +366,7 @@ const getFinalOptionalPlayers = (
     ...shuffle(remain).slice(
       0,
       totalNeeded -
-        (requiredPlayers.length + prioritized.length + nextPrioritized.length)
+        (requiredPlayers.length + prioritized.length + nextPrioritized.length),
     ),
   ];
 };
@@ -279,7 +389,7 @@ const getFinalOptionalPlayers = (
 export const findPairedPlayers = (
   playersA: number[],
   playersB: number[],
-  pairs: Pair[]
+  pairs: Pair[],
 ): number[] => {
   const pairPlayers: number[] = [];
 
@@ -300,7 +410,7 @@ export const findPairedPlayers = (
 export const countMatch = (
   newMatches: MatchType[],
   players: Player[],
-  setPlayers: (value: React.SetStateAction<Player[]>) => void
+  setPlayers: (value: React.SetStateAction<Player[]>) => void,
 ): void => {
   // プレイヤー毎の試合数カウント
   const playedPlayerIds: number[] = newMatches.flatMap((match) => [
@@ -321,13 +431,13 @@ export const countMatch = (
 export const countPairedBefore = (
   player1: number,
   player2: number,
-  matches: MatchType[]
+  matches: MatchType[],
 ) => {
   const joinedTeamAMatches = matches.filter((match) =>
-    match.teamA.includes(player1)
+    match.teamA.includes(player1),
   );
   const joinedTeamBMatches = matches.filter((match) =>
-    match.teamB.includes(player1)
+    match.teamB.includes(player1),
   );
 
   return (
@@ -339,13 +449,13 @@ export const countPairedBefore = (
 const countFacedBefore = (
   player1: number,
   player2: number,
-  matches: MatchType[]
+  matches: MatchType[],
 ) => {
   const joinedTeamAMatches = matches.filter((match) =>
-    match.teamA.includes(player1)
+    match.teamA.includes(player1),
   );
   const joinedTeamBMatches = matches.filter((match) =>
-    match.teamB.includes(player1)
+    match.teamB.includes(player1),
   );
 
   return (
@@ -359,7 +469,9 @@ const countFacedBefore = (
  *
  * @param {number[]} players - グループ分けするプレイヤーのIDリスト。
  * @param {number} [trials=100] - 試行回数。生成するグループ構成の最大数。
- * @param {Court[]} courts - 使用するコートのリスト。各コートに4人ずつ割り当てられる。
+ * @param {Court[]} [courts=[]] - 利用可能なコートのリスト。グループ数の基準として使用。
+ * @param {Pair[]} [pairs=[]] - ペアとして扱うプレイヤーのペアリスト。
+ * @param {GameRound[]} [initialGameRounds=[]] - 初期のゲームラウンド情報。未完了の試合から不完全なグループを抽出。
  * @returns {number[][][]} - グループ分けされたプレイヤーIDのリスト。各グループはコートごとに分割される。
  *
  * @example
@@ -368,16 +480,32 @@ const countFacedBefore = (
 const getRandomGroupPartitions = (
   players: number[],
   trials = 50,
-  courts: Court[],
-  pairs: Pair[] = []
+  courts: Court[] = [],
+  pairs: Pair[] = [],
+  initialGameRounds: GameRound[] = [],
 ): number[][][] => {
+  // console.log("getRandomGroupPartitions_start");
   const results: number[][][] = [];
   const seen = new Set<string>();
 
+  const initialGroups = initialGameRounds
+    .flatMap((round) => round.matches)
+    .filter((match) => match.teamA.length + match.teamB.length < 4)
+    .map((match) => [...match.teamA, ...match.teamB]);
+
   // 十分な人数がいない場合は空配列を返す
-  if (players.length < courts.length * 4) return results;
+  if (courts.length * 4 < players.length + initialGroups.flat().length) {
+    // console.log(
+    //   "players.length",
+    //   players.length,
+    //   "initialGroups.flat().length",
+    //   initialGroups.flat().length
+    // );
+    return results;
+  }
 
   for (let i = 0; i < trials; i++) {
+    // console.log("let i = 0; i < trials; i++");
     // [[player1, player2], [player3, player4], ...]の形に変換
     const pairPlayers: number[][] = pairs.map((pair) => [
       pair.player1,
@@ -387,14 +515,18 @@ const getRandomGroupPartitions = (
     const unPairPlayers: number[] = players.filter(
       (player) =>
         !pairs.some(
-          (pair) => pair.player1 === player || pair.player2 === player
-        )
+          (pair) => pair.player1 === player || pair.player2 === player,
+        ),
     );
 
-    let groups: number[][] = []; // コートごとのグループを格納する配列　[[player1, player2, player3, player4], ...]
-    while (groups.length < courts.length) {
-      let court: number[] = []; // 1コート分のプレイヤーを格納する配列 [player1, player2, player3, player4]
+    let groups: number[][] = initialGroups; // コートごとのグループを格納する配列　[[player1, player2, player3, player4], ...]
+
+    // while (groups.length < courts.length) {
+    for (let i = 0; groups.flat().length < courts.length * 4; i++) {
+      // console.log("let i = 0; groups.flat().length < courts.length * 4; i++");
+      let court: number[] = initialGroups[i] ? [...initialGroups[i]] : []; // 1コート分のプレイヤーを格納する配列 [player1, player2, player3, player4]
       while (court.length < 4) {
+        // console.log("court.length < 4");
         const random = Math.random() - 0.5;
         // ペアがいなくなった、またはコートが3つ目の場合、またはランダム値が0以下の場合は、ペアではないプレイヤーをコートに追加
         if (
@@ -412,8 +544,8 @@ const getRandomGroupPartitions = (
       }
       // コートに4人揃ったらgroupsに追加
       if (court.length === 4) {
-        groups.push(court);
-        court = [];
+        // groups.push(court);
+        groups[i] = court;
       }
     }
 
@@ -429,6 +561,8 @@ const getRandomGroupPartitions = (
       results.push(groups);
     }
   }
+
+  // console.log("getRandomGroupPartitions_finish");
 
   return results;
 };
@@ -468,7 +602,7 @@ const combineLimited = (
     teamA: number[];
     teamB: number[];
   }[][],
-  limit: number
+  limit: number,
 ): {
   teamA: number[];
   teamB: number[];
@@ -483,7 +617,7 @@ const combineLimited = (
 
   for (let i = 0; i < maxTry; i++) {
     const combo = sets.map(
-      (options) => options[getRandomIndex(options.length)]
+      (options) => options[getRandomIndex(options.length)],
     );
     results.push(combo);
   }
@@ -507,12 +641,33 @@ const combineLimited = (
  */
 export const getTeamSplits = (
   group: number[],
-  pairs: Pair[] = []
+  pairs: Pair[] = [],
+  initialSplit: { teamA: number[]; teamB: number[] } = { teamA: [], teamB: [] },
 ): { teamA: number[]; teamB: number[] }[] => {
+  const isInitialTeamA = initialSplit?.teamA?.length > 0;
+  let isPair1TeamA = false;
+  if (isInitialTeamA) {
+    isPair1TeamA =
+      pairs[0]?.player1 === initialSplit.teamA[0] ||
+      pairs[0]?.player2 === initialSplit.teamA[0];
+  }
+
   if (pairs.length === 2) {
     // ペアが2組いる場合、ペア同士でチームを分ける
     const pair1 = pairs[0];
     const pair2 = pairs[1];
+
+    if (isInitialTeamA) {
+      return [
+        {
+          teamA: [...initialSplit.teamA],
+          teamB: isPair1TeamA
+            ? [pair2.player1, pair2.player2]
+            : [pair1.player1, pair1.player2],
+        },
+      ];
+    }
+
     return [
       {
         teamA: [pair1.player1, pair1.player2],
@@ -524,6 +679,31 @@ export const getTeamSplits = (
     const pairPlayers = pairs.flatMap((pair) => [pair.player1, pair.player2]);
     const unPairPlayers = group.filter((p) => !pairPlayers.includes(p));
     const pair = pairs[0];
+
+    if (initialSplit?.teamA?.length === 1) {
+      return [
+        {
+          teamA: [
+            ...initialSplit.teamA,
+            unPairPlayers.find((p) => p !== initialSplit.teamA[0]) as number,
+          ],
+          teamB: [pair.player1, pair.player2],
+        },
+      ];
+    } else if (initialSplit?.teamA?.length === 2) {
+      return [
+        {
+          teamA: [...initialSplit.teamA],
+          teamB: isPair1TeamA
+            ? [unPairPlayers[0], unPairPlayers[1]]
+            : [
+                ...initialSplit.teamB,
+                ...pairPlayers.filter((p) => !initialSplit.teamB.includes(p)),
+              ],
+        },
+      ];
+    }
+
     return [
       {
         teamA: [pair.player1, pair.player2],
@@ -531,6 +711,78 @@ export const getTeamSplits = (
       },
     ];
   } else {
+    if (
+      initialSplit?.teamA?.length === 1 &&
+      initialSplit?.teamB?.length === 0
+    ) {
+      // すでにteamAに1人いる場合、残りの3人からteamAに1人、teamBに2人を割り当てる
+      const remainingPlayers = group.filter((p) => p !== initialSplit.teamA[0]);
+      const teamASplits = remainingPlayers.map((p) => [
+        initialSplit.teamA[0],
+        p,
+      ]);
+      const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
+
+      for (const teamA of teamASplits) {
+        const teamB = remainingPlayers.filter((p) => !teamA.includes(p));
+        teamPairs.push({ teamA, teamB });
+      }
+
+      return teamPairs;
+    } else if (
+      initialSplit.teamA?.length === 1 &&
+      initialSplit.teamB?.length === 1
+    ) {
+      // すでにteamAとteamBに1人ずついる場合、残りの2人をそれぞれのチームに割り当てる
+      const remainingPlayers = group.filter(
+        (p) => p !== initialSplit.teamA[0] && p !== initialSplit.teamB[0],
+      );
+      const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
+
+      for (const p of remainingPlayers) {
+        teamPairs.push({
+          teamA: [initialSplit.teamA[0], p],
+          teamB: [
+            initialSplit.teamB[0],
+            remainingPlayers.find((q) => q !== p) as number,
+          ],
+        });
+      }
+
+      return teamPairs;
+    } else if (
+      initialSplit.teamA?.length === 2 &&
+      initialSplit.teamB?.length === 0
+    ) {
+      // すでにteamAに2人いる場合、残りの2人をteamBに割り当てる
+      const remainingPlayers = group.filter(
+        (p) => p !== initialSplit.teamA[0] && p !== initialSplit.teamA[1],
+      );
+      return [
+        {
+          teamA: [...initialSplit.teamA],
+          teamB: [...remainingPlayers],
+        },
+      ];
+    } else if (
+      initialSplit.teamA?.length === 2 &&
+      initialSplit.teamB?.length === 1
+    ) {
+      // すでにteamAに2人、teamBに1人いる場合、残りの1人をteamBに割り当てる
+      const remainingPlayers = group.filter(
+        (p) =>
+          p !== initialSplit.teamA[0] &&
+          p !== initialSplit.teamA[1] &&
+          p !== initialSplit.teamB[0],
+      );
+      return [
+        {
+          teamA: [...initialSplit.teamA],
+          teamB: [...initialSplit.teamB, ...remainingPlayers],
+        },
+      ];
+    }
+
     // ペアがいない場合、すべての組み合わせを生成
     const comb = getCombinations(group, 2);
     const teamPairs: { teamA: number[]; teamB: number[] }[] = [];
@@ -551,7 +803,7 @@ export const scoreMatch = (
     teamA: number[];
     teamB: number[];
   },
-  matches: MatchType[]
+  matches: MatchType[],
 ): number => {
   let score = 0;
 
@@ -582,15 +834,15 @@ export const scoreGender = (
     teamB: number[];
   },
   players: Player[],
-  genderSetting: GenderPreferenceSetting
+  genderSetting: GenderPreferenceSetting,
 ): number => {
   if (!genderSetting.men && !genderSetting.woman && !genderSetting.mix)
     return 0;
   const teamAGenders = team.teamA.map(
-    (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定
+    (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定,
   );
   const teamBGenders = team.teamB.map(
-    (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定
+    (id) => players.find((p) => p.id === id)?.gender ?? Gender.未設定,
   );
   const teamAMale = teamAGenders.filter((g) => g === "男性").length;
   const teamAFemale = teamAGenders.filter((g) => g === "女性").length;

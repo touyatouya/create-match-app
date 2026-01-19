@@ -6,13 +6,18 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
+// import SelectPlayerModal from "./selectPlayerModal";
 
 interface MatchPlayerProps {
   swapPlayer: number | null;
-  playerId: number;
+  playerId: number | null;
   selectSwapPlayer: (id: number, partnerId?: number | null) => void;
-  partnerId: number | undefined;
+  partnerId: number | undefined | null;
   isSwap: boolean;
+  isSelect: boolean;
+  showMatchCount: boolean;
+  team: "teamA" | "teamB";
+  courtId?: number;
 }
 
 const MatchPlayer: React.FC<MatchPlayerProps> = ({
@@ -21,11 +26,28 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   selectSwapPlayer,
   partnerId,
   isSwap,
+  isSelect,
+  showMatchCount,
+  team,
+  courtId,
 }) => {
   const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
+  // const [isOpen, setIsOpen] = React.useState(false);
+
+  // if (isOpen) {
+  //   return (
+  //     <SelectPlayerModal
+  //       isOpen={isOpen}
+  //       onClose={() => setIsOpen(false)}
+  //       courtId={courtId}
+  //       team={team}
+  //     />
+  //   );
+  // }
+
   return (
     <>
-      {isSwap ? (
+      {playerId != null && isSwap ? (
         <TouchableOpacity
           key={playerId}
           style={[
@@ -38,7 +60,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             // await analytics().logEvent("swap_player");
           }}
         >
-          <PlayerInfo playerId={playerId} />
+          <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
           {isSwap && (
             <Ionicons
               name="swap-horizontal"
@@ -47,9 +69,24 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             />
           )}
         </TouchableOpacity>
+      ) : playerId == null && isSelect ? (
+        <TouchableOpacity
+          key={playerId}
+          style={[styles.playerButton]}
+          onPress={async () => {}}
+        >
+          <PlayerInfo playerId={null} showMatchCount={false} />
+          {isSelect && (
+            <Ionicons
+              name="swap-horizontal"
+              size={18}
+              color={ColorPalette.secondary}
+            />
+          )}
+        </TouchableOpacity>
       ) : (
         <View key={playerId} style={styles.playerButton}>
-          <PlayerInfo playerId={playerId} />
+          <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
         </View>
       )}
     </>

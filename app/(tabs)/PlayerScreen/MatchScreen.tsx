@@ -8,6 +8,8 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
+import SegmentButton from "@/app/components/SegmentButton";
+import { GenerateMode } from "@/types";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -22,6 +24,8 @@ const MatchScreen: React.FC = () => {
     setPlayers,
     gameRounds,
     setGameRounds,
+    generateMode,
+    setGenerateMode,
     isLoading,
     genderSetting,
     // isProUser,
@@ -62,7 +66,20 @@ const MatchScreen: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <CustomHeader
-        title="試合"
+        titleComponent={
+          <View style={styles.segment}>
+            <SegmentButton
+              label="一括"
+              active={generateMode === GenerateMode.REPLACEE_ALL}
+              onPress={() => setGenerateMode(GenerateMode.REPLACEE_ALL)}
+            />
+            <SegmentButton
+              label="流し込み"
+              active={generateMode === GenerateMode.FILL_ENPTY}
+              onPress={() => setGenerateMode(GenerateMode.FILL_ENPTY)}
+            />
+          </View>
+        }
         headerRight={() => (
           <View
             style={{
@@ -111,7 +128,7 @@ const MatchScreen: React.FC = () => {
                       onPress: resetGameRound,
                       style: "destructive",
                     },
-                  ]
+                  ],
                 );
               }}
               style={globalStyles.headerRight}
@@ -157,6 +174,13 @@ const styles = StyleSheet.create({
     backgroundColor: ColorPalette.pageBackground,
     borderTopWidth: 0.5,
     borderTopColor: ColorPalette.pageHeaderFooterBorder,
+  },
+  segment: {
+    flexDirection: "row",
+    backgroundColor: ColorPalette.whiteIcon,
+    borderRadius: 8,
+    padding: 2,
+    ...globalStyles.touch,
   },
   detailSetting: {
     flexDirection: "column",

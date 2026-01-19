@@ -7,10 +7,14 @@ import GenderIcon from "../GenderIcon";
 import { getPlayerName } from "./util";
 
 interface PlayerInfoProps {
-  playerId: number;
+  playerId: number | null;
+  showMatchCount: boolean;
 }
 
-const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
+const PlayerInfo: React.FC<PlayerInfoProps> = ({
+  playerId,
+  showMatchCount,
+}) => {
   const { players } = useContext(AppContext);
 
   const getGender = (id: number) => {
@@ -23,15 +27,21 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
 
   return (
     <View style={styles.playerInfo}>
-      <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">
-        {getPlayerName(playerId, players)}
-      </Text>
-      <View style={styles.subInfo}>
-        <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
-        <Text style={styles.playerGender}>
-          <GenderIcon gender={getGender(playerId)} size={18} />
+      {playerId != null && (
+        <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">
+          {getPlayerName(playerId, players)}
         </Text>
-      </View>
+      )}
+      {playerId != null && (
+        <View style={styles.subInfo}>
+          {showMatchCount && (
+            <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
+          )}
+          <Text style={styles.playerGender}>
+            <GenderIcon gender={getGender(playerId)} size={18} />
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

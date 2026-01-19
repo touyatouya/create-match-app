@@ -22,19 +22,20 @@ import {
 import {
   GameRound,
   GenderPreferenceSetting,
+  GenerateMode,
   Match as MatchType,
   Player,
 } from "../../../types";
 import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
-import MatchPlayer from "./matchPlayer";
+import RenderMatch from "./renderMatch";
 import { countMatch, createMatch } from "./util";
 
-type SectionDataItem = MatchType | Player | Player[];
+type SectionDataItem = MatchType | MatchType[] | Player | Player[]; // Player[] は休憩中プレイヤー行用
 
 type Section = {
   title: string;
-  type: "match" | "rest";
+  type: "match" | "rest" | "matchHistory";
   data: SectionDataItem[];
 };
 
@@ -60,6 +61,7 @@ const Match: React.FC<MatchProps> = ({
     setPlayers,
     gameRounds,
     setGameRounds,
+    generateMode,
     pairs,
     courts,
     setIsLoading,
@@ -73,10 +75,10 @@ const Match: React.FC<MatchProps> = ({
     setSwapPlayer((prev) => {
       let newSwapPlayer: number | null = null;
       const isRestPlayerPrev = restPlayers.some(
-        (restPlayer) => restPlayer.id === prev
+        (restPlayer) => restPlayer.id === prev,
       );
       const isRestPlayerId = restPlayers.some(
-        (restPlayer) => restPlayer.id === id
+        (restPlayer) => restPlayer.id === id,
       );
       if (prev === id) {
         newSwapPlayer = null;
@@ -101,67 +103,35 @@ const Match: React.FC<MatchProps> = ({
     });
   };
 
-  const renderMatch = ({ item, index }: { item: MatchType; index: number }) => (
-    <View style={styles.matchCard}>
-      <Text style={styles.courtName}>{index + 1}コート</Text>
-
-      <View style={styles.teams}>
-        {/* チーム1 */}
-        <View style={styles.team}>
-          {item.teamA.map((playerId) => {
-            const partnerId = item.teamA.find((id) => id !== playerId);
-            return (
-              <MatchPlayer
-                key={playerId}
-                swapPlayer={swapPlayer}
-                playerId={playerId}
-                selectSwapPlayer={selectSwapPlayer}
-                partnerId={partnerId}
-                isSwap={dispRound === gameRounds.length}
-              />
-            );
-          })}
-        </View>
-
-        <Text style={styles.vsText}>VS</Text>
-
-        {/* チーム2 */}
-        <View style={styles.team}>
-          {item.teamB.map((playerId) => {
-            const partnerId = item.teamB.find((id) => id !== playerId);
-            return (
-              <MatchPlayer
-                key={playerId}
-                swapPlayer={swapPlayer}
-                playerId={playerId}
-                selectSwapPlayer={selectSwapPlayer}
-                partnerId={partnerId}
-                isSwap={dispRound === gameRounds.length}
-              />
-            );
-          })}
-        </View>
-      </View>
-    </View>
-  );
-
   const matches: MatchType[] = gameRounds.flatMap(
-    (gameRound) => gameRound.matches
+    (gameRound) => gameRound.matches,
   );
 
   const playablePlayers = players.filter((player) => {
-    return gameRounds[dispRound - 1]?.matches.some((match) => {
-      return (
-        match.teamA.some((playerId) => playerId === player.id) ||
-        match.teamB.some((playerId) => playerId === player.id)
-      );
-    });
+    if (generateMode === GenerateMode.REPLACEE_ALL) {
+      return gameRounds[dispRound - 1]?.matches.some((match) => {
+        return (
+          match.teamA.some((playerId) => playerId === player.id) ||
+          match.teamB.some((playerId) => playerId === player.id)
+        );
+      });
+    } else {
+      return gameRounds
+        .flatMap((gameRound) => gameRound.matches)
+        .filter((match) => !match.isFinished || !match.canInsertNext)
+        .some((match) => {
+          return (
+            match.teamA.some((playerId) => playerId === player.id) ||
+            match.teamB.some((playerId) => playerId === player.id)
+          );
+        });
+    }
   });
 
   const playablePlayerIds = new Set(playablePlayers.map((p) => p.id));
 
   const restPlayers = players.filter(
-    (player) => player.isJoin && !playablePlayerIds.has(player.id)
+    (player) => player.isJoin && !playablePlayerIds.has(player.id),
   );
 
   // 追加: restPlayers を 2 件ずつの行に分割するヘルパー
@@ -272,7 +242,7 @@ const Match: React.FC<MatchProps> = ({
 
   const changePlayableRestPlayer = (
     playablePlayerId: number,
-    restPlayerId: number
+    restPlayerId: number,
   ) => {
     let newGameRounds: GameRound[] = [];
     setGameRounds((prevGameRounds) => {
@@ -283,7 +253,7 @@ const Match: React.FC<MatchProps> = ({
       // 対象の巡目インデックス（dispRound が範囲外のとき安全にクランプ）
       const targetRoundIndex = Math.max(
         0,
-        Math.min(prevGameRounds.length - 1, dispRound - 1)
+        Math.min(prevGameRounds.length - 1, dispRound - 1),
       );
 
       // プレイ中プレイヤーの位置を探す
@@ -337,7 +307,7 @@ const Match: React.FC<MatchProps> = ({
       return newGameRounds;
     });
     const matches: MatchType[] = newGameRounds.flatMap(
-      (gameRound) => gameRound.matches
+      (gameRound) => gameRound.matches,
     );
     const newPlayers = [...players];
     const idxRest = newPlayers.findIndex((p) => p.id === restPlayerId);
@@ -426,10 +396,30 @@ const Match: React.FC<MatchProps> = ({
     </View>
   );
 
+  const matchListWithPlaceholders: (MatchType | undefined)[] = (() => {
+    if (generateMode === GenerateMode.REPLACEE_ALL) return [];
+    const active = matches.filter((m) => !m.isFinished);
+    const sortedCourts = courts.slice().sort((a, b) => a.number - b.number);
+    return sortedCourts.map((court) => {
+      const m = active.find((am) => am.courtId === court.id);
+      return m;
+    });
+  })();
+
+  console.log("matchListWithPlaceholders", matchListWithPlaceholders);
+  console.log("matches", matches);
+
   const sections: Section[] = [
     {
       title: "",
-      data: gameRounds[dispRound - 1]?.matches,
+      data:
+        generateMode === GenerateMode.REPLACEE_ALL
+          ? gameRounds[dispRound - 1]?.matches
+          : matchListWithPlaceholders.length > 0
+            ? matchListWithPlaceholders.filter(
+                (m): m is MatchType => m !== undefined,
+              )
+            : [],
       type: "match",
     },
     {
@@ -438,6 +428,38 @@ const Match: React.FC<MatchProps> = ({
       type: "rest",
     },
   ];
+
+  const playingCourtIds = gameRounds
+    .flatMap((gameRound) => gameRound.matches)
+    .filter((match) => !match.canInsertNext)
+    .flatMap((match) => match.courtId);
+
+  const avaibleCourts =
+    generateMode === GenerateMode.FILL_ENPTY
+      ? courts.filter(
+          (court) =>
+            playingCourtIds == null ||
+            playingCourtIds.length === 0 ||
+            !playingCourtIds.includes(court.id),
+        )
+      : courts;
+
+  const setAllMatchCanInsertNext = () => {
+    setGameRounds((prev) => {
+      return prev.map((gameRound) => {
+        const newMatches = gameRound.matches.map((match) => {
+          if (!match.canInsertNext) {
+            return {
+              ...match,
+              canInsertNext: true,
+            };
+          }
+          return match;
+        });
+        return { ...gameRound, matches: newMatches };
+      });
+    });
+  };
 
   useEffect(() => {
     if (dispRound > 0) {
@@ -483,6 +505,7 @@ const Match: React.FC<MatchProps> = ({
       )} */}
       <PrimaryButton
         text="新しい組み合わせを生成"
+        disabled={avaibleCourts.length === 0}
         icon={
           <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
         }
@@ -497,11 +520,13 @@ const Match: React.FC<MatchProps> = ({
               setGameRounds,
               pairs,
               matches,
+              dispRound,
+              generateMode,
               setSwapPlayer,
               genderSetting,
               setDispRound,
               setIsLoading,
-              setNumOfGenerate
+              setNumOfGenerate,
             );
           }, 0);
 
@@ -518,129 +543,195 @@ const Match: React.FC<MatchProps> = ({
           }
         }}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 2,
-        }}
-      >
-        {gameRounds[dispRound - 2] != null ? (
-          <TouchableOpacity
-            style={{
-              ...globalStyles.touch,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={async () => {
-              setDispRound((prev) => prev - 1);
-
-              // await analytics().logEvent("prev_gameRound", {
-              //   player_count: players.length,
-              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-              //     .length,
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              //   match_count: matches.length,
-              // });
-            }}
-          >
-            <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
-          </TouchableOpacity>
-        ) : (
-          <View style={{ ...globalStyles.touch }}></View>
-        )}
-        {dispRound > 0 && (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {gameRounds[dispRound] == null && (
-              <View style={{ ...globalStyles.touch }}></View>
-            )}
-            <Text
+      {/* {generateMode === GenerateMode.FILL_ENPTY && (
+        <Text style={{ alignSelf: "center" }}>
+          チェックしたコートに試合を入れます
+        </Text>
+      )} */}
+      {generateMode === GenerateMode.FILL_ENPTY && matches.length > 0 && (
+        <TouchableOpacity
+          onPress={() => setAllMatchCanInsertNext()}
+          style={{
+            backgroundColor: ColorPalette.thirdry,
+            borderRadius: 20,
+            padding: 4,
+            marginBottom: 8,
+            alignSelf: "center",
+          }}
+        >
+          <Text>全コート試合終了</Text>
+        </TouchableOpacity>
+        // <Checkbox
+        //   checked={matches
+        //     .filter((match) => !match.isFinished)
+        //     .every((match) => match.canInsertNextMatch)}
+        //   onChange={() =>
+        //     isAllMatchCanInsertNextMatch
+        //       ? setAllMatchCanInsertNext(false)
+        //       : setAllMatchCanInsertNext(true)
+        //   }
+        //   label="全コート試合終了"
+        // />
+      )}
+      {generateMode === GenerateMode.REPLACEE_ALL && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 2,
+          }}
+        >
+          {gameRounds[dispRound - 2] != null ? (
+            <TouchableOpacity
               style={{
-                fontSize: FONT_SIZE.subsubheading,
-                marginHorizontal: 8,
+                ...globalStyles.touch,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={async () => {
+                setDispRound((prev) => prev - 1);
+
+                // await analytics().logEvent("prev_gameRound", {
+                //   player_count: players.length,
+                //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                //     .length,
+                //   court_count: courts.length,
+                //   game_count: gameRounds.length,
+                //   match_count: matches.length,
+                // });
               }}
             >
-              {dispRound}巡目
-            </Text>
-            {gameRounds[dispRound] == null && (
-              <TouchableOpacity
+              <AntDesign
+                name="left"
+                size={20}
+                color={ColorPalette.normalIcon}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={{ ...globalStyles.touch }}></View>
+          )}
+          {dispRound > 0 && (
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {gameRounds[dispRound] == null && (
+                <View style={{ ...globalStyles.touch }}></View>
+              )}
+              <Text
                 style={{
-                  ...globalStyles.touch,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={async () => {
-                  setGameRounds((prev) => prev.slice(0, -1));
-                  setPlayers((prev) => {
-                    return prev.map((player) => {
-                      return {
-                        ...player,
-                        isRest: false,
-                        matchCount: 0,
-                      };
-                    });
-                  });
-                  setSwapPlayer(null);
-                  setDispRound((prev) => prev - 1);
-
-                  // await analytics().logEvent("delete_game");
+                  fontSize: FONT_SIZE.subheading,
+                  marginHorizontal: 8,
                 }}
               >
-                <MaterialIcons name="delete-outline" size={24} color="black" />
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-        {gameRounds[dispRound] != null ? (
-          <TouchableOpacity
-            style={{
-              ...globalStyles.touch,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={async () => {
-              setDispRound((prev) => prev + 1);
+                {dispRound}巡目
+              </Text>
+              {gameRounds[dispRound] == null && (
+                <TouchableOpacity
+                  style={{
+                    ...globalStyles.touch,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={async () => {
+                    setGameRounds((prev) => prev.slice(0, -1));
+                    setPlayers((prev) => {
+                      return prev.map((player) => {
+                        return {
+                          ...player,
+                          isRest: false,
+                          matchCount: 0,
+                        };
+                      });
+                    });
+                    setSwapPlayer(null);
+                    setDispRound((prev) => prev - 1);
 
-              // await analytics().logEvent("next_gameRound", {
-              //   player_count: players.length,
-              //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-              //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
-              //     .length,
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              //   match_count: matches.length,
-              // });
-            }}
-          >
-            <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
-          </TouchableOpacity>
-        ) : (
-          <View style={{ ...globalStyles.touch }}></View>
-        )}
-      </View>
-      {gameRounds[dispRound - 1] != null && (
+                    // await analytics().logEvent("delete_game");
+                  }}
+                >
+                  <MaterialIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          {gameRounds[dispRound] != null ? (
+            <TouchableOpacity
+              style={{
+                ...globalStyles.touch,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={async () => {
+                setDispRound((prev) => prev + 1);
+
+                // await analytics().logEvent("next_gameRound", {
+                //   player_count: players.length,
+                //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
+                //   noAnonymous_player_: players.filter((p) => !p.isAnonymous)
+                //     .length,
+                //   court_count: courts.length,
+                //   game_count: gameRounds.length,
+                //   match_count: matches.length,
+                // });
+              }}
+            >
+              <AntDesign
+                name="right"
+                size={20}
+                color={ColorPalette.normalIcon}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={{ ...globalStyles.touch }}></View>
+          )}
+        </View>
+      )}
+      {(gameRounds[dispRound - 1] != null ||
+        generateMode === GenerateMode.FILL_ENPTY) && (
         <SectionList
           sections={sections}
           keyExtractor={(item, index) =>
             Array.isArray(item)
               ? `restRow-${index}`
               : "id" in item
-              ? `${item.id}-${index}`
-              : `${index}`
+                ? `${item.id}-${index}`
+                : `${index}`
           }
           renderItem={({ item, index, section }) => {
             if (section.type === "match") {
               const match = item as MatchType;
-              return renderMatch({ item: match, index: index }); // 例: カード表示など
+              const court = courts.find((court) => court.id === match.courtId);
+              const courtId = court?.id as number;
+              const courtNumber = court?.number as number;
+              const courtMatch = gameRounds
+                .flatMap((gameRound) => gameRound.matches)
+                .filter((match) => match.courtId === courtId);
+              return (
+                <RenderMatch
+                  item={match}
+                  courtMatch={courtMatch}
+                  courtId={courtId}
+                  courtNumber={courtNumber}
+                  swapPlayer={swapPlayer}
+                  setSwapPlayer={setSwapPlayer}
+                  selectSwapPlayer={selectSwapPlayer}
+                  showMatchCount={true}
+                  canCheck={generateMode === GenerateMode.FILL_ENPTY}
+                  canDelete={true}
+                  canSwap={true}
+                  dispRound={dispRound}
+                />
+              ); // 例: カード表示など
             } else if (section.type === "rest") {
               const restRow = item as Player[];
               return renderRestingRow({ item: restRow });
@@ -707,10 +798,25 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  matchLogCard: {
+    backgroundColor: ColorPalette.disabled,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 8,
+    shadowColor: ColorPalette.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  finishedMatchCard: {
+    backgroundColor: ColorPalette.disabled,
+  },
   courtName: {
     fontSize: FONT_SIZE.tiny,
     fontWeight: "bold",
-    marginBottom: 4,
     color: ColorPalette.sectionTitie,
   },
   teams: {
@@ -737,6 +843,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 4,
+    backgroundColor: ColorPalette.pageBackground,
   },
   restingTitle: {
     flexDirection: "row",
@@ -746,6 +853,7 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.body,
     fontWeight: "bold",
     color: ColorPalette.sectionTitie,
+    marginLeft: 6,
   },
   restingCount: {
     fontSize: FONT_SIZE.subsubheading,
@@ -785,6 +893,11 @@ const styles = StyleSheet.create({
   },
   restingCell: {
     flex: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: ColorPalette.borderline,
+    marginVertical: 8,
   },
 });
 

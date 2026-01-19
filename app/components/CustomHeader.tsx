@@ -2,23 +2,22 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { globalStyles } from "@/styles/global";
 import { AntDesign } from "@expo/vector-icons";
-import {
-  NativeStackHeaderLeftProps,
-  NativeStackHeaderRightProps,
-} from "@react-navigation/native-stack";
+import { NativeStackHeaderItemProps } from "@react-navigation/native-stack";
 import { router, Stack } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 interface CustomHeaderProps {
-  title: string;
+  title?: string;
+  titleComponent?: React.ReactNode;
   isSlideScreen?: boolean;
   headerLeftText?: string;
-  headerRight?: (props: NativeStackHeaderRightProps) => React.ReactNode;
-  headerLeft?: (props: NativeStackHeaderLeftProps) => React.ReactNode;
+  headerRight?: (props: NativeStackHeaderItemProps) => React.ReactNode;
+  headerLeft?: (props: NativeStackHeaderItemProps) => React.ReactNode;
   disalbed?: boolean;
 }
 
 const CustomHeader: React.FC<CustomHeaderProps> = ({
   title,
+  titleComponent,
   isSlideScreen = false,
   headerLeftText,
   headerRight,
@@ -29,7 +28,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
     <Stack.Screen
       options={{
         headerShown: true,
-        title: title,
+        headerTitle: titleComponent ? () => titleComponent : title,
         headerLeft: !disalbed
           ? isSlideScreen
             ? () => (

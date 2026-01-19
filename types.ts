@@ -32,11 +32,19 @@ export interface Match {
   teamA: Player["id"][]; // 使用例：idが1・2 VS 3・4の場合、{...,teamA:[1,2], teamB:[3,4]...}
   teamB: Player["id"][];
   courtId: number; // 何コートの試合か
+  isFinished: boolean;
+  canInsertNext: boolean;
+  finishRound: number | null;
 }
 
 export interface GameRound {
   id: number;
   matches: Match[];
+}
+
+export enum GenerateMode {
+  REPLACEE_ALL = "replace_all",
+  FILL_ENPTY = "fill_empty",
 }
 
 export interface Pair {
@@ -47,6 +55,7 @@ export interface Pair {
 
 export interface Court {
   id: number;
+  number: number;
 }
 
 export type Team = "teamA" | "teamB";

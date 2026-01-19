@@ -123,7 +123,7 @@ const PlayerScreen: React.FC = () => {
     setCourts((prev) => {
       const courtIds = prev.map((court) => court.id);
       const id = generateUniqId(courtIds);
-      return [...prev, { id: id }];
+      return [...prev, { id: id, number: prev.length + 1 }];
     });
   };
 

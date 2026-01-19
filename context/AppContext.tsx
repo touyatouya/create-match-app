@@ -2,9 +2,11 @@ import {
   Court,
   GameRound,
   GenderPreferenceSetting,
+  GenerateMode,
   Pair,
   Player,
 } from "@/types";
+import { generateUniqId } from "@/utils/createId";
 import React, { createContext, ReactNode } from "react";
 
 type AppContextType = {
@@ -16,6 +18,8 @@ type AppContextType = {
   setCourts: React.Dispatch<React.SetStateAction<Court[]>>;
   gameRounds: GameRound[];
   setGameRounds: React.Dispatch<React.SetStateAction<GameRound[]>>;
+  generateMode: GenerateMode;
+  setGenerateMode: React.Dispatch<React.SetStateAction<GenerateMode>>;
   pairs: Pair[];
   setPairs: React.Dispatch<React.SetStateAction<Pair[]>>;
   genderSetting: GenderPreferenceSetting;
@@ -45,6 +49,8 @@ export const AppContext = createContext<AppContextType>({
   setCourts: () => {},
   gameRounds: [],
   setGameRounds: () => {},
+  generateMode: GenerateMode.REPLACEE_ALL,
+  setGenerateMode: () => {},
   pairs: [],
   setPairs: () => {},
   genderSetting: { men: false, woman: false, mix: false },
@@ -71,8 +77,13 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [players, setPlayers] = React.useState<Player[]>([]);
   const [anonymousPlayerCount, setAnonymousPlayerCount] =
     React.useState<number>(0);
-  const [courts, setCourts] = React.useState<Court[]>([{ id: 0 }]);
+  const [courts, setCourts] = React.useState<Court[]>([
+    { id: generateUniqId([]), number: 1 },
+  ]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
+  const [generateMode, setGenerateMode] = React.useState<GenerateMode>(
+    GenerateMode.REPLACEE_ALL
+  );
   const [pairs, setPairs] = React.useState<Pair[]>([]);
   const [genderSetting, setGenderSetting] =
     React.useState<GenderPreferenceSetting>({
@@ -98,6 +109,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setCourts,
         gameRounds,
         setGameRounds,
+        generateMode,
+        setGenerateMode,
         pairs,
         setPairs,
         genderSetting,

@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: FONT_SIZE.body,
+    marginLeft: 8,
   },
 });
 
