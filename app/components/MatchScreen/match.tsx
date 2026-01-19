@@ -406,9 +406,6 @@ const Match: React.FC<MatchProps> = ({
     });
   })();
 
-  console.log("matchListWithPlaceholders", matchListWithPlaceholders);
-  console.log("matches", matches);
-
   const sections: Section[] = [
     {
       title: "",
