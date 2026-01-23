@@ -87,6 +87,7 @@ const MatchScreen: React.FC = () => {
           >
             <TouchableOpacity
               onPress={() => {
+                if (isLoading) return;
                 Alert.alert(
                   "確認",
                   "全ての組み合わせを削除しますがよろしいですか？",
@@ -112,9 +113,10 @@ const MatchScreen: React.FC = () => {
               />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() =>
-                router.push({ pathname: "/PlayerScreen/MatchMenuScreen" })
-              }
+              onPress={() => {
+                if (isLoading) return;
+                router.push({ pathname: "/PlayerScreen/MatchMenuScreen" });
+              }}
               style={globalStyles.headerRight}
             >
               <AntDesign name="menu" size={20} color="black" />

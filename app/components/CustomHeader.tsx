@@ -29,20 +29,18 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       options={{
         headerShown: true,
         headerTitle: titleComponent ? () => titleComponent : title,
-        headerLeft: !disalbed
-          ? isSlideScreen
-            ? () => (
-                <TouchableOpacity
-                  onPress={() => router.back()}
-                  style={[styles.headerLeft, { marginLeft: -8 }]}
-                >
-                  <AntDesign name="left" size={24} color={ColorPalette.link} />
-                  <Text style={styles.headerLeftText}>{headerLeftText}</Text>
-                </TouchableOpacity>
-              )
-            : headerLeft
-          : undefined,
-        headerRight: !disalbed ? headerRight : undefined,
+        headerLeft: isSlideScreen
+          ? () => (
+              <TouchableOpacity
+                onPress={() => (disalbed ? undefined : router.back())}
+                style={[styles.headerLeft, { marginLeft: -8 }]}
+              >
+                <AntDesign name="left" size={24} color={ColorPalette.link} />
+                <Text style={styles.headerLeftText}>{headerLeftText}</Text>
+              </TouchableOpacity>
+            )
+          : headerLeft,
+        headerRight: headerRight,
       }}
     />
   );
