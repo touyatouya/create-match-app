@@ -6,12 +6,14 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface CheckboxProps {
   label?: string;
+  labelStyle?: object;
   checked: boolean;
   onChange: () => void;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
   label = "",
+  labelStyle,
   checked,
   onChange,
 }) => (
@@ -19,7 +21,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     <View style={[styles.checkbox, checked && styles.checked]}>
       {checked && <Text style={styles.checkmark}>✓</Text>}
     </View>
-    {label !== "" && <Text style={styles.label}>{label}</Text>}
+    {label !== "" && <Text style={[styles.label, labelStyle]}>{label}</Text>}
   </TouchableOpacity>
 );
 

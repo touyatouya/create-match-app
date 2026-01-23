@@ -15,6 +15,8 @@ const ColorPalette = {
   text: "#212121",
   muted: "#e0e0e0",
   disabled: "#aaa7a7ff",
+  finished: "rgb(187, 187, 187)",
+  finished2: "rgb(212, 212, 212)",
   error: "#FF0000",
   whiteText: "white",
   blackText: "black",

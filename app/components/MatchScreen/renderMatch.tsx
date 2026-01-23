@@ -2,10 +2,11 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { GenerateMode, Match as MatchType, Player } from "@/types";
+import { GenerateMode, Match as MatchType } from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Checkbox from "../CheckBox";
 import MatchPlayer from "./matchPlayer";
 
 interface MatchProps {
@@ -14,7 +15,7 @@ interface MatchProps {
   courtId: number;
   courtNumber: number;
   swapPlayer: number | null;
-  setSwapPlayer?: React.Dispatch<React.SetStateAction<number | null>>;
+  setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>;
   selectSwapPlayer: (id: number, partnerId?: number | null) => void;
   canCheck: boolean;
   canDelete: boolean;
@@ -37,10 +38,8 @@ const RenderMatch: React.FC<MatchProps> = ({
   showMatchCount,
   dispRound,
 }) => {
-  const { gameRounds, setGameRounds, generateMode, players, setPlayers } =
+  const { gameRounds, setGameRounds, generateMode, setPlayers } =
     React.useContext(AppContext);
-
-  const playersId = players.map((p: Player) => p.id);
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
@@ -50,7 +49,16 @@ const RenderMatch: React.FC<MatchProps> = ({
     <View
       style={[
         styles.matchCard,
-        (item.canInsertNext || isNoMatch) && styles.finishedMatchCard,
+        ((generateMode === GenerateMode.FILL_ENPTY && item.canInsertNext) ||
+          isNoMatch) &&
+          styles.finishedMatchCard,
+        generateMode === GenerateMode.FILL_ENPTY &&
+          !isNoMatch && { paddingTop: 0, paddingBottom: 4 },
+        generateMode === GenerateMode.REPLACEE_ALL &&
+          item.isFinished && {
+            backgroundColor: ColorPalette.finished,
+            opacity: 0.6,
+          },
       ]}
     >
       <View
@@ -61,18 +69,18 @@ const RenderMatch: React.FC<MatchProps> = ({
         }}
       >
         <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.courtName}>{courtNumber}コート</Text>
-          {!isNoMatch && canCheck ? (
-            <TouchableOpacity
-              onPress={() =>
+          {generateMode === GenerateMode.FILL_ENPTY &&
+          !isNoMatch &&
+          canCheck ? (
+            <Checkbox
+              onChange={() => {
                 setGameRounds((prev) => {
                   return prev.map((gameRound, i) => {
                     const newMatches = gameRound.matches.map((match) => {
-                      if (!match.canInsertNext && match.courtId === courtId) {
-                        // console.log("dispRound:", dispRound);
+                      if (!match.isFinished && match.courtId === courtId) {
                         return {
                           ...match,
-                          canInsertNext: true,
+                          canInsertNext: !match.canInsertNext,
                           finishRound: dispRound,
                         };
                       }
@@ -86,51 +94,22 @@ const RenderMatch: React.FC<MatchProps> = ({
                       matches: newMatches,
                     };
                   });
-                })
-              }
-              style={{
-                backgroundColor: ColorPalette.thirdry,
-                borderRadius: 20,
-                padding: 4,
-                marginLeft: 8,
-                justifyContent: "center",
-                alignItems: "center",
-
-                ...globalStyles.touch,
+                });
+                setSwapPlayer(null);
               }}
-            >
-              <Text>試合終了</Text>
-            </TouchableOpacity>
+              label={`${courtNumber}コート`}
+              labelStyle={styles.courtName}
+              checked={item.canInsertNext}
+            />
           ) : (
-            <View
-              style={{
-                borderRadius: 20,
-                padding: 4,
-                marginLeft: 8,
-                justifyContent: "center",
-                alignItems: "center",
-                alignSelf: "center",
-                ...globalStyles.touch,
-              }}
-            >
-              <Text
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  alignSelf: "center",
-                }}
-              >
-                空きコート
-              </Text>
-            </View>
+            <Text style={[styles.courtName]}>{courtNumber}コート</Text>
           )}
         </View>
-        {!isNoMatch && canDelete && (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {generateMode === GenerateMode.REPLACEE_ALL &&
-            gameRounds[dispRound] != null ? (
-              <View style={{ ...globalStyles.touch }}></View>
-            ) : (
+        {generateMode === GenerateMode.FILL_ENPTY &&
+          !isNoMatch &&
+          canDelete &&
+          !item.canInsertNext && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <TouchableOpacity
                 style={{
                   ...globalStyles.touch,
@@ -165,64 +144,67 @@ const RenderMatch: React.FC<MatchProps> = ({
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />
               </TouchableOpacity>
-            )}
+            </View>
+          )}
+      </View>
+
+      {item.teamA?.length === 0 || item.teamB?.length === 0 ? (
+        <View style={styles.empty}>
+          <Text style={styles.vsText}>空きコート</Text>
+        </View>
+      ) : (
+        <View style={styles.teams}>
+          {/* チーム1 */}
+          <View style={styles.team}>
+            {item.teamA?.map((playerId) => {
+              const partnerId = item.teamA.find((id) => id !== playerId);
+              // console.log("playerId1", playerId);
+              return (
+                <MatchPlayer
+                  key={playerId}
+                  swapPlayer={swapPlayer}
+                  playerId={playerId}
+                  selectSwapPlayer={selectSwapPlayer}
+                  partnerId={partnerId}
+                  isSwap={
+                    generateMode === GenerateMode.FILL_ENPTY
+                      ? canSwap && !item.canInsertNext
+                      : dispRound === gameRounds.length
+                  }
+                  showMatchCount={showMatchCount}
+                  isFinished={item.canInsertNext}
+                />
+              );
+            })}
           </View>
-        )}
-      </View>
 
-      <View style={styles.teams}>
-        {/* チーム1 */}
-        <View style={styles.team}>
-          {item.teamA?.map((playerId) => {
-            const partnerId = item.teamA.find((id) => id !== playerId);
-            // console.log("playerId1", playerId);
-            return (
-              <MatchPlayer
-                key={playerId}
-                swapPlayer={swapPlayer}
-                playerId={playerId}
-                selectSwapPlayer={selectSwapPlayer}
-                partnerId={partnerId}
-                isSwap={
-                  generateMode === GenerateMode.FILL_ENPTY
-                    ? canSwap
-                    : dispRound === gameRounds.length
-                }
-                showMatchCount={showMatchCount}
-                isSelect={false}
-                team="teamA"
-              />
-            );
-          })}
+          <Text style={styles.vsText}>VS</Text>
+
+          {/* チーム2 */}
+          <View style={styles.team}>
+            {item.teamB?.map((playerId) => {
+              const partnerId = item.teamB.find((id) => id !== playerId);
+              // console.log("playerId4", playerId);
+              return (
+                <MatchPlayer
+                  key={playerId}
+                  swapPlayer={swapPlayer}
+                  playerId={playerId}
+                  selectSwapPlayer={selectSwapPlayer}
+                  partnerId={partnerId}
+                  isSwap={
+                    generateMode === GenerateMode.FILL_ENPTY
+                      ? canSwap && !item.canInsertNext
+                      : dispRound === gameRounds.length
+                  }
+                  showMatchCount={showMatchCount}
+                  isFinished={item.canInsertNext}
+                />
+              );
+            })}
+          </View>
         </View>
-
-        <Text style={styles.vsText}>VS</Text>
-
-        {/* チーム2 */}
-        <View style={styles.team}>
-          {item.teamB?.map((playerId) => {
-            const partnerId = item.teamB.find((id) => id !== playerId);
-            // console.log("playerId4", playerId);
-            return (
-              <MatchPlayer
-                key={playerId}
-                swapPlayer={swapPlayer}
-                playerId={playerId}
-                selectSwapPlayer={selectSwapPlayer}
-                partnerId={partnerId}
-                isSwap={
-                  generateMode === GenerateMode.FILL_ENPTY
-                    ? canSwap
-                    : dispRound === gameRounds.length
-                }
-                showMatchCount={showMatchCount}
-                isSelect={false}
-                team="teamB"
-              />
-            );
-          })}
-        </View>
-      </View>
+      )}
     </View>
   );
 };
@@ -250,7 +232,7 @@ const styles = StyleSheet.create({
     backgroundColor: ColorPalette.background,
     borderRadius: 8,
     padding: 8,
-    marginBottom: 8,
+    marginBottom: 4,
     shadowColor: ColorPalette.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -258,12 +240,17 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   finishedMatchCard: {
-    backgroundColor: ColorPalette.disabled,
+    backgroundColor: ColorPalette.finished2,
   },
   courtName: {
     fontSize: FONT_SIZE.small,
     fontWeight: "bold",
     color: ColorPalette.sectionTitie,
+  },
+  empty: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   teams: {
     flexDirection: "row",
@@ -272,7 +259,7 @@ const styles = StyleSheet.create({
   },
   team: {
     flex: 1,
-    gap: 8,
+    gap: 4,
   },
   playerGender: {
     flex: 1,

@@ -9,6 +9,7 @@ interface PrimaryButtonProps {
   icon?: React.ReactNode;
   onPress: () => void;
   disabled?: boolean;
+  style?: object;
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({
@@ -16,11 +17,13 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   icon,
   onPress,
   disabled = false,
+  style = {},
 }) => (
   <TouchableOpacity
     style={[
       styles.button,
       disabled && { backgroundColor: ColorPalette.disabled },
+      style,
     ]}
     onPress={onPress}
     disabled={disabled}
@@ -40,7 +43,6 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     marginHorizontal: 16,
     ...globalStyles.touch,
-    minHeight: 50,
     shadowColor: ColorPalette.blackText,
     shadowOpacity: 0.2,
     shadowRadius: 6,

@@ -1,5 +1,6 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { globalStyles } from "@/styles/global";
 import React from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 
@@ -24,23 +25,26 @@ const SegmentButton: React.FC<PrimaryButtonProps> = ({
 
 const styles = StyleSheet.create({
   segmentItem: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
     borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    flexBasis: 0,
+    ...globalStyles.touch,
+    minHeight: 38,
   },
   segmentItemActive: {
-    backgroundColor: ColorPalette.dark.text,
+    backgroundColor: ColorPalette.checked,
     shadowColor: ColorPalette.cardShadow,
-    shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
   text: {
-    fontSize: FONT_SIZE.small,
-    color: ColorPalette.filterItemName,
+    fontSize: FONT_SIZE.tiny,
+    color: ColorPalette.checked,
   },
   textActive: {
-    color: ColorPalette.cardShadow,
+    color: ColorPalette.whiteIcon,
     fontWeight: "600",
   },
 });

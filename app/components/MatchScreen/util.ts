@@ -29,7 +29,7 @@ export const createMatch = async (
 ): Promise<void> => {
   const notFinishedMatches =
     genareteMode === GenerateMode.REPLACEE_ALL
-      ? matches.filter((match) => !match.isFinished)
+      ? []
       : matches.filter((match) => !match.canInsertNext);
 
   const playingPlayer = notFinishedMatches.flatMap((match) => [
@@ -64,9 +64,7 @@ export const createMatch = async (
   const playingCourtIds = gameRounds
     .flatMap((gameRound) => gameRound.matches)
     .filter((match) =>
-      genareteMode === GenerateMode.REPLACEE_ALL
-        ? !match.isFinished
-        : !match.canInsertNext,
+      genareteMode === GenerateMode.REPLACEE_ALL ? false : !match.canInsertNext,
     )
     .flatMap((match) => match.courtId);
 
@@ -100,7 +98,6 @@ export const createMatch = async (
     if (priorityPlayers.length + normalPlayers.length >= totalNeeded) break;
   }
 
-  // console.log("creating match with players:", players);
   const gameRound: GameRound = selectBestGameRounds(
     priorityPlayers.map((player) => player.id),
     normalPlayers.map((player) => player.id),
@@ -115,30 +112,38 @@ export const createMatch = async (
   if (gameRound == null) return;
 
   let prevGameRounds = gameRounds.length;
+  let updatedGameRounds = gameRounds.length;
+
   setGameRounds((prev) => {
     if (genareteMode === GenerateMode.REPLACEE_ALL) {
-      const updatedPrev = prev.map((gameRound) => {
-        return {
-          ...gameRound,
-          matches: gameRound.matches.map((match) => ({
-            ...match,
-            isFinished: true,
-            canInsertNext: true,
-          })),
-        };
-      });
+      const updatedPrev = prev
+        .map((gameRound) => {
+          return {
+            ...gameRound,
+            matches: gameRound.matches.map((match) => ({
+              ...match,
+              isFinished: true,
+              canInsertNext: true,
+            })),
+          };
+        })
+        .filter((gr) => gr.matches.length > 0);
+      updatedGameRounds = updatedPrev.length;
       return [...updatedPrev, gameRound];
     } else {
-      const updatedPrev = prev.map((gameRound) => {
-        return {
-          ...gameRound,
-          matches: gameRound.matches.map((match) => ({
-            ...match,
-            isFinished: match.canInsertNext,
-            canInsertNext: match.canInsertNext,
-          })),
-        };
-      });
+      const updatedPrev = prev
+        .map((gameRound) => {
+          return {
+            ...gameRound,
+            matches: gameRound.matches.map((match) => ({
+              ...match,
+              isFinished: match.canInsertNext,
+              canInsertNext: match.canInsertNext,
+            })),
+          };
+        })
+        .filter((gr) => gr.matches.length > 0);
+      updatedGameRounds = updatedPrev.length;
       return [...updatedPrev, gameRound];
     }
   });
@@ -148,7 +153,9 @@ export const createMatch = async (
   );
   countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
   setSwapPlayer(null);
-  setDispRound(prevGameRounds + 1);
+  if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
+    setDispRound(prevGameRounds + 1);
+  }
   setNumOfGenerate((prev) => prev + 1);
 
   // await analytics().logEvent("match_generated", {
@@ -181,14 +188,6 @@ export function selectBestGameRounds(
     .flatMap((round) => round.matches)
     .filter((match) => match.teamA.length + match.teamB.length < 4)
     .flatMap((match) => [...match.teamA, ...match.teamB]);
-
-  // console.log(
-  //   "a",
-  //   requiredPlayers,
-  //   optionalPlayers,
-  //   courts.length,
-  //   selectedPlayers
-  // );
 
   const totalNeeded = courts.length * 4 - selectedPlayers.length;
 
@@ -233,20 +232,6 @@ export function selectBestGameRounds(
     // ]
     // 各コートの4人グループを2人ずつのチームに分割するすべての組み合わせを取得
     const allTeamSplitSets = courtSet.map((group) => {
-      const initilialCourtMatch = initialGameRounds
-        .flatMap((round) => round.matches)
-        .filter((match) => match.teamA.length + match.teamB.length < 4)
-        .find((match) =>
-          match.teamA
-            .concat(match.teamB)
-            .some((player) => group.includes(player)),
-        );
-
-      const iniitialCourtSplit = {
-        teamA: initilialCourtMatch?.teamA as number[],
-        teamB: initilialCourtMatch?.teamB as number[],
-      };
-
       return group.length === 4
         ? getTeamSplits(
             group,
@@ -254,9 +239,7 @@ export function selectBestGameRounds(
               (pair) =>
                 group.includes(pair.player1) && group.includes(pair.player2),
             ),
-            iniitialCourtSplit != null
-              ? iniitialCourtSplit
-              : { teamA: [], teamB: [] },
+            { teamA: [], teamB: [] },
           )
         : [{ teamA: [], teamB: [] }];
     });

@@ -9,6 +9,8 @@ import {
 } from "@/utils/storeReview";
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
+import { generateUniqId } from "@/utils/createId";
+import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
@@ -26,6 +28,7 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
+import Checkbox from "../CheckBox";
 import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
 import RenderMatch from "./renderMatch";
@@ -396,12 +399,23 @@ const Match: React.FC<MatchProps> = ({
     </View>
   );
 
-  const matchListWithPlaceholders: (MatchType | undefined)[] = (() => {
+  const matchListWithPlaceholders: MatchType[] = (() => {
     if (generateMode === GenerateMode.REPLACEE_ALL) return [];
     const active = matches.filter((m) => !m.isFinished);
     const sortedCourts = courts.slice().sort((a, b) => a.number - b.number);
     return sortedCourts.map((court) => {
       const m = active.find((am) => am.courtId === court.id);
+      if (m == null) {
+        return {
+          id: generateUniqId(matches.map((m) => m.id)),
+          courtId: court.id,
+          teamA: [],
+          teamB: [],
+          isFinished: false,
+          canInsertNext: true,
+          finishRound: null,
+        };
+      }
       return m;
     });
   })();
@@ -412,11 +426,7 @@ const Match: React.FC<MatchProps> = ({
       data:
         generateMode === GenerateMode.REPLACEE_ALL
           ? gameRounds[dispRound - 1]?.matches
-          : matchListWithPlaceholders.length > 0
-            ? matchListWithPlaceholders.filter(
-                (m): m is MatchType => m !== undefined,
-              )
-            : [],
+          : matchListWithPlaceholders,
       type: "match",
     },
     {
@@ -441,14 +451,18 @@ const Match: React.FC<MatchProps> = ({
         )
       : courts;
 
-  const setAllMatchCanInsertNext = () => {
+  const isAllMatchCanInsertNext = gameRounds.every((gameRound) =>
+    gameRound.matches.every((match) => match.canInsertNext),
+  );
+
+  const setAllMatchCanInsertNext = (isAllMatchCanInsertNext: boolean) => {
     setGameRounds((prev) => {
       return prev.map((gameRound) => {
         const newMatches = gameRound.matches.map((match) => {
-          if (!match.canInsertNext) {
+          if (!match.isFinished) {
             return {
               ...match,
-              canInsertNext: true,
+              canInsertNext: !isAllMatchCanInsertNext,
             };
           }
           return match;
@@ -459,10 +473,8 @@ const Match: React.FC<MatchProps> = ({
   };
 
   useEffect(() => {
-    if (dispRound > 0) {
-      setIsLoading(false);
-    }
-  }, [dispRound, setIsLoading]);
+    setIsLoading(false);
+  }, [gameRounds, setIsLoading]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -539,6 +551,7 @@ const Match: React.FC<MatchProps> = ({
             markReviewRequersted();
           }
         }}
+        style={{ marginVertical: 2 }}
       />
       {/* {generateMode === GenerateMode.FILL_ENPTY && (
         <Text style={{ alignSelf: "center" }}>
@@ -546,29 +559,29 @@ const Match: React.FC<MatchProps> = ({
         </Text>
       )} */}
       {generateMode === GenerateMode.FILL_ENPTY && matches.length > 0 && (
-        <TouchableOpacity
-          onPress={() => setAllMatchCanInsertNext()}
+        <View
           style={{
-            backgroundColor: ColorPalette.thirdry,
-            borderRadius: 20,
-            padding: 4,
-            marginBottom: 8,
-            alignSelf: "center",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          <Text>全コート試合終了</Text>
-        </TouchableOpacity>
-        // <Checkbox
-        //   checked={matches
-        //     .filter((match) => !match.isFinished)
-        //     .every((match) => match.canInsertNextMatch)}
-        //   onChange={() =>
-        //     isAllMatchCanInsertNextMatch
-        //       ? setAllMatchCanInsertNext(false)
-        //       : setAllMatchCanInsertNext(true)
-        //   }
-        //   label="全コート試合終了"
-        // />
+          <Checkbox
+            onChange={() => {
+              setAllMatchCanInsertNext(isAllMatchCanInsertNext);
+              setSwapPlayer(null);
+            }}
+            label="全コート終了"
+            checked={isAllMatchCanInsertNext}
+          />
+          <TouchableOpacity
+            onPress={() =>
+              router.push({ pathname: "/PlayerScreen/HistoryScreen" })
+            }
+          >
+            <AntDesign name="history" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
       )}
       {generateMode === GenerateMode.REPLACEE_ALL && (
         <View
@@ -576,7 +589,6 @@ const Match: React.FC<MatchProps> = ({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: 2,
           }}
         >
           {gameRounds[dispRound - 2] != null ? (
@@ -700,11 +712,11 @@ const Match: React.FC<MatchProps> = ({
           keyExtractor={(item, index) =>
             Array.isArray(item)
               ? `restRow-${index}`
-              : "id" in item
+              : (("id" in item) as unknown as Player | MatchType)
                 ? `${item.id}-${index}`
                 : `${index}`
           }
-          renderItem={({ item, index, section }) => {
+          renderItem={({ item, section }) => {
             if (section.type === "match") {
               const match = item as MatchType;
               const court = courts.find((court) => court.id === match.courtId);
@@ -783,38 +795,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 2,
     fontSize: FONT_SIZE.tiny,
-  },
-  matchCard: {
-    backgroundColor: ColorPalette.background,
-    borderRadius: 8,
-    padding: 6,
-    marginBottom: 4,
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  matchLogCard: {
-    backgroundColor: ColorPalette.disabled,
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 8,
-    shadowColor: ColorPalette.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  finishedMatchCard: {
-    backgroundColor: ColorPalette.disabled,
-  },
-  courtName: {
-    fontSize: FONT_SIZE.tiny,
-    fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
   },
   teams: {
     flexDirection: "row",

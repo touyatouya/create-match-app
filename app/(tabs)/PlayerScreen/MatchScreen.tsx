@@ -179,8 +179,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: ColorPalette.whiteIcon,
     borderRadius: 8,
-    padding: 2,
-    ...globalStyles.touch,
   },
   detailSetting: {
     flexDirection: "column",

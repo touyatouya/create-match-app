@@ -1,23 +1,21 @@
 import ColorPalette from "@/constants/color";
-import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
+import { AppContext } from "@/context/AppContext";
+import { GenerateMode } from "@/types";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
-// import SelectPlayerModal from "./selectPlayerModal";
 
 interface MatchPlayerProps {
   swapPlayer: number | null;
-  playerId: number | null;
+  playerId: number;
   selectSwapPlayer: (id: number, partnerId?: number | null) => void;
   partnerId: number | undefined | null;
   isSwap: boolean;
-  isSelect: boolean;
   showMatchCount: boolean;
-  team: "teamA" | "teamB";
-  courtId?: number;
+  isFinished: boolean;
 }
 
 const MatchPlayer: React.FC<MatchPlayerProps> = ({
@@ -26,66 +24,41 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   selectSwapPlayer,
   partnerId,
   isSwap,
-  isSelect,
   showMatchCount,
-  team,
-  courtId,
+  isFinished,
 }) => {
-  const { players, courts, gameRounds, pairs } = React.useContext(AppContext);
-  // const [isOpen, setIsOpen] = React.useState(false);
-
-  // if (isOpen) {
-  //   return (
-  //     <SelectPlayerModal
-  //       isOpen={isOpen}
-  //       onClose={() => setIsOpen(false)}
-  //       courtId={courtId}
-  //       team={team}
-  //     />
-  //   );
-  // }
-
+  const { generateMode } = React.useContext(AppContext);
   return (
     <>
-      {playerId != null && isSwap ? (
+      {isSwap ? (
         <TouchableOpacity
           key={playerId}
           style={[
             styles.playerButton,
-            isSwap && swapPlayer === playerId && styles.swapPlayerButton,
+            swapPlayer === playerId && styles.swapPlayerButton,
           ]}
           onPress={async () => {
-            isSwap && selectSwapPlayer(playerId, partnerId);
+            !isFinished && selectSwapPlayer(playerId, partnerId);
 
             // await analytics().logEvent("swap_player");
           }}
         >
           <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
-          {isSwap && (
-            <Ionicons
-              name="swap-horizontal"
-              size={14}
-              color={ColorPalette.secondary}
-            />
-          )}
-        </TouchableOpacity>
-      ) : playerId == null && isSelect ? (
-        <TouchableOpacity
-          key={playerId}
-          style={[styles.playerButton]}
-          onPress={async () => {}}
-        >
-          <PlayerInfo playerId={null} showMatchCount={false} />
-          {isSelect && (
-            <Ionicons
-              name="swap-horizontal"
-              size={18}
-              color={ColorPalette.secondary}
-            />
-          )}
+          <Ionicons
+            name="swap-horizontal"
+            size={14}
+            color={ColorPalette.secondary}
+          />
         </TouchableOpacity>
       ) : (
-        <View key={playerId} style={styles.playerButton}>
+        <View
+          key={playerId}
+          style={[
+            styles.playerButton,
+            generateMode === GenerateMode.FILL_ENPTY &&
+              isFinished && { opacity: 0.5 },
+          ]}
+        >
           <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
         </View>
       )}
