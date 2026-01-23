@@ -2,11 +2,7 @@ import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { saveOpenApp } from "@/utils/storeReview";
-import {
-  FontAwesome5,
-  Foundation,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
 import SegmentButton from "@/app/components/SegmentButton";
 import { GenerateMode } from "@/types";
@@ -90,30 +86,6 @@ const MatchScreen: React.FC = () => {
             }}
           >
             <TouchableOpacity
-              onPress={() =>
-                router.push({ pathname: "/PlayerScreen/PairSettingScreen" })
-              }
-              style={globalStyles.headerRight}
-            >
-              <FontAwesome5
-                name="handshake"
-                size={24}
-                color={ColorPalette.blackText}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                router.push({ pathname: "/PlayerScreen/GenderSettingScreen" })
-              }
-              style={globalStyles.headerRight}
-            >
-              <Foundation
-                name="male-female"
-                size={24}
-                color={ColorPalette.blackText}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
               onPress={() => {
                 Alert.alert(
                   "確認",
@@ -138,6 +110,14 @@ const MatchScreen: React.FC = () => {
                 size={24}
                 color="black"
               />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({ pathname: "/PlayerScreen/MatchMenuScreen" })
+              }
+              style={globalStyles.headerRight}
+            >
+              <AntDesign name="menu" size={20} color="black" />
             </TouchableOpacity>
           </View>
         )}

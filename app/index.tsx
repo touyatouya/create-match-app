@@ -5,6 +5,10 @@
 // import Constants from "expo-constants";
 import { Redirect } from "expo-router";
 import { useEffect } from "react";
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from "react-native-safe-area-context";
 // import { Alert, Linking } from "react-native";
 
 export default function Index() {
@@ -44,5 +48,9 @@ export default function Index() {
     // checkAppVersion();
   }, []);
 
-  return <Redirect href="/(tabs)/PlayerScreen" />;
+  return (
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+      <Redirect href="/(tabs)/PlayerScreen" />
+    </SafeAreaProvider>
+  );
 }
