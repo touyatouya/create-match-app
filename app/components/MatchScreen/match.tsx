@@ -512,47 +512,49 @@ const Match: React.FC<MatchProps> = ({
           setSnackbarVisible={setSnackbarVisible}
         />
       )} */}
-      <PrimaryButton
-        text="新しい組み合わせを生成"
-        disabled={avaibleCourts.length === 0}
-        icon={
-          <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-        }
-        onPress={async () => {
-          setIsLoading(true);
-          await setTimeout(() => {
-            createMatch(
-              players,
-              setPlayers,
-              courts,
-              gameRounds,
-              setGameRounds,
-              pairs,
-              matches,
-              dispRound,
-              generateMode,
-              setSwapPlayer,
-              genderSetting,
-              setDispRound,
-              setIsLoading,
-              setNumOfGenerate,
-            );
-          }, 0);
-
-          const openAppCount = await getOpenAppCount();
-          const canShow = await shouldShowReviewRequest();
-          if (
-            matches.length >= 12 &&
-            openAppCount >= 5 &&
-            canShow &&
-            (await StoreReview.hasAction())
-          ) {
-            StoreReview.requestReview();
-            markReviewRequersted();
+      {generateMode === GenerateMode.REPLACE_ALL && (
+        <PrimaryButton
+          text="新しい組み合わせを生成"
+          disabled={avaibleCourts.length === 0}
+          icon={
+            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
           }
-        }}
-        style={{ marginVertical: 2 }}
-      />
+          onPress={async () => {
+            setIsLoading(true);
+            await setTimeout(() => {
+              createMatch(
+                players,
+                setPlayers,
+                courts,
+                gameRounds,
+                setGameRounds,
+                pairs,
+                matches,
+                dispRound,
+                generateMode,
+                setSwapPlayer,
+                genderSetting,
+                setDispRound,
+                setIsLoading,
+                setNumOfGenerate,
+              );
+            }, 0);
+
+            const openAppCount = await getOpenAppCount();
+            const canShow = await shouldShowReviewRequest();
+            if (
+              matches.length >= 12 &&
+              openAppCount >= 5 &&
+              canShow &&
+              (await StoreReview.hasAction())
+            ) {
+              StoreReview.requestReview();
+              markReviewRequersted();
+            }
+          }}
+          style={{ marginVertical: 2 }}
+        />
+      )}
       {/* {generateMode === GenerateMode.FILL_ENPTY && (
         <Text style={{ alignSelf: "center" }}>
           チェックしたコートに試合を入れます
@@ -771,6 +773,49 @@ const Match: React.FC<MatchProps> = ({
             }
             return null;
           }}
+        />
+      )}
+      {generateMode === GenerateMode.FILL_ENPTY && (
+        <PrimaryButton
+          text="新しい組み合わせを生成"
+          disabled={avaibleCourts.length === 0}
+          icon={
+            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
+          }
+          onPress={async () => {
+            setIsLoading(true);
+            await setTimeout(() => {
+              createMatch(
+                players,
+                setPlayers,
+                courts,
+                gameRounds,
+                setGameRounds,
+                pairs,
+                matches,
+                dispRound,
+                generateMode,
+                setSwapPlayer,
+                genderSetting,
+                setDispRound,
+                setIsLoading,
+                setNumOfGenerate,
+              );
+            }, 0);
+
+            const openAppCount = await getOpenAppCount();
+            const canShow = await shouldShowReviewRequest();
+            if (
+              matches.length >= 12 &&
+              openAppCount >= 5 &&
+              canShow &&
+              (await StoreReview.hasAction())
+            ) {
+              StoreReview.requestReview();
+              markReviewRequersted();
+            }
+          }}
+          style={{ marginVertical: 2 }}
         />
       )}
     </View>
