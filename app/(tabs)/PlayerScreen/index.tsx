@@ -7,7 +7,13 @@ import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as Progress from "react-native-progress";
 import { GenerateMode, Player } from "../../../types";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
@@ -40,6 +46,8 @@ const PlayerScreen: React.FC = () => {
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const TOOLTIP_WIDTH = 260;
+
   // const [expanded, setExpanded] = useState(false);
   // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
   // const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
@@ -159,6 +167,13 @@ const PlayerScreen: React.FC = () => {
 
   return (
     <View style={styles.page}>
+      {tooltipVisible && (
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setTooltipVisible(false)}
+        />
+      )}
+
       <CustomHeader
         title="試合準備"
         headerRight={() =>
@@ -240,7 +255,13 @@ const PlayerScreen: React.FC = () => {
           </View>
         </View>
         <View style={[styles.court, { marginBottom: 2 }]}>
-          <View style={{ flexDirection: "row", alignItems: "center", position: "relative" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
             <Text
               style={{
                 fontSize: FONT_SIZE.subsubheading,
@@ -253,7 +274,7 @@ const PlayerScreen: React.FC = () => {
               <TouchableOpacity
                 style={styles.button}
                 onPressIn={() => setTooltipVisible(true)}
-                onPressOut={() => setTooltipVisible(false)}
+                onPress={() => setTooltipVisible(true)}
                 activeOpacity={0.8}
               >
                 <FontAwesome
@@ -263,9 +284,24 @@ const PlayerScreen: React.FC = () => {
                 />
               </TouchableOpacity>
               {tooltipVisible && (
-                <View style={styles.tooltip} pointerEvents="none">
-                  <Text style={styles.tooltipText}>
-                    一括：全てのコートを一気に入れ替えます。流し込み：空いたコートから試合を入れます。
+                <View
+                  style={[
+                    styles.tooltip,
+                    {
+                      width: TOOLTIP_WIDTH,
+                      left: 40,
+                      top: -50,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={styles.tooltipText}
+                    numberOfLines={6}
+                    ellipsizeMode="tail"
+                  >
+                    一括{"\n"}　全コート同時に新しい組み合わせにします
+                    {"\n"}
+                    流し込み{"\n"}　空いたコートから新しい試合を追加します
                   </Text>
                 </View>
               )}
@@ -457,18 +493,27 @@ const styles = StyleSheet.create({
   tooltip: {
     position: "absolute",
     right: 0,
-    bottom: 40,
+    top: 36,
     backgroundColor: "rgba(0,0,0,0.85)",
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 8,
-    maxWidth: 260,
+    minWidth: 220,
+    maxWidth: 360,
+    maxHeight: 300,
     zIndex: 20,
+    elevation: 8,
   },
   tooltipText: {
     color: "#fff",
-    fontSize: 12,
+    fontSize: FONT_SIZE.small,
     lineHeight: 16,
+    flexWrap: "wrap",
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 10,
+    backgroundColor: "transparent",
   },
 });
 
