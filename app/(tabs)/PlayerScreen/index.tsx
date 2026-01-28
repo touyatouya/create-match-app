@@ -289,8 +289,8 @@ const PlayerScreen: React.FC = () => {
                     styles.tooltip,
                     {
                       width: TOOLTIP_WIDTH,
-                      left: 40,
-                      top: -50,
+                      left: 30,
+                      top: 60,
                     },
                   ]}
                 >
@@ -299,10 +299,11 @@ const PlayerScreen: React.FC = () => {
                     numberOfLines={6}
                     ellipsizeMode="tail"
                   >
-                    一括{"\n"}　全コート同時に新しい組み合わせにします
+                    一括　　：全コート同時に試合作成
                     {"\n"}
-                    流し込み{"\n"}　空いたコートから新しい試合を追加します
+                    流し込み：空いたコートから試合作成
                   </Text>
+                  <View style={styles.bubbleArrow} />
                 </View>
               )}
             </View>
@@ -494,18 +495,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     top: 36,
-    backgroundColor: "rgba(0,0,0,0.85)",
+    backgroundColor: ColorPalette.blackText,
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 8,
-    minWidth: 220,
-    maxWidth: 360,
+    minWidth: 250,
+    maxWidth: 250,
     maxHeight: 300,
     zIndex: 20,
     elevation: 8,
   },
   tooltipText: {
-    color: "#fff",
+    color: ColorPalette.whiteText,
     fontSize: FONT_SIZE.small,
     lineHeight: 16,
     flexWrap: "wrap",
@@ -514,6 +515,17 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 10,
     backgroundColor: "transparent",
+  },
+  bubbleArrow: {
+    position: "absolute",
+    top: -6,
+    left: "60%",
+    marginLeft: -6,
+    width: 14,
+    height: 14,
+    backgroundColor: ColorPalette.blackText,
+    transform: [{ rotate: "45deg" }],
+    zIndex: 21,
   },
 });
 
