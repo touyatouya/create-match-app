@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Pressable,
   StyleSheet,
   Text,
@@ -38,6 +39,7 @@ const PlayerScreen: React.FC = () => {
     courts,
     setCourts,
     gameRounds,
+    setGameRounds,
     pairs,
     generateMode,
     setGenerateMode,
@@ -324,7 +326,38 @@ const PlayerScreen: React.FC = () => {
                 { label: "流し込み", value: GenerateMode.FILL_ENPTY },
               ]}
               value={generateMode}
-              onChange={(v) => setGenerateMode(v)}
+              onChange={(v) => {
+                if (gameRounds.length > 0) {
+                  Alert.alert(
+                    "作成方式の変更",
+                    "既に作成された試合データはクリアされます。よろしいですか？",
+                    [
+                      {
+                        text: "キャンセル",
+                        style: "cancel",
+                      },
+                      {
+                        text: "変更する",
+                        onPress: () => {
+                          setGameRounds([]);
+                          setPlayers((prev) => {
+                            return prev.map((player) => {
+                              return {
+                                ...player,
+                                isRest: false,
+                                matchCount: 0,
+                              };
+                            });
+                          });
+                          setGenerateMode(v);
+                        },
+                      },
+                    ],
+                  );
+                  return;
+                }
+                setGenerateMode(v);
+              }}
             />
           </View>
         </View>
