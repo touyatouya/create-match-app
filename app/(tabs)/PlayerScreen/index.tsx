@@ -3,13 +3,13 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Progress from "react-native-progress";
-import { Player } from "../../../types";
+import { GenerateMode, Player } from "../../../types";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 import AddPlayerModal from "../../components/PlayerScreen/addPlayerModal";
 // import FilterButtons from "./components/PlayerScreen/filterButtons";
@@ -18,6 +18,7 @@ import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "../../components/PrimaryButton";
 // import PurchaseModal from "./components/PurchaseModal";
 // import analytics from "@react-native-firebase/analytics";
+import SegmentControl from "@/app/components/SegmentControl";
 import CustomHeader from "../../components/CustomHeader";
 import FabModal from "../../components/PlayerScreen/fabModal";
 
@@ -32,10 +33,13 @@ const PlayerScreen: React.FC = () => {
     setCourts,
     gameRounds,
     pairs,
+    generateMode,
+    setGenerateMode,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   // const [expanded, setExpanded] = useState(false);
   // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
   // const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
@@ -235,6 +239,58 @@ const PlayerScreen: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
+        <View style={[styles.court, { marginBottom: 2 }]}>
+          <View style={{ flexDirection: "row", alignItems: "center", position: "relative" }}>
+            <Text
+              style={{
+                fontSize: FONT_SIZE.subsubheading,
+                fontWeight: "bold",
+              }}
+            >
+              作成方式
+            </Text>
+            <View style={{ position: "relative" }}>
+              <TouchableOpacity
+                style={styles.button}
+                onPressIn={() => setTooltipVisible(true)}
+                onPressOut={() => setTooltipVisible(false)}
+                activeOpacity={0.8}
+              >
+                <FontAwesome
+                  name="question-circle"
+                  size={22}
+                  color={ColorPalette.checked}
+                />
+              </TouchableOpacity>
+              {tooltipVisible && (
+                <View style={styles.tooltip} pointerEvents="none">
+                  <Text style={styles.tooltipText}>
+                    一括：全てのコートを一気に入れ替えます。流し込み：空いたコートから試合を入れます。
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+          <View
+            style={[
+              styles.courtCard,
+              {
+                flex: 1,
+                backgroundColor: ColorPalette.whiteIcon,
+                borderRadius: 8,
+              },
+            ]}
+          >
+            <SegmentControl
+              options={[
+                { label: "一括", value: GenerateMode.REPLACE_ALL },
+                { label: "流し込み", value: GenerateMode.FILL_ENPTY },
+              ]}
+              value={generateMode}
+              onChange={(v) => setGenerateMode(v)}
+            />
+          </View>
+        </View>
         <View style={styles.player}>
           <Text
             style={{
@@ -326,7 +382,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     columnGap: 15,
-    marginBottom: 8,
   },
   player: {
     display: "flex",
@@ -398,6 +453,22 @@ const styles = StyleSheet.create({
   joinedPlayer: {
     fontSize: FONT_SIZE.subheading,
     fontWeight: 600,
+  },
+  tooltip: {
+    position: "absolute",
+    right: 0,
+    bottom: 40,
+    backgroundColor: "rgba(0,0,0,0.85)",
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    maxWidth: 260,
+    zIndex: 20,
+  },
+  tooltipText: {
+    color: "#fff",
+    fontSize: 12,
+    lineHeight: 16,
   },
 });
 

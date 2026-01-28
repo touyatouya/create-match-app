@@ -111,7 +111,7 @@ const Match: React.FC<MatchProps> = ({
   );
 
   const playablePlayers = players.filter((player) => {
-    if (generateMode === GenerateMode.REPLACEE_ALL) {
+    if (generateMode === GenerateMode.REPLACE_ALL) {
       return gameRounds[dispRound - 1]?.matches.some((match) => {
         return (
           match.teamA.some((playerId) => playerId === player.id) ||
@@ -400,7 +400,7 @@ const Match: React.FC<MatchProps> = ({
   );
 
   const matchListWithPlaceholders: MatchType[] = (() => {
-    if (generateMode === GenerateMode.REPLACEE_ALL) return [];
+    if (generateMode === GenerateMode.REPLACE_ALL) return [];
     const active = matches.filter((m) => !m.isFinished);
     const sortedCourts = courts.slice().sort((a, b) => a.number - b.number);
     return sortedCourts.map((court) => {
@@ -424,7 +424,7 @@ const Match: React.FC<MatchProps> = ({
     {
       title: "",
       data:
-        generateMode === GenerateMode.REPLACEE_ALL
+        generateMode === GenerateMode.REPLACE_ALL
           ? gameRounds[dispRound - 1]?.matches
           : matchListWithPlaceholders,
       type: "match",
@@ -583,7 +583,7 @@ const Match: React.FC<MatchProps> = ({
           </TouchableOpacity>
         </View>
       )}
-      {generateMode === GenerateMode.REPLACEE_ALL && (
+      {generateMode === GenerateMode.REPLACE_ALL && (
         <View
           style={{
             flexDirection: "row",

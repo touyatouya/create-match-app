@@ -4,8 +4,6 @@ import { globalStyles } from "@/styles/global";
 import { saveOpenApp } from "@/utils/storeReview";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
-import SegmentButton from "@/app/components/SegmentButton";
-import { GenerateMode } from "@/types";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -62,20 +60,7 @@ const MatchScreen: React.FC = () => {
     <>
       {isLoading && <Loading />}
       <CustomHeader
-        titleComponent={
-          <View style={styles.segment}>
-            <SegmentButton
-              label="一括"
-              active={generateMode === GenerateMode.REPLACEE_ALL}
-              onPress={() => setGenerateMode(GenerateMode.REPLACEE_ALL)}
-            />
-            <SegmentButton
-              label="流し込み"
-              active={generateMode === GenerateMode.FILL_ENPTY}
-              onPress={() => setGenerateMode(GenerateMode.FILL_ENPTY)}
-            />
-          </View>
-        }
+        title="試合"
         headerRight={() => (
           <View
             style={{

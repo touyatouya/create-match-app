@@ -28,7 +28,7 @@ export const createMatch = async (
   setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>,
 ): Promise<void> => {
   const notFinishedMatches =
-    genareteMode === GenerateMode.REPLACEE_ALL
+    genareteMode === GenerateMode.REPLACE_ALL
       ? []
       : matches.filter((match) => !match.canInsertNext);
 
@@ -64,7 +64,7 @@ export const createMatch = async (
   const playingCourtIds = gameRounds
     .flatMap((gameRound) => gameRound.matches)
     .filter((match) =>
-      genareteMode === GenerateMode.REPLACEE_ALL ? false : !match.canInsertNext,
+      genareteMode === GenerateMode.REPLACE_ALL ? false : !match.canInsertNext,
     )
     .flatMap((match) => match.courtId);
 
@@ -115,7 +115,7 @@ export const createMatch = async (
   let updatedGameRounds = gameRounds.length;
 
   setGameRounds((prev) => {
-    if (genareteMode === GenerateMode.REPLACEE_ALL) {
+    if (genareteMode === GenerateMode.REPLACE_ALL) {
       const updatedPrev = prev
         .map((gameRound) => {
           return {

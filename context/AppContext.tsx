@@ -49,7 +49,7 @@ export const AppContext = createContext<AppContextType>({
   setCourts: () => {},
   gameRounds: [],
   setGameRounds: () => {},
-  generateMode: GenerateMode.REPLACEE_ALL,
+  generateMode: GenerateMode.REPLACE_ALL,
   setGenerateMode: () => {},
   pairs: [],
   setPairs: () => {},
@@ -82,7 +82,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
   ]);
   const [gameRounds, setGameRounds] = React.useState<GameRound[]>([]);
   const [generateMode, setGenerateMode] = React.useState<GenerateMode>(
-    GenerateMode.REPLACEE_ALL
+    GenerateMode.REPLACE_ALL,
   );
   const [pairs, setPairs] = React.useState<Pair[]>([]);
   const [genderSetting, setGenderSetting] =

@@ -54,7 +54,7 @@ const RenderMatch: React.FC<MatchProps> = ({
           styles.finishedMatchCard,
         generateMode === GenerateMode.FILL_ENPTY &&
           !isNoMatch && { paddingTop: 0, paddingBottom: 4 },
-        generateMode === GenerateMode.REPLACEE_ALL &&
+        generateMode === GenerateMode.REPLACE_ALL &&
           item.isFinished && {
             backgroundColor: ColorPalette.finished,
             opacity: 0.6,

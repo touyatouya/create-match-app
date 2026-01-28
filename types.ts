@@ -43,7 +43,7 @@ export interface GameRound {
 }
 
 export enum GenerateMode {
-  REPLACEE_ALL = "replace_all",
+  REPLACE_ALL = "replace_all",
   FILL_ENPTY = "fill_empty",
 }
 
