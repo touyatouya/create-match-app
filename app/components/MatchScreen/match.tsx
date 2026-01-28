@@ -68,9 +68,6 @@ const Match: React.FC<MatchProps> = ({
     pairs,
     courts,
     setIsLoading,
-    // isProUser,
-    // numOfGenerate,
-    setNumOfGenerate,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number, partnerId?: number | null) => {
@@ -478,40 +475,6 @@ const Match: React.FC<MatchProps> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {/* {isProUser || numOfGenerate < 5 ? ( */}
-      {/* {numOfGenerate < 5 ? (
-        <PrimaryButton
-          text="新しい組み合わせを生成"
-          icon={
-            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-          }
-          onPress={() => {
-            setIsLoading(true);
-            setTimeout(() => {
-              createMatch(
-                players,
-                setPlayers,
-                courts,
-                gameRounds,
-                setGameRounds,
-                pairs,
-                matches,
-                setSwapPlayer,
-                genderSetting,
-                setDispRound,
-                setIsLoading,
-                setNumOfGenerate
-              );
-            }, 0);
-          }}
-        />
-      ) : (
-        <RewardAdButton
-          onPress={() => setNumOfGenerate(0)}
-          text="動画を見て更に組み合わせを作る"
-          setSnackbarVisible={setSnackbarVisible}
-        />
-      )} */}
       {generateMode === GenerateMode.REPLACE_ALL && (
         <PrimaryButton
           text="新しい組み合わせを生成"
@@ -536,7 +499,6 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
-                setNumOfGenerate,
               );
             }, 0);
 
@@ -799,7 +761,6 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
-                setNumOfGenerate,
               );
             }, 0);
 

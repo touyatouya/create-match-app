@@ -25,7 +25,6 @@ export const createMatch = async (
   genderSetting: GenderPreferenceSetting,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>,
 ): Promise<void> => {
   const notFinishedMatches =
     genareteMode === GenerateMode.REPLACE_ALL
@@ -156,7 +155,6 @@ export const createMatch = async (
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
     setDispRound(prevGameRounds + 1);
   }
-  setNumOfGenerate((prev) => prev + 1);
 
   // await analytics().logEvent("match_generated", {
   //   player_count: players.length,

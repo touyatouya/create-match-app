@@ -26,18 +26,8 @@ type AppContextType = {
   setGenderSetting: React.Dispatch<
     React.SetStateAction<GenderPreferenceSetting>
   >;
-  // filters: Filter[];
-  // setFilters: React.Dispatch<React.SetStateAction<Filter[]>>;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isPairUnlocked: boolean;
-  setIsPairUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
-  isRestUnlocked: boolean;
-  setIsRestUnlocked: React.Dispatch<React.SetStateAction<boolean>>;
-  isProUser: boolean;
-  setIsProUser: React.Dispatch<React.SetStateAction<boolean>>;
-  numOfGenerate: number;
-  setNumOfGenerate: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -55,18 +45,8 @@ export const AppContext = createContext<AppContextType>({
   setPairs: () => {},
   genderSetting: { men: false, woman: false, mix: false },
   setGenderSetting: () => {},
-  // filters: [],
-  // setFilters: () => {},
   isLoading: false,
   setIsLoading: () => {},
-  isPairUnlocked: false,
-  setIsPairUnlocked: () => {},
-  isRestUnlocked: false,
-  setIsRestUnlocked: () => {},
-  isProUser: false,
-  setIsProUser: () => {},
-  numOfGenerate: 0,
-  setNumOfGenerate: () => {},
 });
 
 type AppContextProps = {
@@ -91,12 +71,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
       woman: false,
       mix: false,
     });
-  // const [filters, setFilters] = React.useState<Filter[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isPairUnlocked, setIsPairUnlocked] = React.useState<boolean>(false);
-  const [isRestUnlocked, setIsRestUnlocked] = React.useState<boolean>(false);
-  const [isProUser, setIsProUser] = React.useState<boolean>(false);
-  const [numOfGenerate, setNumOfGenerate] = React.useState<number>(0);
 
   return (
     <AppContext.Provider
@@ -115,18 +90,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setPairs,
         genderSetting,
         setGenderSetting,
-        // filters,
-        // setFilters,
         isLoading,
         setIsLoading,
-        isPairUnlocked,
-        setIsPairUnlocked,
-        isRestUnlocked,
-        setIsRestUnlocked,
-        isProUser,
-        setIsProUser,
-        numOfGenerate,
-        setNumOfGenerate,
       }}
     >
       {children}

@@ -22,7 +22,6 @@ const MatchScreen: React.FC = () => {
     setGenerateMode,
     isLoading,
     genderSetting,
-    // isProUser,
     players,
     courts,
     pairs,
@@ -128,7 +127,6 @@ const MatchScreen: React.FC = () => {
         onDismiss={() => setSnackbarVisible(false)}
         onPressLabel={() => setSnackbarVisible(false)}
       />
-      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );

@@ -19,11 +19,9 @@ import * as Progress from "react-native-progress";
 import { GenerateMode, Player } from "../../../types";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 import AddPlayerModal from "../../components/PlayerScreen/addPlayerModal";
-// import FilterButtons from "./components/PlayerScreen/filterButtons";
 import PlayerTable from "../../components/PlayerScreen/playerTable";
 import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "../../components/PrimaryButton";
-// import PurchaseModal from "./components/PurchaseModal";
 // import analytics from "@react-native-firebase/analytics";
 import SegmentControl from "@/app/components/SegmentControl";
 import CustomHeader from "../../components/CustomHeader";
@@ -34,13 +32,10 @@ const PlayerScreen: React.FC = () => {
     players,
     setPlayers,
     setPairs,
-    // setFilters,
-    // isProUser,
     courts,
     setCourts,
     gameRounds,
     setGameRounds,
-    pairs,
     generateMode,
     setGenerateMode,
   } = useContext(AppContext);
@@ -49,12 +44,6 @@ const PlayerScreen: React.FC = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const TOOLTIP_WIDTH = 260;
-
-  // const [expanded, setExpanded] = useState(false);
-  // const [defaultOrderPlayers, setDefaultOrderPlayers] = useState<Player[]>([]);
-  // const [filteredFilters, setFilteredFilters] = useState<Filter[]>([]);
-  // const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
-
   const isAddingRef = useRef(false);
 
   useEffect(() => {
@@ -84,34 +73,11 @@ const PlayerScreen: React.FC = () => {
           });
         }
         setPlayers(players);
-        // setDefaultOrderPlayers(players);
       }
-
-      // const filtersData = await AsyncStorage.getItem("filters");
-      // let filtersLength: number = 0;
-      // if (filtersData) filtersLength = JSON.parse(filtersData).length;
-
-      // if (filtersData && filtersLength > 0) {
-      //   const parsedFilters = JSON.parse(filtersData);
-      //   let filters: Filter[] = [];
-      //   for (let i = 0; i < parsedFilters.length; i++) {
-      //     filters.push({
-      //       id: parsedFilters[i].id,
-      //       name: parsedFilters[i].name,
-      //       players: parsedFilters[i].players,
-      //     });
-      //   }
-      //   setFilters(filters);
-      // }
     };
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // const filteredPlayers = players.filter((player) => {
-  //   if (filteredFilters.length === 0) return true;
-  //   return filteredFilters.flatMap((item) => item.players).includes(player.id);
-  // });
 
   const joinedPlayer = players.filter((player) => player.isJoin);
 
@@ -180,24 +146,12 @@ const PlayerScreen: React.FC = () => {
         title="試合準備"
         headerRight={() =>
           isEdit || (
-            <>
-              {/* <TouchableOpacity
-                onPress={() => setIsOpenPurchaseModal(true)}
-                style={globalStyles.headerLeft}
-              >
-                <FontAwesome
-                  name="diamond"
-                  size={24}
-                  color={ColorPalette.normalIcon}
-                />
-              </TouchableOpacity> */}
-              <TouchableOpacity
-                onPress={openAddPlayerModal}
-                style={globalStyles.headerRight}
-              >
-                <AntDesign name="plus" size={24} color={ColorPalette.link} />
-              </TouchableOpacity>
-            </>
+            <TouchableOpacity
+              onPress={openAddPlayerModal}
+              style={globalStyles.headerRight}
+            >
+              <AntDesign name="plus" size={24} color={ColorPalette.link} />
+            </TouchableOpacity>
           )
         }
         headerLeft={() =>
@@ -218,15 +172,10 @@ const PlayerScreen: React.FC = () => {
           )
         }
       />
-      {/* <PurchaseModal
-        isOpen={isOpenPurchaseModal}
-        onClose={() => setIsOpenPurchaseModal(false)}
-      /> */}
       <View style={styles.container}>
         <AddPlayerModal
           isOpen={isAddModalVisible}
           onClose={() => setAddModalVisible(false)}
-          // setDefaultOrderPlayers={setDefaultOrderPlayers}
           isAddingRef={isAddingRef}
         />
         <View style={styles.court}>
@@ -440,7 +389,6 @@ const PlayerScreen: React.FC = () => {
           disabled={joinedPlayer.length < courts.length * 4}
         />
       </View>
-      {/* {!isProUser && <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />} */}
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </View>
   );
