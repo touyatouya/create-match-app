@@ -39,7 +39,7 @@ interface Props {
 }
 
 const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { players, setPlayers } = useContext(AppContext);
+  const { players, setPlayers, courts } = useContext(AppContext);
   const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
 
@@ -56,6 +56,33 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   const createRestPlayer = async () => {
+    if (selectedPlayer.length < 1) {
+      return Alert.alert("1人以上選んでください", "", [
+        {
+          text: "OK",
+          style: "cancel",
+        },
+      ]);
+    }
+
+    const joinPlayerCount = players.filter((p) => p.isJoin).length;
+    const playablePlayerCount = players.filter(
+      (p) => p.isJoin && !p.isRest && !selectedPlayer.includes(p.id),
+    ).length;
+    const needPlayerCount = courts.length * 4;
+    if (playablePlayerCount < needPlayerCount) {
+      return Alert.alert(
+        `休憩にできません`,
+        `試合作成に必要な人数が足りなくなります\n休憩にしたい場合は、コート数を減らしてください\n休憩にできる人数: ${joinPlayerCount - needPlayerCount}人\n試合作成に必要な人数: ${needPlayerCount}人\n参加中人数: ${joinPlayerCount}人`,
+        [
+          {
+            text: "OK",
+            style: "cancel",
+          },
+        ],
+      );
+    }
+
     if (selectedPlayer.length < 1) {
       return Alert.alert("1人以上選んでください", "", [
         {
