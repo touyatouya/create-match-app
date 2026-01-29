@@ -29,6 +29,7 @@ export const saveGameData = async ({
   anonymousPlayerCount,
   pairs,
   genderSetting,
+  isAdjustMatchCount,
   saveAt,
 }: {
   gameRounds: GameRound[];
@@ -38,6 +39,7 @@ export const saveGameData = async ({
   anonymousPlayerCount: number;
   pairs: Pair[];
   genderSetting: GenderPreferenceSetting;
+  isAdjustMatchCount: boolean;
   saveAt?: number;
 }) => {
   try {
@@ -51,6 +53,7 @@ export const saveGameData = async ({
         anonymousPlayerCount,
         pairs,
         genderSetting,
+        isAdjustMatchCount,
         saveAt,
       }),
     );

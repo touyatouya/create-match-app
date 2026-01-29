@@ -19,6 +19,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 // import analytics from "@react-native-firebase/analytics";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
@@ -39,7 +40,16 @@ interface Props {
 }
 
 const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { players, setPlayers, courts } = useContext(AppContext);
+  const {
+    players,
+    setPlayers,
+    courts,
+    gameRounds,
+    generateMode,
+    pairs,
+    genderSetting,
+    isAdjustMatchCount,
+  } = useContext(AppContext);
   const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
 
@@ -92,15 +102,30 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       ]);
     }
 
-    setPlayers((prev) =>
-      prev.map((player) => {
+    let newPlayers = players;
+    setPlayers((prev) => {
+      newPlayers = prev.map((player) => {
         if (selectedPlayer.includes(player.id)) {
           return { ...player, isRest: true };
         }
         return player;
-      }),
-    );
+      });
+      return newPlayers;
+    });
     setSelectedPlayer([]);
+
+    await clearGameData();
+    await saveGameData({
+      gameRounds,
+      courts,
+      generateMode: generateMode,
+      recentPlayers: newPlayers,
+      anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
+      pairs,
+      genderSetting,
+      isAdjustMatchCount,
+      saveAt: new Date().getTime(),
+    });
 
     // await analytics().logEvent("create_pair");
   };

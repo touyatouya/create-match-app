@@ -17,6 +17,7 @@ import {
 } from "react-native-safe-area-context";
 // import analytics from "@react-native-firebase/analytics";
 import Toggle from "@/app/components/Toggle";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { MarchScreenStyles } from "./styles";
 
@@ -26,7 +27,16 @@ interface Props {
 }
 
 const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { genderSetting, setGenderSetting } = React.useContext(AppContext);
+  const {
+    genderSetting,
+    setGenderSetting,
+    gameRounds,
+    courts,
+    generateMode,
+    players,
+    pairs,
+    isAdjustMatchCount,
+  } = React.useContext(AppContext);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -36,24 +46,69 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
   }, []);
 
   const onChangeMan = async () => {
+    let newGenderSetting = { ...genderSetting };
     setGenderSetting((prev) => {
-      return { ...prev, men: !prev.men };
+      newGenderSetting = { ...prev, men: !prev.men };
+      return newGenderSetting;
+    });
+
+    await clearGameData();
+    await saveGameData({
+      gameRounds,
+      courts,
+      generateMode: generateMode,
+      recentPlayers: players,
+      anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
+      pairs,
+      genderSetting: newGenderSetting,
+      isAdjustMatchCount,
+      saveAt: new Date().getTime(),
     });
 
     // await analytics().logEvent("change_man");
   };
 
   const onChangeWoman = async () => {
+    let newGenderSetting = { ...genderSetting };
     setGenderSetting((prev) => {
-      return { ...prev, woman: !prev.woman };
+      newGenderSetting = { ...prev, woman: !prev.woman };
+      return newGenderSetting;
+    });
+
+    await clearGameData();
+    await saveGameData({
+      gameRounds,
+      courts,
+      generateMode: generateMode,
+      recentPlayers: players,
+      anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
+      pairs,
+      genderSetting: newGenderSetting,
+      isAdjustMatchCount,
+      saveAt: new Date().getTime(),
     });
 
     // await analytics().logEvent("change_woman");
   };
 
   const onChangeMix = async () => {
+    let newGenderSetting = { ...genderSetting };
     setGenderSetting((prev) => {
-      return { ...prev, mix: !prev.mix };
+      newGenderSetting = { ...prev, mix: !prev.mix };
+      return newGenderSetting;
+    });
+
+    await clearGameData();
+    await saveGameData({
+      gameRounds,
+      courts,
+      generateMode: generateMode,
+      recentPlayers: players,
+      anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
+      pairs,
+      genderSetting: newGenderSetting,
+      isAdjustMatchCount,
+      saveAt: new Date().getTime(),
     });
 
     // await analytics().logEvent("change_mix");

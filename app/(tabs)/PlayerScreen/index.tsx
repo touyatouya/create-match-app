@@ -41,6 +41,7 @@ const PlayerScreen: React.FC = () => {
     generateMode,
     setGenerateMode,
     isRestore,
+    isAdjustMatchCount,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
@@ -89,13 +90,18 @@ const PlayerScreen: React.FC = () => {
   const joinedPlayer = players.filter((player) => player.isJoin);
 
   const joinAllPlayer = () => {
-    const updatedPlayers = players.map((player) => {
-      if (players.flatMap((p) => p.id).includes(player.id)) {
-        return { ...player, isJoin: true };
-      }
-      return { ...player };
+    setPlayers((prev) => {
+      return prev.map((player) => {
+        const joinedMatchCounts = prev.filter((pl) => pl.isJoin).map((pl) => pl.matchCount);
+        const minCount = joinedMatchCounts.length > 0 ? Math.min(...joinedMatchCounts) : player.matchCount;
+
+        return {
+          ...player,
+          isJoin: true,
+          matchCount: isAdjustMatchCount ? minCount : player.matchCount,
+        };
+      });
     });
-    setPlayers(updatedPlayers);
   };
 
   const noJoinAllPlayer = () => {

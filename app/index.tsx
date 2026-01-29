@@ -26,6 +26,7 @@ export default function Index() {
     setGenerateMode,
     setAnonymousPlayerCount,
     setIsRestore,
+    setIsAdjustMatchCount,
   } = useContext(AppContext);
   useEffect(() => {
     // const checkAppVersion = async () => {
@@ -169,6 +170,12 @@ export default function Index() {
       if (parsedGenderSetting != null) {
         setGenderSetting(parsedGenderSetting);
       }
+
+      // 途中参加試合数調整
+      const parsedIsAdjustMatchCount = parsedGameData.isAdjustMatchCount;
+      if (parsedIsAdjustMatchCount != null) {
+        setIsAdjustMatchCount(parsedIsAdjustMatchCount);
+      }
     };
     loadData();
   }, [
@@ -180,6 +187,7 @@ export default function Index() {
     setPlayers,
     setGenderSetting,
     setIsRestore,
+    setIsAdjustMatchCount,
   ]);
 
   return (

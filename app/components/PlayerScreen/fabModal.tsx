@@ -25,31 +25,39 @@ const FabModal: React.FC<Props> = ({
     setPlayers,
     anonymousPlayerCount,
     setAnonymousPlayerCount,
-    courts,
-    gameRounds,
-    pairs,
+    isAdjustMatchCount,
   } = useContext(AppContext);
 
   const addAnonymousPlayer = async (): Promise<void> => {
     const existingIds = players.map((player) => player.id);
     const newId = generateUniqId(existingIds);
 
-    const newPlayer: Player = {
-      id: newId,
-      name: (anonymousPlayerCount + 1).toString(),
-      gender: Gender.未設定,
-      matchCount: 0,
-      isJoin: true,
-      isRest: false,
-      rank: Rank.未設定,
-      isAnonymous: true,
-      anonymousNumber: anonymousPlayerCount + 1,
-    };
-
     setAnonymousPlayerCount((prev) => prev + 1);
 
-    const newPlayers = [...players, newPlayer];
-    setPlayers(newPlayers);
+    let newPlayers: Player[] = [];
+    setPlayers((prev) => {
+      const otherMatchCounts = prev
+        .filter((pl) => pl.isJoin)
+        .map((pl) => pl.matchCount);
+      const minMatchCount =
+        otherMatchCounts.length > 0 ? Math.min(...otherMatchCounts) : 0;
+      newPlayers = [
+        ...prev,
+        {
+          id: newId,
+          name: (anonymousPlayerCount + 1).toString(),
+          gender: Gender.未設定,
+          matchCount: isAdjustMatchCount ? minMatchCount : 0,
+          isJoin: true,
+          isRest: false,
+          rank: Rank.未設定,
+          isAnonymous: true,
+          anonymousNumber: anonymousPlayerCount + 1,
+        },
+      ];
+
+      return newPlayers;
+    });
     setMenuVisible(false);
     isAddingRef.current = true;
 

@@ -33,6 +33,8 @@ type AppContextType = {
   setIsRestore: React.Dispatch<React.SetStateAction<boolean | null>>;
   newGames: Match["id"][];
   setNewGames: React.Dispatch<React.SetStateAction<Match["id"][]>>;
+  isAdjustMatchCount: boolean;
+  setIsAdjustMatchCount: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -56,6 +58,8 @@ export const AppContext = createContext<AppContextType>({
   setIsRestore: () => {},
   newGames: [],
   setNewGames: () => {},
+  isAdjustMatchCount: false,
+  setIsAdjustMatchCount: () => {},
 });
 
 type AppContextProps = {
@@ -83,6 +87,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isRestore, setIsRestore] = React.useState<boolean | null>(null);
   const [newGames, setNewGames] = React.useState<Match["id"][]>([]);
+  const [isAdjustMatchCount, setIsAdjustMatchCount] =
+    React.useState<boolean>(false);
 
   return (
     <AppContext.Provider
@@ -107,6 +113,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setIsRestore,
         newGames,
         setNewGames,
+        isAdjustMatchCount,
+        setIsAdjustMatchCount,
       }}
     >
       {children}

@@ -7,14 +7,31 @@ import { AppContext } from "@/context/AppContext";
 import GenderModal from "@/app/components/MatchScreen/genderModal";
 import PairModal from "@/app/components/MatchScreen/pairModal";
 import RestModal from "@/app/components/MatchScreen/restModal";
+import Toggle from "@/app/components/Toggle";
 import { FONT_SIZE } from "@/constants/fonts";
-import { Entypo, Feather, FontAwesome5, Foundation } from "@expo/vector-icons";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
+import {
+  Entypo,
+  Feather,
+  FontAwesome5,
+  Foundation,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MatchMenuScreen: React.FC = () => {
-  const { players, isLoading, pairs, genderSetting, courts, gameRounds } =
-    useContext(AppContext);
+  const {
+    players,
+    isLoading,
+    pairs,
+    genderSetting,
+    isAdjustMatchCount,
+    setIsAdjustMatchCount,
+    gameRounds,
+    courts,
+    generateMode,
+  } = useContext(AppContext);
   const [isOpenPairModal, setIsOpenPairModal] = React.useState(false);
   const [isOpenGenderModal, setIsOpenGenderModal] = React.useState(false);
   const [isOpenRestModal, setIsOpenRestModal] = React.useState(false);
@@ -48,7 +65,7 @@ const MatchMenuScreen: React.FC = () => {
             }}
             style={[styles.row]}
           >
-            <Feather name="coffee" size={25} color="black" />
+            <Feather name="coffee" size={25} color={ColorPalette.blackText} />
             <View
               style={[
                 {
@@ -191,7 +208,76 @@ const MatchMenuScreen: React.FC = () => {
               />
             </View>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              setIsOpenGenderModal(true);
+            }}
+            style={[styles.row]}
+          >
+            <MaterialCommunityIcons
+              name="account-plus"
+              size={24}
+              color="black"
+            />
+            <View
+              style={[
+                {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  height: 44,
+                  marginLeft: 0.3,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    flex: 1,
+                  },
+                ]}
+              >
+                途中参加の試合数調整
+              </Text>
+              <Toggle
+                label=""
+                checked={isAdjustMatchCount}
+                onChange={async () => {
+                  let newIsAdjustMatchCount = isAdjustMatchCount;
+                  setIsAdjustMatchCount((prev) => {
+                    newIsAdjustMatchCount = !prev;
+                    return newIsAdjustMatchCount;
+                  });
+
+                  await clearGameData();
+                  await saveGameData({
+                    gameRounds,
+                    courts,
+                    generateMode: generateMode,
+                    recentPlayers: players,
+                    anonymousPlayerCount: players.filter((p) => p.isAnonymous)
+                      .length,
+                    pairs,
+                    genderSetting: genderSetting,
+                    isAdjustMatchCount: newIsAdjustMatchCount,
+                    saveAt: new Date().getTime(),
+                  });
+                }}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
+        <Text
+          style={{
+            paddingHorizontal: 16,
+            color: ColorPalette.greyIcon2,
+            fontSize: FONT_SIZE.small,
+          }}
+        >
+          オンにすると、途中参加したプレイヤーの試合数を他のプレイヤーの最低試合数に合わせて調整します。
+        </Text>
       </View>
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
       {isLoading && <Loading />}

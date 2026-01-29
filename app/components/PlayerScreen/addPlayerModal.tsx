@@ -37,8 +37,7 @@ const AddPlayerModal: React.FC<Props> = ({
   // setDefaultOrderPlayers,
   isAddingRef,
 }) => {
-  const { players, setPlayers, courts, gameRounds, pairs } =
-    useContext(AppContext);
+  const { players, setPlayers, isAdjustMatchCount } = useContext(AppContext);
 
   const [name, setName] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.未設定);
@@ -51,20 +50,30 @@ const AddPlayerModal: React.FC<Props> = ({
     const existingIds = players.map((player) => player.id);
     const newId = generateUniqId(existingIds);
 
-    const newPlayer: Player = {
-      id: newId,
-      name: name,
-      gender: gender,
-      matchCount: 0,
-      isJoin: true,
-      isRest: false,
-      rank: Rank.未設定,
-      isAnonymous: false,
-      anonymousNumber: null,
-    };
+    let newPlayers: Player[] = [];
+    setPlayers((prev) => {
+      const otherMatchCounts = prev
+        .filter((pl) => pl.isJoin)
+        .map((pl) => pl.matchCount);
+      const minMatchCount =
+        otherMatchCounts.length > 0 ? Math.min(...otherMatchCounts) : 0;
+      newPlayers = [
+        ...prev,
+        {
+          id: newId,
+          name: name,
+          gender: gender,
+          matchCount: isAdjustMatchCount ? minMatchCount : 0,
+          isJoin: true,
+          isRest: false,
+          rank: Rank.未設定,
+          isAnonymous: false,
+          anonymousNumber: null,
+        },
+      ];
 
-    const newPlayers = [...players, newPlayer];
-    setPlayers(newPlayers);
+      return newPlayers;
+    });
     // setDefaultOrderPlayers(newPlayers);
 
     isAddingRef.current = true;
@@ -79,7 +88,7 @@ const AddPlayerModal: React.FC<Props> = ({
             gender: player.gender,
             rank: player.rank,
           };
-        })
+        }),
     );
     onClose();
 

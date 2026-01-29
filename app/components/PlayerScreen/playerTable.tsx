@@ -17,7 +17,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   isEdit,
   isAddingRef,
 }) => {
-  const { players, setPlayers, pairs, setPairs } = useContext(AppContext);
+  const { players, setPlayers, pairs, setPairs, isAdjustMatchCount } =
+    useContext(AppContext);
 
   const flatListRef = useRef<any>(null);
 
@@ -33,15 +34,32 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
 
     if (targetPlayer?.isJoin) {
       const updatePairs = pairs.filter(
-        (pair) => pair.player1 !== id && pair.player2 !== id
+        (pair) => pair.player1 !== id && pair.player2 !== id,
       );
       setPairs(updatePairs);
     }
 
-    const updatedPlayers = players.map((player) =>
-      player.id === id ? { ...player, isJoin: !player.isJoin } : player
-    );
-    setPlayers(updatedPlayers);
+    setPlayers((prev) => {
+      return prev.map((p) => {
+        if (p.id === id) {
+          const otherMatchCounts = prev
+            .filter((pl) => pl.isJoin && pl.id !== id)
+            .map((pl) => pl.matchCount);
+          const minMatchCount =
+            otherMatchCounts.length > 0
+              ? Math.min(...otherMatchCounts)
+              : p.matchCount;
+
+          return {
+            ...p,
+            isJoin: !p.isJoin,
+            matchCount: isAdjustMatchCount ? minMatchCount : p.matchCount,
+          };
+        } else {
+          return p;
+        }
+      });
+    });
   };
 
   const removePlayer = (id: number): void => {
@@ -59,7 +77,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
             gender: player.gender,
             rank: player.rank,
           };
-        })
+        }),
     );
   };
 
@@ -80,7 +98,7 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
                 gender: player.gender,
                 rank: player.rank,
               };
-            })
+            }),
         );
       }}
       renderItem={({ item, drag }) => (

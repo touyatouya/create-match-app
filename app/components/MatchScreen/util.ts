@@ -25,6 +25,7 @@ export const createMatch = async (
   genareteMode: GenerateMode,
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
+  isAdjustMatchCount: boolean,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
@@ -175,6 +176,7 @@ export const createMatch = async (
     anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
     pairs,
     genderSetting,
+    isAdjustMatchCount,
     saveAt: new Date().getTime(),
   });
 

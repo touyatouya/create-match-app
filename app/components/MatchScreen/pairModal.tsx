@@ -19,6 +19,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 // import analytics from "@react-native-firebase/analytics";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import PairItem from "../PairItem";
 import PlayerItem from "../PlayerItem";
@@ -39,7 +40,16 @@ interface Props {
 }
 
 const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { players, pairs, setPairs } = useContext(AppContext);
+  const {
+    players,
+    pairs,
+    setPairs,
+    gameRounds,
+    courts,
+    generateMode,
+    genderSetting,
+    isAdjustMatchCount,
+  } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
 
@@ -85,6 +95,19 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
       return newPairs;
     });
     setPair([]);
+
+    await clearGameData();
+    await saveGameData({
+      gameRounds,
+      courts,
+      generateMode: generateMode,
+      recentPlayers: players,
+      anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
+      pairs: newPairs,
+      genderSetting,
+      isAdjustMatchCount,
+      saveAt: new Date().getTime(),
+    });
 
     // await analytics().logEvent("create_pair");
   };
