@@ -604,6 +604,18 @@ const Match: React.FC<MatchProps> = ({
                     let newGameRounds: GameRound[] = [];
                     setGameRounds((prev) => {
                       newGameRounds = prev.slice(0, -1);
+                      if (newGameRounds.length > 0) {
+                        newGameRounds[newGameRounds.length - 1] = {
+                          ...newGameRounds[newGameRounds.length - 1],
+                          matches: newGameRounds[
+                            newGameRounds.length - 1
+                          ].matches.map((m) => ({
+                            ...m,
+                            isFinished: false,
+                            canInsertNext: false,
+                          })),
+                        };
+                      }
                       return newGameRounds;
                     });
                     const newMatch = newGameRounds.flatMap(
