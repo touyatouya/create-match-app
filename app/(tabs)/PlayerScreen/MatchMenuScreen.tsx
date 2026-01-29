@@ -1,14 +1,13 @@
 import CustomHeader from "@/app/components/CustomHeader";
 import Loading from "@/app/components/Loading";
-import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
-import ColorPalette from "@/constants/color";
-import { AppContext } from "@/context/AppContext";
-// import analytics from "@react-native-firebase/analytics";
 import GenderModal from "@/app/components/MatchScreen/genderModal";
 import PairModal from "@/app/components/MatchScreen/pairModal";
 import RestModal from "@/app/components/MatchScreen/restModal";
+import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import Toggle from "@/app/components/Toggle";
+import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { AppContext } from "@/context/AppContext";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import {
   Entypo,
@@ -17,6 +16,7 @@ import {
   Foundation,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -40,9 +40,9 @@ const MatchMenuScreen: React.FC = () => {
   const [isOpenRestModal, setIsOpenRestModal] = React.useState(false);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "MatchMenuScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "MatchMenuScreen",
+    });
   }, []);
 
   return (
@@ -271,6 +271,8 @@ const MatchMenuScreen: React.FC = () => {
                     isAdjustMatchCount: newIsAdjustMatchCount,
                     saveAt: new Date().getTime(),
                   });
+
+                  await analytics().logEvent("isAdjustMatchCount");
                 }}
               />
             </View>

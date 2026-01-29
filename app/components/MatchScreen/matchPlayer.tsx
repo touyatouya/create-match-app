@@ -1,9 +1,9 @@
 import ColorPalette from "@/constants/color";
-import { globalStyles } from "@/styles/global";
-import { Ionicons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
 import { AppContext } from "@/context/AppContext";
+import { globalStyles } from "@/styles/global";
 import { GenerateMode } from "@/types";
+import { Ionicons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
@@ -40,7 +40,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
           onPress={async () => {
             !isFinished && selectSwapPlayer(playerId, partnerId);
 
-            // await analytics().logEvent("swap_player");
+            await analytics().logEvent("swap_player");
           }}
         >
           <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />

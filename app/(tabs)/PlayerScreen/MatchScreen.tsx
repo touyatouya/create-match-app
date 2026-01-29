@@ -1,10 +1,10 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { clearGameData } from "@/utils/saveStorage";
 import { saveOpenApp } from "@/utils/storeReview";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
-import { clearGameData } from "@/utils/saveStorage";
+import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -15,27 +15,17 @@ import Match from "../../components/MatchScreen/match";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
-  const {
-    setPlayers,
-    gameRounds,
-    setGameRounds,
-    generateMode,
-    setGenerateMode,
-    isLoading,
-    genderSetting,
-    players,
-    courts,
-    pairs,
-  } = useContext(AppContext);
+  const { setPlayers, gameRounds, setGameRounds, isLoading, genderSetting } =
+    useContext(AppContext);
 
   const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
   const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "MatchScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "MatchScreen",
+    });
     saveOpenApp();
   }, []);
 
@@ -55,7 +45,7 @@ const MatchScreen: React.FC = () => {
 
     clearGameData();
 
-    // await analytics().logEvent("reset_game");
+    await analytics().logEvent("reset_game");
   }, [setGameRounds, setPlayers]);
 
   return (

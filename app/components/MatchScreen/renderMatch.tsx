@@ -5,6 +5,7 @@ import { globalStyles } from "@/styles/global";
 import { GameRound, GenerateMode, Match as MatchType, Player } from "@/types";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { MaterialIcons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
 import React from "react";
 import {
   Animated,
@@ -198,6 +199,8 @@ const RenderMatch: React.FC<MatchProps> = ({
                     isAdjustMatchCount,
                     saveAt: new Date().getTime(),
                   });
+
+                  await analytics().logEvent("delete_match_by_court");
                 }}
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />

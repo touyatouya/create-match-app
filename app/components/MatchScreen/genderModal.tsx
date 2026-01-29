@@ -1,7 +1,11 @@
+import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
 import React, { useEffect } from "react";
 import {
   Keyboard,
@@ -15,10 +19,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-// import analytics from "@react-native-firebase/analytics";
-import Toggle from "@/app/components/Toggle";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { MarchScreenStyles } from "./styles";
 
 interface Props {
@@ -40,9 +40,9 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "GenderSettingScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "GenderSettingScreen",
+    });
   }, []);
 
   const onChangeMan = async () => {
@@ -65,7 +65,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    // await analytics().logEvent("change_man");
+    await analytics().logEvent("change_man");
   };
 
   const onChangeWoman = async () => {
@@ -88,7 +88,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    // await analytics().logEvent("change_woman");
+    await analytics().logEvent("change_woman");
   };
 
   const onChangeMix = async () => {
@@ -111,7 +111,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    // await analytics().logEvent("change_mix");
+    await analytics().logEvent("change_mix");
   };
 
   return (

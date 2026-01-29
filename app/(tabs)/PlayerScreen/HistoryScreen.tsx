@@ -3,7 +3,7 @@ import Loading from "@/app/components/Loading";
 import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { SectionList, StyleSheet, Text, View } from "react-native";
 import { GameRound } from "../../../types";
@@ -20,14 +20,10 @@ const HistoryScreen: React.FC = () => {
   const { players, isLoading, courts, gameRounds } = useContext(AppContext);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "HistoryScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "HistoryScreen",
+    });
   }, []);
-
-  const finishedGameRounds: GameRound[] = gameRounds
-    .map((gr) => ({ ...gr, matches: gr.matches.filter((m) => m.isFinished) }))
-    .filter((gr) => gr.matches.length > 0);
 
   const sections: Section[] = [
     {

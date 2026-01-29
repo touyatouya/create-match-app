@@ -1,20 +1,20 @@
-// import { isVersionNewer } from "@/utils/isVersionNewer";
-// import firestore, {
-//   FirebaseFirestoreTypes,
-// } from "@react-native-firebase/firestore";
-// import Constants from "expo-constants";
 import { SESSION_MILLISECONDS, STORAGE_KEYS } from "@/constants/storage";
 import { AppContext } from "@/context/AppContext";
 import { Court, GameRound, Pair, Player } from "@/types";
+import { isVersionNewer } from "@/utils/isVersionNewer";
 import { clearGameData } from "@/utils/saveStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import firestore, {
+  FirebaseFirestoreTypes,
+} from "@react-native-firebase/firestore";
+import Constants from "expo-constants";
 import { Redirect } from "expo-router";
 import { useContext, useEffect } from "react";
+import { Alert, Linking } from "react-native";
 import {
   SafeAreaProvider,
   initialWindowMetrics,
 } from "react-native-safe-area-context";
-// import { Alert, Linking } from "react-native";
 
 export default function Index() {
   const {
@@ -29,39 +29,39 @@ export default function Index() {
     setIsAdjustMatchCount,
   } = useContext(AppContext);
   useEffect(() => {
-    // const checkAppVersion = async () => {
-    //   try {
-    //     const data = await firestore()
-    //       .collection("app_config")
-    //       .doc("version")
-    //       .get()
-    //       .then((doc: FirebaseFirestoreTypes.DocumentSnapshot) => doc.data());
-    //     if (!data) return;
-    //     const latest = data.latest_version;
-    //     const url = data.store_url_ios;
-    //     const current = Constants.expoConfig?.version; // アプリ側
-    //     if (!latest || !current) return;
-    //     if (isVersionNewer(latest, current)) {
-    //       // 更新が必要
-    //       Alert.alert(
-    //         "アップデートがあります",
-    //         "新しいバージョンが利用できます",
-    //         [
-    //           {
-    //             text: "アップデート",
-    //             onPress: () => {
-    //               Linking.openURL(url);
-    //             },
-    //           },
-    //           { text: "閉じる", style: "cancel" },
-    //         ]
-    //       );
-    //     }
-    //   } catch (e) {
-    //     console.log("version check error:", e);
-    //   }
-    // };
-    // checkAppVersion();
+    const checkAppVersion = async () => {
+      try {
+        const data = await firestore()
+          .collection("app_config")
+          .doc("version")
+          .get()
+          .then((doc: FirebaseFirestoreTypes.DocumentSnapshot) => doc.data());
+        if (!data) return;
+        const latest = data.latest_version;
+        const url = data.store_url_ios;
+        const current = Constants.expoConfig?.version; // アプリ側
+        if (!latest || !current) return;
+        if (isVersionNewer(latest, current)) {
+          // 更新が必要
+          Alert.alert(
+            "アップデートがあります",
+            "新しいバージョンが利用できます",
+            [
+              {
+                text: "アップデート",
+                onPress: () => {
+                  Linking.openURL(url);
+                },
+              },
+              { text: "閉じる", style: "cancel" },
+            ],
+          );
+        }
+      } catch (e) {
+        console.log("version check error:", e);
+      }
+    };
+    checkAppVersion();
 
     const loadData = async () => {
       const gameData = await AsyncStorage.getItem(STORAGE_KEYS.GAME_DATA);

@@ -3,6 +3,9 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Pair, Player } from "@/types";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
@@ -18,9 +21,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-// import analytics from "@react-native-firebase/analytics";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
 import RestPlayerItem from "../RestPlayerItem";
@@ -54,9 +54,9 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "RestModal",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "RestModal",
+    });
   }, []);
 
   const selectPlayer = (id: number) => {
@@ -127,7 +127,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    // await analytics().logEvent("create_pair");
+    await analytics().logEvent("create_rest_player");
   };
 
   const removeRestPlayer = async (id: number) => {
@@ -140,7 +140,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       }),
     );
 
-    // await analytics().logEvent("remove_rest_player");
+    await analytics().logEvent("remove_rest_player");
   };
 
   const restPlayers = players.filter((player) => player.isRest);

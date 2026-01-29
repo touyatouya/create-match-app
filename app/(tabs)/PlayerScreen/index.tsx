@@ -1,9 +1,14 @@
+import SegmentControl from "@/app/components/SegmentControl";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { STORAGE_KEYS } from "@/constants/storage";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
+import { clearGameData } from "@/utils/saveStorage";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
@@ -16,18 +21,13 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { GenerateMode, Player } from "../../../types";
+import CustomHeader from "../../components/CustomHeader";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 import AddPlayerModal from "../../components/PlayerScreen/addPlayerModal";
+import FabModal from "../../components/PlayerScreen/fabModal";
 import PlayerTable from "../../components/PlayerScreen/playerTable";
 import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "../../components/PrimaryButton";
-// import analytics from "@react-native-firebase/analytics";
-import SegmentControl from "@/app/components/SegmentControl";
-import { STORAGE_KEYS } from "@/constants/storage";
-import { clearGameData } from "@/utils/saveStorage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomHeader from "../../components/CustomHeader";
-import FabModal from "../../components/PlayerScreen/fabModal";
 
 const PlayerScreen: React.FC = () => {
   const {
@@ -51,9 +51,9 @@ const PlayerScreen: React.FC = () => {
   const isAddingRef = useRef(false);
 
   useEffect(() => {
-    // // analytics().logEvent("screen_view", {
-    //   screen_name: "PlayerScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "PlayerScreen",
+    });
 
     const loadData = async () => {
       if (isRestore == null) return;
@@ -92,8 +92,13 @@ const PlayerScreen: React.FC = () => {
   const joinAllPlayer = () => {
     setPlayers((prev) => {
       return prev.map((player) => {
-        const joinedMatchCounts = prev.filter((pl) => pl.isJoin).map((pl) => pl.matchCount);
-        const minCount = joinedMatchCounts.length > 0 ? Math.min(...joinedMatchCounts) : player.matchCount;
+        const joinedMatchCounts = prev
+          .filter((pl) => pl.isJoin)
+          .map((pl) => pl.matchCount);
+        const minCount =
+          joinedMatchCounts.length > 0
+            ? Math.min(...joinedMatchCounts)
+            : player.matchCount;
 
         return {
           ...player,
@@ -130,20 +135,20 @@ const PlayerScreen: React.FC = () => {
   const toMatchScreen = async () => {
     router.push({ pathname: "/PlayerScreen/MatchScreen" });
 
-    // await analytics().logEvent("to_match_screen", {
-    //   player_count: players.length,
-    //   court_count: courts.length,
-    // });
+    await analytics().logEvent("to_match_screen", {
+      player_count: players.length,
+      court_count: courts.length,
+    });
   };
 
   const openAddPlayerModal = async () => {
     setAddModalVisible(true);
 
-    // await analytics().logEvent("open_add_player_modal_header", {
-    //   player_count: players.length,
-    //   court_count: courts.length,
-    //   game_count: gameRounds.length,
-    // });
+    await analytics().logEvent("open_add_player_modal_header", {
+      player_count: players.length,
+      court_count: courts.length,
+      game_count: gameRounds.length,
+    });
   };
 
   return (
@@ -390,11 +395,11 @@ const PlayerScreen: React.FC = () => {
             style={styles.fab}
             onPress={async () => {
               setMenuVisible(true);
-              // await analytics().logEvent("open_fab_menu", {
-              //   player_count: players.length,
-              //   court_count: courts.length,
-              //   game_count: gameRounds.length,
-              // });
+              await analytics().logEvent("open_fab_menu", {
+                player_count: players.length,
+                court_count: courts.length,
+                game_count: gameRounds.length,
+              });
             }}
           >
             <Ionicons name="add" size={32} color="#fff" />
