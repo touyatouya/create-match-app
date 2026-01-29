@@ -7,7 +7,12 @@ import {
   markReviewRequersted,
   shouldShowReviewRequest,
 } from "@/utils/storeReview";
-import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Feather,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
@@ -317,16 +322,21 @@ const Match: React.FC<MatchProps> = ({
   const renderRestCell = (player: Player) => {
     const content = (
       <>
-        <Text
-          style={[
-            styles.restingPlayerName,
-            swapPlayer === player.id && styles.restingSwapPlayerName,
-          ]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {player.name}
-        </Text>
+        <View style={styles.restingPlayerName}>
+          <Text
+            style={[
+              styles.restingPlayerText,
+              swapPlayer === player.id && styles.restingSwapPlayerName,
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {player.name}
+          </Text>
+          {players.find((p) => p.id === player.id)?.isRest && (
+            <Feather name="coffee" size={15} color={ColorPalette.blackText} />
+          )}
+        </View>
         <View style={styles.subInfo}>
           <Text style={styles.getGameCount}>{player.matchCount}</Text>
           <Text style={styles.playerGender}>
@@ -740,9 +750,9 @@ const Match: React.FC<MatchProps> = ({
               return (
                 <View style={styles.restingHeader}>
                   <View style={styles.restingTitle}>
-                    <Ionicons
-                      name="cafe-outline"
-                      size={24}
+                    <Feather
+                      name="coffee"
+                      size={20}
                       color={ColorPalette.blackText}
                     />
                     <Text style={styles.restingSectionTitle}>
@@ -883,9 +893,14 @@ const styles = StyleSheet.create({
   restingPlayerName: {
     flex: 4,
     marginLeft: 6,
+    marginRight: 5,
+    flexDirection: "row",
+    gap: 4,
+    alignItems: "center",
+  },
+  restingPlayerText: {
     fontSize: FONT_SIZE.small,
     color: ColorPalette.filterItemName,
-    marginRight: 5,
   },
   restingSwapPlayerName: {
     flex: 4,

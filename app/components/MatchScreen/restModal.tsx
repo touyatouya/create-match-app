@@ -19,7 +19,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 // import analytics from "@react-native-firebase/analytics";
-import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
 import RestPlayerItem from "../RestPlayerItem";
@@ -182,9 +182,9 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
               section.type === "restPlayers" ? (
                 <View style={styles.pairHeader}>
                   <View style={styles.restingTitle}>
-                    <Ionicons
-                      name="cafe-outline"
-                      size={24}
+                    <Feather
+                      name="coffee"
+                      size={20}
                       color={ColorPalette.blackText}
                     />
                     <Text style={styles.restingSectionTitle}>
@@ -269,6 +269,7 @@ const styles = StyleSheet.create({
   restingTitle: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
   },
   restingSectionTitle: {
     fontSize: 18,

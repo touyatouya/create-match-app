@@ -8,12 +8,13 @@ import GenderModal from "@/app/components/MatchScreen/genderModal";
 import PairModal from "@/app/components/MatchScreen/pairModal";
 import RestModal from "@/app/components/MatchScreen/restModal";
 import { FONT_SIZE } from "@/constants/fonts";
-import { Entypo, FontAwesome5, Foundation, Ionicons } from "@expo/vector-icons";
+import { Entypo, Feather, FontAwesome5, Foundation } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MatchMenuScreen: React.FC = () => {
-  const { players, isLoading, courts, gameRounds } = useContext(AppContext);
+  const { players, isLoading, pairs, genderSetting, courts, gameRounds } =
+    useContext(AppContext);
   const [isOpenPairModal, setIsOpenPairModal] = React.useState(false);
   const [isOpenGenderModal, setIsOpenGenderModal] = React.useState(false);
   const [isOpenRestModal, setIsOpenRestModal] = React.useState(false);
@@ -47,11 +48,7 @@ const MatchMenuScreen: React.FC = () => {
             }}
             style={[styles.row]}
           >
-            <Ionicons
-              name="cafe-outline"
-              size={20}
-              color={ColorPalette.blackText}
-            />
+            <Feather name="coffee" size={25} color="black" />
             <View
               style={[
                 {
@@ -73,7 +70,17 @@ const MatchMenuScreen: React.FC = () => {
               >
                 休憩
               </Text>
-
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    color: ColorPalette.greyIcon2,
+                    marginRight: 4,
+                  },
+                ]}
+              >
+                {players.filter((p) => p.isRest).length}人休憩中
+              </Text>
               <Entypo
                 name="chevron-right"
                 size={24}
@@ -113,7 +120,17 @@ const MatchMenuScreen: React.FC = () => {
               >
                 ペア作成
               </Text>
-
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    color: ColorPalette.greyIcon2,
+                    marginRight: 4,
+                  },
+                ]}
+              >
+                {pairs.length}ペア
+              </Text>
               <Entypo
                 name="chevron-right"
                 size={24}
@@ -154,7 +171,19 @@ const MatchMenuScreen: React.FC = () => {
               >
                 性別設定
               </Text>
-
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    color: ColorPalette.greyIcon2,
+                    marginRight: 4,
+                  },
+                ]}
+              >
+                {genderSetting.men && "男"}
+                {genderSetting.woman && "女"}
+                {genderSetting.mix && "混"}
+              </Text>
               <Entypo
                 name="chevron-right"
                 size={24}

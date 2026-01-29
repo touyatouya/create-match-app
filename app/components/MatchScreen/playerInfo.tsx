@@ -1,6 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { Feather } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import GenderIcon from "../GenderIcon";
@@ -28,10 +29,20 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
   return (
     <View style={styles.playerInfo}>
       {playerId != null && (
-        <Text style={styles.playerName} numberOfLines={1} ellipsizeMode="tail">
-          {getPlayerName(playerId, players)}
-        </Text>
+        <View style={styles.playerName}>
+          <Text
+            style={styles.playerText}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {getPlayerName(playerId, players)}
+          </Text>
+          {players.find((player) => player.id === playerId)?.isRest && (
+            <Feather name="coffee" size={17} color="black" />
+          )}
+        </View>
       )}
+
       {playerId != null && (
         <View style={styles.subInfo}>
           {showMatchCount && (
@@ -63,10 +74,14 @@ const styles = StyleSheet.create({
   },
   playerName: {
     flex: 2.7,
+    display: "flex",
+    flexDirection: "row",
+    gap: 4,
+  },
+  playerText: {
     fontSize: FONT_SIZE.body,
     color: ColorPalette.blackText,
     fontWeight: "500",
-    display: "flex",
   },
   getGameCount: {
     flex: 1.7,
