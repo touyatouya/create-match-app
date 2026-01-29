@@ -10,6 +10,7 @@ import {
 import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
 import { generateUniqId } from "@/utils/createId";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
@@ -68,6 +69,7 @@ const Match: React.FC<MatchProps> = ({
     pairs,
     courts,
     setIsLoading,
+    setNewGames,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number, partnerId?: number | null) => {
@@ -309,21 +311,7 @@ const Match: React.FC<MatchProps> = ({
     const matches: MatchType[] = newGameRounds.flatMap(
       (gameRound) => gameRound.matches,
     );
-    const newPlayers = [...players];
-    const idxRest = newPlayers.findIndex((p) => p.id === restPlayerId);
-    const idxPlayable = newPlayers.findIndex((p) => p.id === playablePlayerId);
-
-    if (idxRest !== -1 && idxPlayable !== -1) {
-      const restPlayer = { ...newPlayers[idxRest], isRest: true };
-      const playablePlayer = { ...newPlayers[idxPlayable], isRest: false };
-
-      // rest 側の位置を保持するために配列要素を入れ替える
-      newPlayers[idxRest] = playablePlayer;
-      newPlayers[idxPlayable] = restPlayer;
-
-      setPlayers(newPlayers);
-    }
-    countMatch([...matches], newPlayers, setPlayers);
+    countMatch([...matches], players, setPlayers);
   };
 
   const renderRestCell = (player: Player) => {
@@ -499,6 +487,7 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
+                setNewGames,
               );
             }, 0);
 
@@ -612,18 +601,35 @@ const Match: React.FC<MatchProps> = ({
                     alignItems: "center",
                   }}
                   onPress={async () => {
-                    setGameRounds((prev) => prev.slice(0, -1));
-                    setPlayers((prev) => {
-                      return prev.map((player) => {
-                        return {
-                          ...player,
-                          isRest: false,
-                          matchCount: 0,
-                        };
-                      });
+                    let newGameRounds: GameRound[] = [];
+                    setGameRounds((prev) => {
+                      newGameRounds = prev.slice(0, -1);
+                      return newGameRounds;
                     });
+                    const newMatch = newGameRounds.flatMap(
+                      (gameRound) => gameRound.matches,
+                    );
+                    const newPlayers = countMatch(
+                      newMatch,
+                      players,
+                      setPlayers,
+                    );
                     setSwapPlayer(null);
                     setDispRound((prev) => prev - 1);
+
+                    await clearGameData();
+                    await saveGameData({
+                      gameRounds: newGameRounds,
+                      courts,
+                      generateMode: generateMode,
+                      recentPlayers: newPlayers,
+                      anonymousPlayerCount: newPlayers.filter(
+                        (p) => p.isAnonymous,
+                      ).length,
+                      pairs,
+                      genderSetting,
+                      saveAt: new Date().getTime(),
+                    });
 
                     // await analytics().logEvent("delete_game");
                   }}
@@ -689,6 +695,10 @@ const Match: React.FC<MatchProps> = ({
               const courtMatch = gameRounds
                 .flatMap((gameRound) => gameRound.matches)
                 .filter((match) => match.courtId === courtId);
+              // const isNew = gameRounds[gameRounds.length - 1]?.matches.some(
+              //   (m) => m.id === match.id,
+              // );
+
               return (
                 <RenderMatch
                   item={match}
@@ -761,6 +771,7 @@ const Match: React.FC<MatchProps> = ({
                 genderSetting,
                 setDispRound,
                 setIsLoading,
+                setNewGames,
               );
             }, 0);
 

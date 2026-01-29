@@ -17,14 +17,14 @@ export const globalStyles = StyleSheet.create({
     minHeight: 44,
   },
   headerLeft: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 20,
+    minHeight: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   headerRight: {
-    minWidth: 44,
-    minHeight: 44,
+    minWidth: 20,
+    minHeight: 20,
     justifyContent: "center",
     alignItems: "center",
   },

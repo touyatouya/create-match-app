@@ -2,12 +2,20 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { GenerateMode, Match as MatchType } from "@/types";
+import { GameRound, GenerateMode, Match as MatchType, Player } from "@/types";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Checkbox from "../CheckBox";
 import MatchPlayer from "./matchPlayer";
+import { countMatch } from "./util";
 
 interface MatchProps {
   item: MatchType;
@@ -38,27 +46,60 @@ const RenderMatch: React.FC<MatchProps> = ({
   showMatchCount,
   dispRound,
 }) => {
-  const { gameRounds, setGameRounds, generateMode, setPlayers } =
-    React.useContext(AppContext);
+  const {
+    courts,
+    gameRounds,
+    setGameRounds,
+    generateMode,
+    players,
+    setPlayers,
+    pairs,
+    genderSetting,
+    newGames,
+    setNewGames,
+  } = React.useContext(AppContext);
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
     (item.teamB == null || item.teamB.length === 0);
 
+  const anim = React.useRef(new Animated.Value(1)).current;
+  // newGames は「アニメーション対象の match.id の配列」とする。
+  const isNew = Array.isArray(newGames) && newGames.includes(item.id);
+
+  React.useEffect(() => {
+    if (!isNew) return;
+    anim.setValue(0.3);
+    const fade = Animated.timing(anim, {
+      toValue: 1,
+      duration: 700,
+      useNativeDriver: true,
+    });
+    fade.start(() => {
+      setNewGames((prev) => prev.filter((id) => id !== item.id));
+    });
+    return () => {
+      fade.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNew, item.id]);
+
   return (
-    <View
+    <Animated.View
       style={[
         styles.matchCard,
-        ((generateMode === GenerateMode.FILL_ENPTY && item.canInsertNext) ||
-          isNoMatch) &&
-          styles.finishedMatchCard,
         generateMode === GenerateMode.FILL_ENPTY &&
           !isNoMatch && { paddingTop: 0, paddingBottom: 4 },
+        generateMode === GenerateMode.FILL_ENPTY &&
+          item.canInsertNext && {
+            backgroundColor: ColorPalette.finished,
+          },
         generateMode === GenerateMode.REPLACE_ALL &&
           item.isFinished && {
             backgroundColor: ColorPalette.finished,
             opacity: 0.6,
           },
+        isNew && { opacity: anim },
       ]}
     >
       <View
@@ -117,8 +158,9 @@ const RenderMatch: React.FC<MatchProps> = ({
                   alignItems: "center",
                 }}
                 onPress={async () => {
+                  let newGameRounds: GameRound[] = [];
                   setGameRounds((prev) => {
-                    return prev.map((gameRound, i) => {
+                    newGameRounds = prev.map((gameRound) => {
                       const newMatches = gameRound.matches.filter(
                         (match) =>
                           !(!match.isFinished && match.courtId === courtId),
@@ -129,17 +171,31 @@ const RenderMatch: React.FC<MatchProps> = ({
                         matches: newMatches,
                       };
                     });
+                    return newGameRounds;
                   });
-                  setPlayers((prev) => {
-                    return prev.map((player) => {
-                      return {
-                        ...player,
-                        isRest: false,
-                        matchCount: 0,
-                      };
-                    });
-                  });
+                  const newMatch = newGameRounds.flatMap(
+                    (gameRound) => gameRound.matches,
+                  );
+                  const newPlayers: Player[] = countMatch(
+                    newMatch,
+                    players,
+                    setPlayers,
+                  );
                   if (setSwapPlayer) setSwapPlayer(null);
+
+                  await clearGameData();
+                  await saveGameData({
+                    gameRounds: newGameRounds,
+                    courts,
+                    generateMode: generateMode,
+                    recentPlayers: newPlayers,
+                    anonymousPlayerCount: newPlayers.filter(
+                      (p) => p.isAnonymous,
+                    ).length,
+                    pairs,
+                    genderSetting,
+                    saveAt: new Date().getTime(),
+                  });
                 }}
               >
                 <MaterialIcons name="delete-outline" size={24} color="black" />
@@ -205,7 +261,7 @@ const RenderMatch: React.FC<MatchProps> = ({
           </View>
         </View>
       )}
-    </View>
+    </Animated.View>
   );
 };
 

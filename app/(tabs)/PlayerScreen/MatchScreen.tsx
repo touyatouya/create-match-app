@@ -4,6 +4,7 @@ import { globalStyles } from "@/styles/global";
 import { saveOpenApp } from "@/utils/storeReview";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
+import { clearGameData } from "@/utils/saveStorage";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -52,6 +53,8 @@ const MatchScreen: React.FC = () => {
     setSwapPlayer(null);
     setDispRound(0);
 
+    clearGameData();
+
     // await analytics().logEvent("reset_game");
   }, [setGameRounds, setPlayers]);
 
@@ -66,7 +69,7 @@ const MatchScreen: React.FC = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: 4,
+              gap: 16,
             }}
           >
             <TouchableOpacity
@@ -109,7 +112,7 @@ const MatchScreen: React.FC = () => {
         )}
         isSlideScreen
         headerLeftText="試合準備"
-        disalbed={isLoading}
+        disabled={isLoading}
       />
       <View style={styles.container}>
         <Match

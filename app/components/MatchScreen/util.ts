@@ -1,5 +1,7 @@
 // import analytics from "@react-native-firebase/analytics";
 import { generateUniqId } from "@/utils/createId";
+import { clearGameData, saveGameData } from "@/utils/saveStorage";
+import React from "react";
 import {
   Court,
   GameRound,
@@ -25,6 +27,7 @@ export const createMatch = async (
   genderSetting: GenderPreferenceSetting,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
 ): Promise<void> => {
   const notFinishedMatches =
     genareteMode === GenerateMode.REPLACE_ALL
@@ -112,6 +115,7 @@ export const createMatch = async (
 
   let prevGameRounds = gameRounds.length;
   let updatedGameRounds = gameRounds.length;
+  let newGameRounds: GameRound[] = [];
 
   setGameRounds((prev) => {
     if (genareteMode === GenerateMode.REPLACE_ALL) {
@@ -128,7 +132,9 @@ export const createMatch = async (
         })
         .filter((gr) => gr.matches.length > 0);
       updatedGameRounds = updatedPrev.length;
-      return [...updatedPrev, gameRound];
+
+      newGameRounds = [...updatedPrev, gameRound];
+      return newGameRounds;
     } else {
       const updatedPrev = prev
         .map((gameRound) => {
@@ -143,25 +149,41 @@ export const createMatch = async (
         })
         .filter((gr) => gr.matches.length > 0);
       updatedGameRounds = updatedPrev.length;
-      return [...updatedPrev, gameRound];
+      newGameRounds = [...updatedPrev, gameRound];
+      return newGameRounds;
     }
   });
 
-  const preMatches: MatchType[] = gameRounds.flatMap(
+  const newMatches: MatchType[] = newGameRounds.flatMap(
     (gameRound) => gameRound.matches,
   );
-  countMatch([...preMatches, ...gameRound.matches], players, setPlayers);
+  const newPlayers = countMatch(newMatches, players, setPlayers);
   setSwapPlayer(null);
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
     setDispRound(prevGameRounds + 1);
   }
+
+  const newIds = gameRound.matches.map((m) => m.id);
+  setNewGames(newIds);
+
+  await clearGameData();
+  await saveGameData({
+    gameRounds: newGameRounds,
+    courts,
+    generateMode: genareteMode,
+    recentPlayers: newPlayers,
+    anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
+    pairs,
+    genderSetting,
+    saveAt: new Date().getTime(),
+  });
 
   // await analytics().logEvent("match_generated", {
   //   player_count: players.length,
   //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
   //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
   //   court_count: courts.length,
-  //   game_count: gameRounds.length,
+  //   game_count: newGameRounds.length,
   //   match_count: matches.length,
   //   pairs: pairs.length,
   //   genderMen: genderSetting.men,
@@ -392,7 +414,7 @@ export const countMatch = (
   newMatches: MatchType[],
   players: Player[],
   setPlayers: (value: React.SetStateAction<Player[]>) => void,
-): void => {
+): Player[] => {
   // プレイヤー毎の試合数カウント
   const playedPlayerIds: number[] = newMatches.flatMap((match) => [
     ...match.teamA,
@@ -407,6 +429,7 @@ export const countMatch = (
   });
 
   setPlayers(matchCountedPlayers);
+  return matchCountedPlayers;
 };
 
 export const countPairedBefore = (

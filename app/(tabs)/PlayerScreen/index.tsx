@@ -4,7 +4,6 @@ import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { generateUniqId } from "@/utils/createId";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
@@ -24,6 +23,9 @@ import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
 import PrimaryButton from "../../components/PrimaryButton";
 // import analytics from "@react-native-firebase/analytics";
 import SegmentControl from "@/app/components/SegmentControl";
+import { STORAGE_KEYS } from "@/constants/storage";
+import { clearGameData } from "@/utils/saveStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomHeader from "../../components/CustomHeader";
 import FabModal from "../../components/PlayerScreen/fabModal";
 
@@ -38,6 +40,7 @@ const PlayerScreen: React.FC = () => {
     setGameRounds,
     generateMode,
     setGenerateMode,
+    isRestore,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
@@ -52,7 +55,12 @@ const PlayerScreen: React.FC = () => {
     // });
 
     const loadData = async () => {
-      const playersData = await AsyncStorage.getItem("players");
+      if (isRestore == null) return;
+      if (isRestore) {
+        toMatchScreen();
+        return;
+      }
+      const playersData = await AsyncStorage.getItem(STORAGE_KEYS.PLAYERS);
       let playersDataLength: number = 0;
       if (playersData) playersDataLength = JSON.parse(playersData).length;
 
@@ -76,8 +84,7 @@ const PlayerScreen: React.FC = () => {
       }
     };
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isRestore, setPlayers]);
 
   const joinedPlayer = players.filter((player) => player.isJoin);
 
@@ -276,6 +283,7 @@ const PlayerScreen: React.FC = () => {
               ]}
               value={generateMode}
               onChange={(v) => {
+                if (v === generateMode) return;
                 if (gameRounds.length > 0) {
                   Alert.alert(
                     "作成方式の変更",
@@ -298,8 +306,11 @@ const PlayerScreen: React.FC = () => {
                               };
                             });
                           });
+                          clearGameData();
+
                           setGenerateMode(v);
                         },
+                        style: "destructive",
                       },
                     ],
                   );

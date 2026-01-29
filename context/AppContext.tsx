@@ -3,6 +3,7 @@ import {
   GameRound,
   GenderPreferenceSetting,
   GenerateMode,
+  Match,
   Pair,
   Player,
 } from "@/types";
@@ -28,6 +29,10 @@ type AppContextType = {
   >;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isRestore: boolean | null;
+  setIsRestore: React.Dispatch<React.SetStateAction<boolean | null>>;
+  newGames: Match["id"][];
+  setNewGames: React.Dispatch<React.SetStateAction<Match["id"][]>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -47,6 +52,10 @@ export const AppContext = createContext<AppContextType>({
   setGenderSetting: () => {},
   isLoading: false,
   setIsLoading: () => {},
+  isRestore: null,
+  setIsRestore: () => {},
+  newGames: [],
+  setNewGames: () => {},
 });
 
 type AppContextProps = {
@@ -72,6 +81,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
       mix: false,
     });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isRestore, setIsRestore] = React.useState<boolean | null>(null);
+  const [newGames, setNewGames] = React.useState<Match["id"][]>([]);
 
   return (
     <AppContext.Provider
@@ -92,6 +103,10 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setGenderSetting,
         isLoading,
         setIsLoading,
+        isRestore,
+        setIsRestore,
+        newGames,
+        setNewGames,
       }}
     >
       {children}

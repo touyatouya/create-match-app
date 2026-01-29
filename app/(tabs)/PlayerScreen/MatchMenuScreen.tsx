@@ -6,8 +6,9 @@ import { AppContext } from "@/context/AppContext";
 // import analytics from "@react-native-firebase/analytics";
 import GenderModal from "@/app/components/MatchScreen/genderModal";
 import PairModal from "@/app/components/MatchScreen/pairModal";
+import RestModal from "@/app/components/MatchScreen/restModal";
 import { FONT_SIZE } from "@/constants/fonts";
-import { Entypo, FontAwesome5, Foundation } from "@expo/vector-icons";
+import { Entypo, FontAwesome5, Foundation, Ionicons } from "@expo/vector-icons";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -15,6 +16,7 @@ const MatchMenuScreen: React.FC = () => {
   const { players, isLoading, courts, gameRounds } = useContext(AppContext);
   const [isOpenPairModal, setIsOpenPairModal] = React.useState(false);
   const [isOpenGenderModal, setIsOpenGenderModal] = React.useState(false);
+  const [isOpenRestModal, setIsOpenRestModal] = React.useState(false);
 
   useEffect(() => {
     // analytics().logEvent("screen_view", {
@@ -34,7 +36,51 @@ const MatchMenuScreen: React.FC = () => {
           isOpen={isOpenPairModal}
           onClose={() => setIsOpenPairModal(false)}
         />
+        <RestModal
+          isOpen={isOpenRestModal}
+          onClose={() => setIsOpenRestModal(false)}
+        />
         <View style={styles.detailSettingSection}>
+          <TouchableOpacity
+            onPress={async () => {
+              setIsOpenRestModal(true);
+            }}
+            style={[styles.row]}
+          >
+            <Ionicons
+              name="cafe-outline"
+              size={20}
+              color={ColorPalette.blackText}
+            />
+            <View
+              style={[
+                {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  height: 44,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    flex: 1,
+                  },
+                ]}
+              >
+                休憩
+              </Text>
+
+              <Entypo
+                name="chevron-right"
+                size={24}
+                color={ColorPalette.greyIcon1}
+              />
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={async () => {
               setIsOpenPairModal(true);

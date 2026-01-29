@@ -19,17 +19,17 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 // import analytics from "@react-native-firebase/analytics";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import PairItem from "../PairItem";
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import PlayerItem from "../PlayerItem";
 import PrimaryButton from "../PrimaryButton";
+import RestPlayerItem from "../RestPlayerItem";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;
 
 type Section = {
   title: string;
-  type: "pairs" | "players";
+  type: "restPlayers" | "noRestPlayers";
   data: SectionDataItem[];
 };
 
@@ -38,81 +38,72 @@ interface Props {
   onClose: () => void;
 }
 
-const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { players, pairs, setPairs } = useContext(AppContext);
-  const [pair, setPair] = useState<number[]>([]);
+const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
+  const { players, setPlayers } = useContext(AppContext);
+  const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     // analytics().logEvent("screen_view", {
-    //   screen_name: "PairSettingScreen",
+    //   screen_name: "RestModal",
     // });
   }, []);
 
-  const selectPlayer = (id: number) =>
-    setPair((prev) =>
-      prev.includes(id)
-        ? prev.filter((p) => p !== id)
-        : prev.length === 2
-          ? [prev[0], id]
-          : [...prev, id],
+  const selectPlayer = (id: number) => {
+    setSelectedPlayer((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
     );
+  };
 
-  const createPair = async () => {
-    let newPairs: Pair[] = [];
-
-    if (pair.length !== 2)
-      return Alert.alert("2人選んでください", "", [
+  const createRestPlayer = async () => {
+    if (selectedPlayer.length < 1) {
+      return Alert.alert("1人以上選んでください", "", [
         {
           text: "OK",
           style: "cancel",
         },
       ]);
+    }
 
-    setPairs((prev) => {
-      const pairIds = prev.map((pair) => pair.id);
-      let newPairId: number;
-      do {
-        newPairId = Math.floor(Math.random() * 10000); // 1〜10000の自然数
-      } while (pairIds.includes(newPairId));
-
-      const newPair: Pair = {
-        id: newPairId,
-        player1: pair[0],
-        player2: pair[1],
-      };
-      newPairs = [...prev, newPair];
-      return newPairs;
-    });
-    setPair([]);
+    setPlayers((prev) =>
+      prev.map((player) => {
+        if (selectedPlayer.includes(player.id)) {
+          return { ...player, isRest: true };
+        }
+        return player;
+      }),
+    );
+    setSelectedPlayer([]);
 
     // await analytics().logEvent("create_pair");
   };
 
-  const removePair = async (id: number) => {
-    setPairs((prev) => prev.filter((pair) => pair.id !== id));
+  const removeRestPlayer = async (id: number) => {
+    setPlayers((prev) =>
+      prev.map((player) => {
+        if (player.id === id) {
+          return { ...player, isRest: false };
+        }
+        return player;
+      }),
+    );
 
-    // await analytics().logEvent("remove_pair");
+    // await analytics().logEvent("remove_rest_player");
   };
 
-  const NotPaierPlayer = players.filter(
-    (player) =>
-      player.isJoin &&
-      !pairs.find(
-        (pair) => pair.player1 === player.id || pair.player2 === player.id,
-      ),
-  );
+  const restPlayers = players.filter((player) => player.isRest);
+  const noRestPlayers = players.filter((player) => !player.isRest);
 
   const sections: Section[] = [
     {
-      title: "ペア一覧",
-      data: pairs,
-      type: "pairs",
+      title: "休憩プレイヤー",
+      data: restPlayers,
+      type: "restPlayers",
     },
     {
-      title: "ペア未設定プレイヤー",
-      data: NotPaierPlayer,
-      type: "players",
+      title: "プレイヤー",
+      data: noRestPlayers,
+      type: "noRestPlayers",
     },
   ];
 
@@ -138,7 +129,7 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <Feather name="x" size={24} color="black" />
           </TouchableOpacity>
           <View style={styles.modalTitleWrapper}>
-            <Text style={styles.title}>ペア作成</Text>
+            <Text style={styles.title}>休憩</Text>
           </View>
         </View>
         <View style={styles.container}>
@@ -146,28 +137,28 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
             sections={sections}
             keyExtractor={(item, index) => item.id.toString() + index}
             renderItem={({ item, section }) =>
-              section.type === "pairs" ? (
-                <PairItem
-                  item={item as Pair}
-                  onPressRemoveButton={() => removePair(item.id)}
+              section.type === "restPlayers" ? (
+                <RestPlayerItem
+                  item={item as Player}
+                  onPressRemoveButton={() => removeRestPlayer(item.id)}
                 />
               ) : (
                 <PlayerItem
                   item={item as Player}
                   onPress={() => selectPlayer(item.id)}
-                  isSelected={pair.some((p) => item.id === p)}
+                  isSelected={selectedPlayer.some((p) => item.id === p)}
                   selectedText="選択中"
                 />
               )
             }
             renderSectionHeader={({ section }) =>
-              section.type === "pairs" ? (
+              section.type === "restPlayers" ? (
                 <View style={styles.pairHeader}>
                   <View style={styles.restingTitle}>
-                    <MaterialCommunityIcons
-                      name="human-male-male"
+                    <Ionicons
+                      name="cafe-outline"
                       size={24}
-                      color={ColorPalette.normalIcon}
+                      color={ColorPalette.blackText}
                     />
                     <Text style={styles.restingSectionTitle}>
                       {section.title}
@@ -190,20 +181,20 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
               )
             }
             renderSectionFooter={({ section }) =>
-              section.type === "pairs" ? (
+              section.type === "restPlayers" ? (
                 <SectionFooter
-                  message="ペアはありません"
+                  message="休憩プレイヤーはいません"
                   visible={section.data.length === 0}
                 />
               ) : (
                 <SectionFooter
-                  message="参加中でペア未設定のプレイヤーはいません"
+                  message="参加中で休憩未設定のプレイヤーはいません"
                   visible={section.data.length === 0}
                 />
               )
             }
           />
-          <PrimaryButton onPress={createPair} text="ペア作成" />
+          <PrimaryButton onPress={createRestPlayer} text="休憩にする" />
         </View>
       </SafeAreaView>
     </Modal>
@@ -264,4 +255,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PairModal;
+export default RestModal;
