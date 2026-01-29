@@ -69,7 +69,7 @@ const MatchScreen: React.FC = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              gap: 16,
+              gap: 32,
             }}
           >
             <TouchableOpacity

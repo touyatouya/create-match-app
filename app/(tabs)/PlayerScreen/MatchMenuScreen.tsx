@@ -31,6 +31,9 @@ const MatchMenuScreen: React.FC = () => {
     gameRounds,
     courts,
     generateMode,
+    setPlayers,
+    setPairs,
+    setGenderSetting,
   } = useContext(AppContext);
   const [isOpenPairModal, setIsOpenPairModal] = React.useState(false);
   const [isOpenGenderModal, setIsOpenGenderModal] = React.useState(false);
@@ -197,6 +200,10 @@ const MatchMenuScreen: React.FC = () => {
                   },
                 ]}
               >
+                {!genderSetting.men &&
+                  !genderSetting.woman &&
+                  !genderSetting.mix &&
+                  "未設定"}
                 {genderSetting.men && "男"}
                 {genderSetting.woman && "女"}
                 {genderSetting.mix && "混"}
@@ -278,6 +285,63 @@ const MatchMenuScreen: React.FC = () => {
         >
           オンにすると、途中参加したプレイヤーの試合数を他のプレイヤーの最低試合数に合わせて調整します。
         </Text>
+        <TouchableOpacity
+          onPress={async () => {
+            let newPlayers = players;
+            setPlayers((prev) => {
+              newPlayers = prev.map((player) => {
+                return { ...player, isRest: false };
+              });
+              return newPlayers;
+            });
+
+            setPairs([]);
+
+            setGenderSetting({ men: false, woman: false, mix: false });
+
+            setIsAdjustMatchCount(false);
+
+            await clearGameData();
+            await saveGameData({
+              gameRounds,
+              courts,
+              generateMode: generateMode,
+              recentPlayers: newPlayers,
+              anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous)
+                .length,
+              pairs: [],
+              genderSetting: { men: false, woman: false, mix: false },
+              isAdjustMatchCount: false,
+              saveAt: new Date().getTime(),
+            });
+          }}
+          style={[styles.detailSettingSection, styles.row]}
+        >
+          <View
+            style={[
+              {
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                height: 44,
+                marginLeft: 0.3,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                {
+                  fontSize: FONT_SIZE.body,
+                  color: ColorPalette.error,
+                  flex: 1,
+                },
+              ]}
+            >
+              試合設定をリセット
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
       {isLoading && <Loading />}
