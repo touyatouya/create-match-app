@@ -215,12 +215,7 @@ const MatchMenuScreen: React.FC = () => {
               />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={async () => {
-              setIsOpenGenderModal(true);
-            }}
-            style={[styles.row]}
-          >
+          <View style={[styles.row]}>
             <MaterialCommunityIcons
               name="account-plus"
               size={24}
@@ -276,7 +271,7 @@ const MatchMenuScreen: React.FC = () => {
                 }}
               />
             </View>
-          </TouchableOpacity>
+          </View>
         </View>
         <Text
           style={{
