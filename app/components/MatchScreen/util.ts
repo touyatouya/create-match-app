@@ -26,6 +26,7 @@ export const createMatch = async (
   setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
   genderSetting: GenderPreferenceSetting,
   isAdjustMatchCount: boolean,
+  isPreferMatchCountOverPair: boolean,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
@@ -177,6 +178,7 @@ export const createMatch = async (
     pairs,
     genderSetting,
     isAdjustMatchCount,
+    isPreferMatchCountOverPair,
     saveAt: new Date().getTime(),
   });
 

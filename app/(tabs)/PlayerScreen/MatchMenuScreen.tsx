@@ -34,6 +34,8 @@ const MatchMenuScreen: React.FC = () => {
     setPlayers,
     setPairs,
     setGenderSetting,
+    isPreferMatchCountOverPair,
+    setIsPreferMatchCountOverPair,
   } = useContext(AppContext);
   const [isOpenPairModal, setIsOpenPairModal] = React.useState(false);
   const [isOpenGenderModal, setIsOpenGenderModal] = React.useState(false);
@@ -158,6 +160,75 @@ const MatchMenuScreen: React.FC = () => {
               />
             </View>
           </TouchableOpacity>
+          <View style={[styles.row]}>
+            <FontAwesome5 name="balance-scale" size={20} color="black" />
+            <View
+              style={[
+                {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  height: 44,
+                  marginLeft: 0.3,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    flex: 1,
+                  },
+                ]}
+              >
+                ペア設定より試合数を優先する
+              </Text>
+              <Toggle
+                label=""
+                checked={isPreferMatchCountOverPair}
+                onChange={async () => {
+                  let newIsPreferMatchCountOverPair =
+                    isPreferMatchCountOverPair;
+                  setIsPreferMatchCountOverPair((prev) => {
+                    newIsPreferMatchCountOverPair = !prev;
+                    return newIsPreferMatchCountOverPair;
+                  });
+
+                  await clearGameData();
+                  await saveGameData({
+                    gameRounds,
+                    courts,
+                    generateMode: generateMode,
+                    recentPlayers: players,
+                    anonymousPlayerCount: players.filter((p) => p.isAnonymous)
+                      .length,
+                    pairs,
+                    genderSetting: genderSetting,
+                    isAdjustMatchCount: isAdjustMatchCount,
+                    isPreferMatchCountOverPair: newIsPreferMatchCountOverPair,
+                    saveAt: new Date().getTime(),
+                  });
+
+                  // await analytics().logEvent("isPreferMatchCountOverPair");
+                }}
+              />
+            </View>
+          </View>
+        </View>
+        <Text
+          style={{
+            paddingHorizontal: 16,
+            color: ColorPalette.greyIcon2,
+            fontSize: FONT_SIZE.small,
+            marginBottom: 16,
+          }}
+        >
+          オンの場合、ペア設定が反映されないことがありますが、試合数が均等になるように調整されます。
+          {"\n"}
+          オフの場合、試合数に偏りが出ますが、必ずペアで組むようになります。
+        </Text>
+        <View style={styles.detailSettingSection}>
           <TouchableOpacity
             onPress={async () => {
               setIsOpenGenderModal(true);
@@ -264,6 +335,7 @@ const MatchMenuScreen: React.FC = () => {
                     pairs,
                     genderSetting: genderSetting,
                     isAdjustMatchCount: newIsAdjustMatchCount,
+                    isPreferMatchCountOverPair,
                     saveAt: new Date().getTime(),
                   });
 
@@ -278,6 +350,7 @@ const MatchMenuScreen: React.FC = () => {
             paddingHorizontal: 16,
             color: ColorPalette.greyIcon2,
             fontSize: FONT_SIZE.small,
+            marginBottom: 16,
           }}
         >
           オンにすると、途中参加したプレイヤーの試合数を他のプレイヤーの最低試合数に合わせて調整します。
@@ -297,6 +370,7 @@ const MatchMenuScreen: React.FC = () => {
             setGenderSetting({ men: false, woman: false, mix: false });
 
             setIsAdjustMatchCount(false);
+            setIsPreferMatchCountOverPair(false);
 
             await clearGameData();
             await saveGameData({
@@ -309,6 +383,7 @@ const MatchMenuScreen: React.FC = () => {
               pairs: [],
               genderSetting: { men: false, woman: false, mix: false },
               isAdjustMatchCount: false,
+              isPreferMatchCountOverPair: false,
               saveAt: new Date().getTime(),
             });
           }}
@@ -354,7 +429,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     borderRadius: 12,
     width: "100%",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   item: { marginBottom: 4 },
   itemBottomBorder: {

@@ -31,6 +31,7 @@ export const saveGameData = async ({
   genderSetting,
   isAdjustMatchCount,
   saveAt,
+  isPreferMatchCountOverPair,
 }: {
   gameRounds: GameRound[];
   courts: Court[];
@@ -40,6 +41,7 @@ export const saveGameData = async ({
   pairs: Pair[];
   genderSetting: GenderPreferenceSetting;
   isAdjustMatchCount: boolean;
+  isPreferMatchCountOverPair: boolean;
   saveAt?: number;
 }) => {
   try {
@@ -54,6 +56,7 @@ export const saveGameData = async ({
         pairs,
         genderSetting,
         isAdjustMatchCount,
+        isPreferMatchCountOverPair,
         saveAt,
       }),
     );

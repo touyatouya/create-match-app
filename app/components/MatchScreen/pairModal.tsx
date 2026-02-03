@@ -49,6 +49,7 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
     generateMode,
     genderSetting,
     isAdjustMatchCount,
+    isPreferMatchCountOverPair,
   } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
@@ -106,6 +107,7 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
       pairs: newPairs,
       genderSetting,
       isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
 

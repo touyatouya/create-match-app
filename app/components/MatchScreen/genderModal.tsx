@@ -36,6 +36,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
     players,
     pairs,
     isAdjustMatchCount,
+    isPreferMatchCountOverPair,
   } = React.useContext(AppContext);
   const insets = useSafeAreaInsets();
 
@@ -62,6 +63,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       pairs,
       genderSetting: newGenderSetting,
       isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
 
@@ -85,6 +87,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       pairs,
       genderSetting: newGenderSetting,
       isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
 
@@ -108,6 +111,7 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       pairs,
       genderSetting: newGenderSetting,
       isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
 

@@ -24,6 +24,7 @@ export default function Index() {
     setAnonymousPlayerCount,
     setIsRestore,
     setIsAdjustMatchCount,
+    setIsPreferMatchCountOverPair,
   } = useContext(AppContext);
   useEffect(() => {
     // const checkAppVersion = async () => {
@@ -160,6 +161,13 @@ export default function Index() {
           });
         }
         setPairs(pairs);
+      }
+
+      // ペアより試合数優先
+      const parsedIsPreferMatchCountOverPair =
+        parsedGameData.isPreferMatchCountOverPair;
+      if (parsedIsPreferMatchCountOverPair != null) {
+        setIsPreferMatchCountOverPair(parsedIsPreferMatchCountOverPair);
       }
 
       // 性別設定

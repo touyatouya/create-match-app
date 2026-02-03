@@ -49,6 +49,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
     pairs,
     genderSetting,
     isAdjustMatchCount,
+    isPreferMatchCountOverPair,
   } = useContext(AppContext);
   const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
   const insets = useSafeAreaInsets();
@@ -124,6 +125,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       pairs,
       genderSetting,
       isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
 

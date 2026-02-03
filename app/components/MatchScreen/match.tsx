@@ -76,6 +76,7 @@ const Match: React.FC<MatchProps> = ({
     setIsLoading,
     setNewGames,
     isAdjustMatchCount,
+    isPreferMatchCountOverPair,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (id: number, partnerId?: number | null) => {
@@ -497,6 +498,7 @@ const Match: React.FC<MatchProps> = ({
                 setSwapPlayer,
                 genderSetting,
                 isAdjustMatchCount,
+                isPreferMatchCountOverPair,
                 setDispRound,
                 setIsLoading,
                 setNewGames,
@@ -645,6 +647,7 @@ const Match: React.FC<MatchProps> = ({
                       pairs,
                       genderSetting,
                       isAdjustMatchCount,
+                      isPreferMatchCountOverPair,
                       saveAt: new Date().getTime(),
                     });
 
@@ -779,6 +782,7 @@ const Match: React.FC<MatchProps> = ({
                 setSwapPlayer,
                 genderSetting,
                 isAdjustMatchCount,
+                isPreferMatchCountOverPair,
                 setDispRound,
                 setIsLoading,
                 setNewGames,

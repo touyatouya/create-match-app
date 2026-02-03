@@ -35,6 +35,8 @@ type AppContextType = {
   setNewGames: React.Dispatch<React.SetStateAction<Match["id"][]>>;
   isAdjustMatchCount: boolean;
   setIsAdjustMatchCount: React.Dispatch<React.SetStateAction<boolean>>;
+  isPreferMatchCountOverPair: boolean;
+  setIsPreferMatchCountOverPair: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -60,6 +62,8 @@ export const AppContext = createContext<AppContextType>({
   setNewGames: () => {},
   isAdjustMatchCount: false,
   setIsAdjustMatchCount: () => {},
+  isPreferMatchCountOverPair: false,
+  setIsPreferMatchCountOverPair: () => {},
 });
 
 type AppContextProps = {
@@ -89,6 +93,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
   const [newGames, setNewGames] = React.useState<Match["id"][]>([]);
   const [isAdjustMatchCount, setIsAdjustMatchCount] =
     React.useState<boolean>(false);
+  const [isPreferMatchCountOverPair, setIsPreferMatchCountOverPair] =
+    React.useState<boolean>(false);
 
   return (
     <AppContext.Provider
@@ -115,6 +121,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setNewGames,
         isAdjustMatchCount,
         setIsAdjustMatchCount,
+        isPreferMatchCountOverPair,
+        setIsPreferMatchCountOverPair,
       }}
     >
       {children}
