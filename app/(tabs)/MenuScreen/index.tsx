@@ -3,16 +3,16 @@ import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuScreen: React.FC = () => {
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "MenuScreen",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "MenuScreen",
+    // });
   }, []);
 
   return (
@@ -27,7 +27,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              await analytics().logEvent("contact_us");
+              // await analytics().logEvent("contact_us");
             }}
             style={[styles.row]}
           >
@@ -73,7 +73,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              await analytics().logEvent("suggest_new");
+              // await analytics().logEvent("suggest_new");
             }}
             style={[styles.row]}
           >
@@ -120,7 +120,7 @@ const MenuScreen: React.FC = () => {
                 await WebBrowser.openBrowserAsync(url);
               } catch (e) {}
 
-              await analytics().logEvent("how_to_use");
+              // await analytics().logEvent("how_to_use");
             }}
             style={[styles.row]}
           >

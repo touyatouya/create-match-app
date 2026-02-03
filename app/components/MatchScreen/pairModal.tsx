@@ -5,7 +5,7 @@ import { globalStyles } from "@/styles/global";
 import { Pair, Player } from "@/types";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
@@ -54,9 +54,9 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    analytics().logEvent("screen_view", {
-      screen_name: "PairModal",
-    });
+    // analytics().logEvent("screen_view", {
+    //   screen_name: "PairModal",
+    // });
   }, []);
 
   const selectPlayer = (id: number) =>
@@ -109,13 +109,13 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    await analytics().logEvent("create_pair");
+    // await analytics().logEvent("create_pair");
   };
 
   const removePair = async (id: number) => {
     setPairs((prev) => prev.filter((pair) => pair.id !== id));
 
-    await analytics().logEvent("remove_pair");
+    // await analytics().logEvent("remove_pair");
   };
 
   const NotPaierPlayer = players.filter(

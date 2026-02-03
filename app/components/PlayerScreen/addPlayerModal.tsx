@@ -20,7 +20,7 @@ import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
-import analytics from "@react-native-firebase/analytics";
+// import analytics from "@react-native-firebase/analytics";
 import TextInput from "../../components/TextInput";
 import GenderToggle from "../GenderToggle";
 
@@ -92,7 +92,7 @@ const AddPlayerModal: React.FC<Props> = ({
     );
     onClose();
 
-    await analytics().logEvent("add_player_name");
+    // await analytics().logEvent("add_player_name");
   };
 
   const resetInput = () => {
