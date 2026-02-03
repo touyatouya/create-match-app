@@ -321,60 +321,51 @@ const getFinalOptionalPlayers = (
   pairs: Pair[],
   totalNeeded: number,
 ): number[] => {
-  // 優先される任意参加者を取得
-  const prioritized = findPairedPlayers(
+  // 足りない人数
+  const needCount = totalNeeded - requiredPlayers.length;
+  if (needCount <= 0) return [];
+  let result: number[] = [];
+
+  // requiredPlayersとペアになっているoptionalPlayersを取得
+  const pairedPlayers = findPairedPlayers(
     optionalPlayers,
     requiredPlayers,
     pairs,
   );
-
-  // 必須参加者と優先任意参加者の合計が多すぎる場合、優先任意参加者をランダムに減らす
-  if (requiredPlayers.length + prioritized.length > totalNeeded) {
-    return shuffle(prioritized).slice(0, totalNeeded - requiredPlayers.length);
-  }
-  // 必須参加者と優先任意参加者の合計がぴったりの場合
-  if (requiredPlayers.length + prioritized.length === totalNeeded) {
-    return prioritized;
+  // requiredPlayersとペアになっているoptionalPlayersを追加
+  if (pairedPlayers.length > 0) {
+    for (const pairedPlayer of pairedPlayers) {
+      result = [...result, pairedPlayer];
+      if (result.length >= needCount) return result;
+    }
   }
 
-  // 必須参加者と優先任意参加者の合計が足りない場合、任意参加者同士のペアを優先して追加
-  const nextPrioritized = findPairedPlayers(
-    optionalPlayers,
-    optionalPlayers,
-    pairs,
+  // optionalPlayersで同士のペアを取得
+  const pairBothOptional = pairs.filter(
+    (pair) =>
+      optionalPlayers.includes(pair.player1) &&
+      optionalPlayers.includes(pair.player2),
   );
+  // optionalPlayersで同士のペアを追加
+  if (pairBothOptional.length > 0) {
+    for (const pair of pairBothOptional) {
+      if (needCount - result.length >= 2) {
+        result = [...result, pair.player1, pair.player2];
+        if (result.length >= needCount) return result;
+      } else {
+        break;
+      }
+    }
+  }
 
-  // 必須参加者と優先任意参加者と次優先任意参加者の合計が多すぎる場合、次優先任意参加者をランダムに減らす
-  if (
-    requiredPlayers.length + prioritized.length + nextPrioritized.length >
-    totalNeeded
-  ) {
-    const selectedNext = shuffle(nextPrioritized).slice(
-      0,
-      totalNeeded - (requiredPlayers.length + prioritized.length),
-    );
-    return [...prioritized, ...selectedNext];
-  }
-  // 必須参加者と優先任意参加者と次優先任意参加者の合計がぴったりの場合
-  if (
-    requiredPlayers.length + prioritized.length + nextPrioritized.length ===
-    totalNeeded
-  ) {
-    return [...prioritized, ...nextPrioritized];
-  }
-  // 必須参加者と優先任意参加者と次優先任意参加者の合計が足りない場合
-  const remain = optionalPlayers.filter(
-    (p) => !prioritized.includes(p) && !nextPrioritized.includes(p),
+  // 残りのoptionalPlayersからランダムに選択して追加
+  const remainingOptional = optionalPlayers.filter((p) => !result.includes(p));
+  const selectedOptional = shuffle(remainingOptional).slice(
+    0,
+    needCount - result.length,
   );
-  return [
-    ...prioritized,
-    ...nextPrioritized,
-    ...shuffle(remain).slice(
-      0,
-      totalNeeded -
-        (requiredPlayers.length + prioritized.length + nextPrioritized.length),
-    ),
-  ];
+  result = [...result, ...selectedOptional];
+  return result;
 };
 
 /**
