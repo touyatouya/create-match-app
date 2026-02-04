@@ -98,6 +98,19 @@ export const createMatch = async (
       normalPlayers = [];
     }
     normalPlayers = [...separatedPlayers[i]];
+    if (!isPreferMatchCountOverPair) {
+      const normalPlayerIds = normalPlayers.map((p) => p.id);
+      const otherPlayerIds = players
+        .filter((player) => !normalPlayerIds.includes(player.id))
+        .map((p) => p.id);
+      const pairPlayerIds = findPairedPlayers(
+        otherPlayerIds,
+        normalPlayerIds,
+        pairs,
+      );
+      const pairPlayers = players.filter((p) => pairPlayerIds.includes(p.id));
+      normalPlayers = [...normalPlayers, ...pairPlayers];
+    }
 
     if (priorityPlayers.length + normalPlayers.length >= totalNeeded) break;
   }
@@ -111,6 +124,7 @@ export const createMatch = async (
     matches,
     players,
     genderSetting,
+    isPreferMatchCountOverPair,
   );
 
   if (gameRound == null) return;
@@ -208,28 +222,20 @@ export function selectBestGameRounds(
   matches: MatchType[],
   players: Player[],
   genderSetting: GenderPreferenceSetting,
+  isPreferMatchCountOverPair: boolean,
 ): GameRound {
-  const selectedPlayers = initialGameRounds
-    .flatMap((round) => round.matches)
-    .filter((match) => match.teamA.length + match.teamB.length < 4)
-    .flatMap((match) => [...match.teamA, ...match.teamB]);
-
-  const totalNeeded = courts.length * 4 - selectedPlayers.length;
+  const totalNeeded = courts.length * 4;
 
   // 最終的な任意参加者を決定
-  const finalOptinalPlayers = getFinalOptionalPlayers(
+  const joinedPlayers = getJoinPlayers(
     requiredPlayers,
     optionalPlayers,
     pairs,
     totalNeeded,
+    isPreferMatchCountOverPair,
   );
 
   // 参加者の中のペアを抽出
-  const joinedPlayers = [
-    ...selectedPlayers,
-    ...requiredPlayers,
-    ...finalOptinalPlayers,
-  ];
   const joinedPairs = pairs.filter(
     (pair) =>
       joinedPlayers.includes(pair.player1) &&
@@ -238,7 +244,7 @@ export function selectBestGameRounds(
 
   // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
-    [...selectedPlayers, ...requiredPlayers, ...finalOptinalPlayers],
+    [...joinedPlayers],
     50,
     courts,
     joinedPairs,
@@ -317,57 +323,195 @@ export function selectBestGameRounds(
   return bestSets[Math.floor(Math.random() * bestSets.length)];
 }
 
-const getFinalOptionalPlayers = (
+const getJoinPlayers = (
   requiredPlayers: number[],
   optionalPlayers: number[],
   pairs: Pair[],
   totalNeeded: number,
+  isPreferMatchCountOverPair: boolean,
 ): number[] => {
-  // 足りない人数
-  const needCount = totalNeeded - requiredPlayers.length;
-  if (needCount <= 0) return [];
-  let result: number[] = [];
+  if (requiredPlayers.length === 0 && optionalPlayers.length === totalNeeded)
+    return [...optionalPlayers];
+  if (requiredPlayers.length + optionalPlayers.length === totalNeeded)
+    return [...requiredPlayers, ...optionalPlayers];
 
-  // requiredPlayersとペアになっているoptionalPlayersを取得
-  const pairedPlayers = findPairedPlayers(
-    optionalPlayers,
-    requiredPlayers,
-    pairs,
-  );
-  // requiredPlayersとペアになっているoptionalPlayersを追加
-  if (pairedPlayers.length > 0) {
-    for (const pairedPlayer of pairedPlayers) {
-      result = [...result, pairedPlayer];
-      if (result.length >= needCount) return result;
-    }
+  // 必須はまず確定
+  const result: number[] = [...requiredPlayers];
+  const needCount = Math.max(0, totalNeeded - result.length);
+  if (needCount === 0) return result.slice(0, totalNeeded);
+
+  // ペアのマップを作る
+  const partnerMap = new Map<number, number>();
+  for (const p of pairs) {
+    partnerMap.set(p.player1, p.player2);
+    partnerMap.set(p.player2, p.player1);
   }
 
-  // optionalPlayersで同士のペアを取得
-  const pairBothOptional = pairs.filter(
-    (pair) =>
-      optionalPlayers.includes(pair.player1) &&
-      optionalPlayers.includes(pair.player2),
-  );
-  // optionalPlayersで同士のペアを追加
-  if (pairBothOptional.length > 0) {
-    for (const pair of pairBothOptional) {
-      if (needCount - result.length >= 2) {
-        result = [...result, pair.player1, pair.player2];
-        if (result.length >= needCount) return result;
+  if (!isPreferMatchCountOverPair) {
+    // resultの要素数が奇数の場合
+    if (result.length % 2 === 1) {
+      // optionalPlayers からペアを持たないプレイヤーをランダムに1人追加して偶数にする
+      const optionalWithoutPair = optionalPlayers.filter(
+        (p) => !partnerMap.has(p),
+      );
+      if (optionalWithoutPair.length > 0) {
+        const randIndex = Math.floor(
+          Math.random() * optionalWithoutPair.length,
+        );
+        const selectedPlayer = optionalWithoutPair[randIndex];
+        result.push(selectedPlayer);
       } else {
-        break;
+        // requiredPlayersをランダムに1人除外して偶数にする
+        const randIndex = Math.floor(Math.random() * requiredPlayers.length);
+        const removedPlayer = requiredPlayers[randIndex];
+        const removedIndex = result.indexOf(removedPlayer);
+        if (removedIndex !== -1) {
+          result.splice(removedIndex, 1);
+        }
       }
     }
-  }
 
-  // 残りのoptionalPlayersからランダムに選択して追加
-  const remainingOptional = optionalPlayers.filter((p) => !result.includes(p));
-  const selectedOptional = shuffle(remainingOptional).slice(
-    0,
-    needCount - result.length,
-  );
-  result = [...result, ...selectedOptional];
-  return result;
+    // optional 内のペア、もしくはペア無しoptional2人どちらかをランダムに追加していく
+    while (result.length < totalNeeded) {
+      const canAddPairs: Pair[] = [];
+      // optional 内のペアを抽出
+      for (const pair of pairs) {
+        if (
+          optionalPlayers.includes(pair.player1) &&
+          optionalPlayers.includes(pair.player2) &&
+          !result.includes(pair.player1) &&
+          !result.includes(pair.player2)
+        ) {
+          canAddPairs.push(pair);
+        }
+      }
+      // optional 内のペアを持たないプレイヤーを抽出
+      const canAddSingles = optionalPlayers.filter(
+        (p) => !result.includes(p) && !partnerMap.has(p),
+      );
+
+      if (canAddSingles.length < 2 && canAddPairs.length > 0) {
+        const randIndex = Math.floor(Math.random() * canAddPairs.length);
+        const selectedPair = canAddPairs[randIndex];
+        result.push(selectedPair.player1, selectedPair.player2);
+        continue;
+      } else if (canAddSingles.length >= 2 && canAddPairs.length === 0) {
+        const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+        const selectedSingles = shuffledSingles.slice(0, 2);
+        for (const single of selectedSingles) {
+          result.push(single);
+        }
+        continue;
+      } else {
+        // ランダムにどちらかを選択して追加
+        const choosePair = Math.random() < 0.5;
+        if (choosePair) {
+          const randIndex = Math.floor(Math.random() * canAddPairs.length);
+          const selectedPair = canAddPairs[randIndex];
+          console.log("c", selectedPair);
+          result.push(selectedPair.player1, selectedPair.player2);
+          continue;
+        } else {
+          const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+          const selectedSingles = shuffledSingles.slice(0, 2);
+          for (const single of selectedSingles) {
+            result.push(single);
+          }
+          continue;
+        }
+      }
+    }
+
+    return result.slice(0, totalNeeded);
+  } else {
+    const pairPlayerOptionals = optionalPlayers.filter((p) => {
+      const partner = partnerMap.get(p);
+      return partner != null && requiredPlayers.includes(partner);
+    });
+    for (const p of pairPlayerOptionals) {
+      result.push(p);
+      if (result.length >= totalNeeded) break;
+    }
+    // optional 内のペア、もしくはペア無しoptional2人どちらかをランダムに追加していく
+    while (result.length < totalNeeded) {
+      // requiredPlayers側でペアを持つプレイヤーがいる場合、そのペアを優先的に追加する
+      const canAddPairs: Pair[] = [];
+      // optional 内のペアを抽出
+      for (const pair of pairs) {
+        if (
+          optionalPlayers.includes(pair.player1) &&
+          optionalPlayers.includes(pair.player2) &&
+          !result.includes(pair.player1) &&
+          !result.includes(pair.player2)
+        ) {
+          canAddPairs.push(pair);
+        }
+      }
+      // optional 内のペアを持たないプレイヤーを抽出
+      const canAddSingles = optionalPlayers.filter(
+        (p) => !result.includes(p) && !partnerMap.has(p),
+      );
+
+      // optionalでペアがoptionalにもrequiredにも存在しないプレイヤーを抽出
+      const optionalWithoutPair = optionalPlayers.filter((p) => {
+        const partner = partnerMap.get(p);
+        return (
+          partner != null &&
+          !optionalPlayers.includes(partner) &&
+          !requiredPlayers.includes(partner)
+        );
+      });
+
+      if (
+        totalNeeded - result.length >= 2 &&
+        canAddPairs.length > 0 &&
+        canAddSingles.length === 0
+      ) {
+        const randIndex = Math.floor(Math.random() * canAddPairs.length);
+        const selectedPair = canAddPairs[randIndex];
+        result.push(selectedPair.player1, selectedPair.player2);
+        continue;
+      } else if (
+        canAddPairs.length === 0 &&
+        canAddSingles.length === 0 &&
+        optionalWithoutPair.length >= 1
+      ) {
+        const shuffledOptionalWithoutPair = optionalWithoutPair.sort(
+          () => 0.5 - Math.random(),
+        );
+        const selectedSingles = shuffledOptionalWithoutPair.slice(0, 2);
+        for (const single of selectedSingles) {
+          result.push(single);
+        }
+        continue;
+      } else if (canAddPairs.length === 0 && canAddSingles.length >= 1) {
+        const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+        const selectedSingles = shuffledSingles.slice(0, 2);
+        for (const single of selectedSingles) {
+          result.push(single);
+        }
+        continue;
+      } else {
+        // ランダムにどちらかを選択して追加
+        const choosePair = Math.random() < 0.5;
+        if (choosePair) {
+          const randIndex = Math.floor(Math.random() * canAddPairs.length);
+          const selectedPair = canAddPairs[randIndex];
+          result.push(selectedPair.player1, selectedPair.player2);
+          continue;
+        } else {
+          const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+          const selectedSingles = shuffledSingles.slice(0, 2);
+          for (const single of selectedSingles) {
+            result.push(single);
+          }
+          continue;
+        }
+      }
+    }
+
+    return result.slice(0, totalNeeded);
+  }
 };
 
 /**
@@ -484,7 +628,6 @@ const getRandomGroupPartitions = (
   pairs: Pair[] = [],
   initialGameRounds: GameRound[] = [],
 ): number[][][] => {
-  // console.log("getRandomGroupPartitions_start");
   const results: number[][][] = [];
   const seen = new Set<string>();
 
@@ -495,22 +638,16 @@ const getRandomGroupPartitions = (
 
   // 十分な人数がいない場合は空配列を返す
   if (courts.length * 4 < players.length + initialGroups.flat().length) {
-    // console.log(
-    //   "players.length",
-    //   players.length,
-    //   "initialGroups.flat().length",
-    //   initialGroups.flat().length
-    // );
     return results;
   }
 
   for (let i = 0; i < trials; i++) {
-    // console.log("let i = 0; i < trials; i++");
     // [[player1, player2], [player3, player4], ...]の形に変換
     const pairPlayers: number[][] = pairs.map((pair) => [
       pair.player1,
       pair.player2,
     ]);
+    const shuffledPairPlayers = shuffle(pairPlayers);
     // [player1, player2, ...]の形に変換
     const unPairPlayers: number[] = players.filter(
       (player) =>
@@ -518,33 +655,30 @@ const getRandomGroupPartitions = (
           (pair) => pair.player1 === player || pair.player2 === player,
         ),
     );
+    const shuffledUnPairPlayers = shuffle(unPairPlayers);
 
     let groups: number[][] = initialGroups; // コートごとのグループを格納する配列　[[player1, player2, player3, player4], ...]
 
-    // while (groups.length < courts.length) {
     for (let i = 0; groups.flat().length < courts.length * 4; i++) {
-      // console.log("let i = 0; groups.flat().length < courts.length * 4; i++");
       let court: number[] = initialGroups[i] ? [...initialGroups[i]] : []; // 1コート分のプレイヤーを格納する配列 [player1, player2, player3, player4]
       while (court.length < 4) {
-        // console.log("court.length < 4");
         const random = Math.random() - 0.5;
         // ペアがいなくなった、またはコートが3つ目の場合、またはランダム値が0以下の場合は、ペアではないプレイヤーをコートに追加
         if (
-          pairPlayers.length === 0 ||
+          shuffledPairPlayers.length === 0 ||
           court.length === 3 ||
-          (unPairPlayers[0] != null && random <= 0)
+          (shuffledUnPairPlayers[0] != null && random <= 0)
         ) {
-          const headPlayer = unPairPlayers.shift();
+          const headPlayer = shuffledUnPairPlayers.shift();
           court.push(headPlayer!);
           // ペアがいる場合、またはランダム値が0より大きい場合は、ペアのプレイヤーをコートに追加
-        } else if (pairPlayers[0] != null && random > 0) {
-          const headPlayer = pairPlayers.shift();
+        } else if (shuffledPairPlayers[0] != null && random > 0) {
+          const headPlayer = shuffledPairPlayers.shift();
           court.push(...headPlayer!);
         }
       }
       // コートに4人揃ったらgroupsに追加
       if (court.length === 4) {
-        // groups.push(court);
         groups[i] = court;
       }
     }
@@ -561,8 +695,6 @@ const getRandomGroupPartitions = (
       results.push(groups);
     }
   }
-
-  // console.log("getRandomGroupPartitions_finish");
 
   return results;
 };
