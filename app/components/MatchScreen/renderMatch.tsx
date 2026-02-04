@@ -58,7 +58,6 @@ const RenderMatch: React.FC<MatchProps> = ({
     genderSetting,
     newGames,
     setNewGames,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
   } = React.useContext(AppContext);
 

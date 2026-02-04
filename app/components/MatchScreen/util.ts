@@ -360,9 +360,14 @@ const getJoinPlayers = (
         const selectedPlayer = optionalWithoutPair[randIndex];
         result.push(selectedPlayer);
       } else {
-        // requiredPlayersをランダムに1人除外して偶数にする
-        const randIndex = Math.floor(Math.random() * requiredPlayers.length);
-        const removedPlayer = requiredPlayers[randIndex];
+        // requiredPlayersのうちペアがいないプレイヤーをランダムに1人除外して偶数にする
+        const requiredWithoutPair = requiredPlayers.filter(
+          (p) => !partnerMap.has(p),
+        );
+        const randIndex = Math.floor(
+          Math.random() * requiredWithoutPair.length,
+        );
+        const removedPlayer = requiredWithoutPair[randIndex];
         const removedIndex = result.indexOf(removedPlayer);
         if (removedIndex !== -1) {
           result.splice(removedIndex, 1);
@@ -395,7 +400,7 @@ const getJoinPlayers = (
         result.push(selectedPair.player1, selectedPair.player2);
         continue;
       } else if (canAddSingles.length >= 2 && canAddPairs.length === 0) {
-        const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+        const shuffledSingles = shuffle(canAddSingles);
         const selectedSingles = shuffledSingles.slice(0, 2);
         for (const single of selectedSingles) {
           result.push(single);
@@ -410,7 +415,7 @@ const getJoinPlayers = (
           result.push(selectedPair.player1, selectedPair.player2);
           continue;
         } else {
-          const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
+          const shuffledSingles = shuffle(canAddSingles);
           const selectedSingles = shuffledSingles.slice(0, 2);
           for (const single of selectedSingles) {
             result.push(single);
@@ -474,20 +479,16 @@ const getJoinPlayers = (
         canAddSingles.length === 0 &&
         optionalWithoutPair.length >= 1
       ) {
-        const shuffledOptionalWithoutPair = optionalWithoutPair.sort(
-          () => 0.5 - Math.random(),
-        );
+        const shuffledOptionalWithoutPair = shuffle(optionalWithoutPair);
         const selectedSingles = shuffledOptionalWithoutPair.slice(0, 2);
         for (const single of selectedSingles) {
           result.push(single);
         }
         continue;
       } else if (canAddPairs.length === 0 && canAddSingles.length >= 1) {
-        const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
-        const selectedSingles = shuffledSingles.slice(0, 2);
-        for (const single of selectedSingles) {
-          result.push(single);
-        }
+        const shuffledSingles = shuffle(canAddSingles);
+        const selectedSingles = shuffledSingles[0];
+        result.push(selectedSingles);
         continue;
       } else {
         // ランダムにどちらかを選択して追加
@@ -498,11 +499,9 @@ const getJoinPlayers = (
           result.push(selectedPair.player1, selectedPair.player2);
           continue;
         } else {
-          const shuffledSingles = canAddSingles.sort(() => 0.5 - Math.random());
-          const selectedSingles = shuffledSingles.slice(0, 2);
-          for (const single of selectedSingles) {
-            result.push(single);
-          }
+          const shuffledSingles = shuffle(canAddSingles);
+          const selectedSingles = shuffledSingles[0];
+          result.push(selectedSingles);
           continue;
         }
       }
