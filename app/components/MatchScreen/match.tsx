@@ -325,18 +325,22 @@ const Match: React.FC<MatchProps> = ({
     const content = (
       <>
         <View style={styles.restingPlayerName}>
-          <Text
-            style={[
-              styles.restingPlayerText,
-              swapPlayer === player.id && styles.restingSwapPlayerName,
-            ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {player.name}
-          </Text>
+          <View style={{ flex: 4 }}>
+            <Text
+              style={[
+                styles.restingPlayerText,
+                swapPlayer === player.id && styles.restingSwapPlayerName,
+              ]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {player.name}
+            </Text>
+          </View>
           {players.find((p) => p.id === player.id)?.isRest && (
-            <Feather name="coffee" size={15} color={ColorPalette.blackText} />
+            <View style={{ flex: 1 }}>
+              <Feather name="coffee" size={14} color={ColorPalette.blackText} />
+            </View>
           )}
         </View>
         <View style={styles.subInfo}>
@@ -707,9 +711,6 @@ const Match: React.FC<MatchProps> = ({
               const courtMatch = gameRounds
                 .flatMap((gameRound) => gameRound.matches)
                 .filter((match) => match.courtId === courtId);
-              // const isNew = gameRounds[gameRounds.length - 1]?.matches.some(
-              //   (m) => m.id === match.id,
-              // );
 
               return (
                 <RenderMatch
@@ -824,7 +825,6 @@ const styles = StyleSheet.create({
   },
   getGameCount: {
     flex: 1,
-    marginRight: 2,
     fontSize: FONT_SIZE.tiny,
   },
   teams: {
@@ -838,7 +838,6 @@ const styles = StyleSheet.create({
   },
   playerGender: {
     flex: 1,
-    marginRight: 2,
   },
   vsText: {
     fontSize: FONT_SIZE.tiny,
@@ -872,7 +871,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: ColorPalette.restPlayerBackground,
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: ColorPalette.borderline,
@@ -883,9 +882,9 @@ const styles = StyleSheet.create({
     borderColor: ColorPalette.secondary,
   },
   restingPlayerName: {
-    flex: 4,
-    marginLeft: 6,
-    marginRight: 5,
+    flex: 3,
+    marginLeft: 3,
+    marginRight: 3,
     flexDirection: "row",
     gap: 4,
     alignItems: "center",
