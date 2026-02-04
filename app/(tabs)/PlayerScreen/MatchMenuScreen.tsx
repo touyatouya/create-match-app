@@ -216,9 +216,9 @@ const MatchMenuScreen: React.FC = () => {
             marginBottom: 16,
           }}
         >
-          オンの場合、ペア設定が反映されないことがありますが、試合数が均等になるように調整されます。
+          オン：ペア設定が反映されない場合がありますが、試合数が均等になるよう調整します。
           {"\n"}
-          オフの場合、試合数に偏りが出ますが、必ずペアで組むようになります。
+          オフ：試合数に偏りが出ることがありますが、必ずペアで組まれます。
         </Text>
         <View style={[styles.detailSettingSection, { marginBottom: 32 }]}>
           <TouchableOpacity
