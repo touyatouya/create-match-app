@@ -408,7 +408,6 @@ const getJoinPlayers = (
         if (choosePair) {
           const randIndex = Math.floor(Math.random() * canAddPairs.length);
           const selectedPair = canAddPairs[randIndex];
-          console.log("c", selectedPair);
           result.push(selectedPair.player1, selectedPair.player2);
           continue;
         } else {
