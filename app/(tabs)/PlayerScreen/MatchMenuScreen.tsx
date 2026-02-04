@@ -10,7 +10,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Entypo, Feather, FontAwesome5, Foundation } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -35,9 +35,9 @@ const MatchMenuScreen: React.FC = () => {
   const [isOpenRestModal, setIsOpenRestModal] = React.useState(false);
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    //   screen_name: "MatchMenuScreen",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "MatchMenuScreen",
+    });
   }, []);
 
   return (
@@ -202,7 +202,7 @@ const MatchMenuScreen: React.FC = () => {
                     saveAt: new Date().getTime(),
                   });
 
-                  // await analytics().logEvent("isPreferMatchCountOverPair");
+                  await analytics().logEvent("isPreferMatchCountOverPair");
                 }}
               />
             </View>

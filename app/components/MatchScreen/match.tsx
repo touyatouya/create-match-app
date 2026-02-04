@@ -15,7 +15,7 @@ import {
   Ionicons,
   MaterialIcons,
 } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
@@ -572,7 +572,7 @@ const Match: React.FC<MatchProps> = ({
               onPress={async () => {
                 setDispRound((prev) => prev - 1);
 
-                // await analytics().logEvent("prev_gameRound");
+                await analytics().logEvent("prev_gameRound");
               }}
             >
               <AntDesign
@@ -654,7 +654,7 @@ const Match: React.FC<MatchProps> = ({
                       saveAt: new Date().getTime(),
                     });
 
-                    // await analytics().logEvent("delete_game");
+                    await analytics().logEvent("delete_game");
                   }}
                 >
                   <MaterialIcons
@@ -676,7 +676,7 @@ const Match: React.FC<MatchProps> = ({
               onPress={async () => {
                 setDispRound((prev) => prev + 1);
 
-                // await analytics().logEvent("next_gameRound");
+                await analytics().logEvent("next_gameRound");
               }}
             >
               <AntDesign

@@ -1,6 +1,7 @@
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
+import Constants from "expo-constants";
 import React from "react";
 import {
   Court,
@@ -195,20 +196,22 @@ export const createMatch = async (
     saveAt: new Date().getTime(),
   });
 
-  // await analytics().logEvent("match_generated", {
-  //   player_count: players.length,
-  //   anonymous_player_: players.filter((p) => p.isAnonymous).length,
-  //   noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
-  //   court_count: courts.length,
-  //   game_count: newGameRounds.length,
-  //   match_count: matches.length,
-  //   generateMode: genareteMode,
-  //   pairs: pairs.length,
-  //   genderMen: genderSetting.men,
-  //   genderWoman: genderSetting.woman,
-  //   genderMix: genderSetting.mix,
-  //   version: Constants.expoConfig?.version,
-  // });
+  await analytics().logEvent("match_generated", {
+    player_count: players.length,
+    anonymous_player_: players.filter((p) => p.isAnonymous).length,
+    noAnonymous_player_: players.filter((p) => !p.isAnonymous).length,
+    court_count: courts.length,
+    game_count: newGameRounds.length,
+    match_count: matches.length,
+    generateMode: genareteMode,
+    pairs: pairs.length,
+    genderMen: genderSetting.men,
+    genderWoman: genderSetting.woman,
+    genderMix: genderSetting.mix,
+    isAdjustMatchCount: isAdjustMatchCount,
+    isPreferMatchCountOverPair: isPreferMatchCountOverPair,
+    version: Constants.expoConfig?.version,
+  });
 };
 
 // スコアの高いコート構成を選ぶ関数

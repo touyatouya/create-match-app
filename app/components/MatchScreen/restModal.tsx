@@ -5,7 +5,7 @@ import { globalStyles } from "@/styles/global";
 import { Pair, Player } from "@/types";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-// import analytics from "@react-native-firebase/analytics";
+import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect, useState } from "react";
 import {
   Alert,
@@ -54,9 +54,9 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    // analytics().logEvent("screen_view", {
-    // screen_name: "RestModal",
-    // });
+    analytics().logEvent("screen_view", {
+      screen_name: "RestModal",
+    });
   }, []);
 
   const selectPlayer = (id: number) => {
@@ -127,7 +127,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       saveAt: new Date().getTime(),
     });
 
-    // await analytics().logEvent("create_rest_player");
+    await analytics().logEvent("create_rest_player");
   };
 
   const removeRestPlayer = async (id: number) => {
@@ -140,7 +140,7 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       }),
     );
 
-    // await analytics().logEvent("remove_rest_player");
+    await analytics().logEvent("remove_rest_player");
   };
 
   const restPlayers = players.filter((player) => player.isRest);
