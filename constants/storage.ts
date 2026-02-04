@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
   PLAYERS: "players",
+  IS_ADJUST_MATCH_COUNT: "isAdjustMatchCount",
   GAME_DATA: "gameData",
 };
 

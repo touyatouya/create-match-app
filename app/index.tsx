@@ -175,14 +175,18 @@ export default function Index() {
       if (parsedGenderSetting != null) {
         setGenderSetting(parsedGenderSetting);
       }
-
-      // 途中参加試合数調整
-      const parsedIsAdjustMatchCount = parsedGameData.isAdjustMatchCount;
-      if (parsedIsAdjustMatchCount != null) {
-        setIsAdjustMatchCount(parsedIsAdjustMatchCount);
-      }
     };
     loadData();
+
+    const loadIsAdjustMatchCount = async () => {
+      const isAdjustMatchCount = await AsyncStorage.getItem(
+        STORAGE_KEYS.IS_ADJUST_MATCH_COUNT,
+      );
+      if (isAdjustMatchCount != null) {
+        setIsAdjustMatchCount(JSON.parse(isAdjustMatchCount));
+      }
+    };
+    loadIsAdjustMatchCount();
   }, [
     setAnonymousPlayerCount,
     setCourts,
@@ -192,6 +196,7 @@ export default function Index() {
     setPlayers,
     setGenderSetting,
     setIsRestore,
+    setIsPreferMatchCountOverPair,
     setIsAdjustMatchCount,
   ]);
 

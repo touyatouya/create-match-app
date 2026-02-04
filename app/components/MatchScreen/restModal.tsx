@@ -48,7 +48,6 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
     generateMode,
     pairs,
     genderSetting,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
   } = useContext(AppContext);
   const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
@@ -124,7 +123,6 @@ const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
       anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
       pairs,
       genderSetting,
-      isAdjustMatchCount,
       isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });

@@ -650,7 +650,6 @@ const Match: React.FC<MatchProps> = ({
                       ).length,
                       pairs,
                       genderSetting,
-                      isAdjustMatchCount,
                       isPreferMatchCountOverPair,
                       saveAt: new Date().getTime(),
                     });

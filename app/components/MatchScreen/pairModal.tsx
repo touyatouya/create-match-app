@@ -48,7 +48,6 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
     courts,
     generateMode,
     genderSetting,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
   } = useContext(AppContext);
   const [pair, setPair] = useState<number[]>([]);
@@ -106,7 +105,6 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
       anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
       pairs: newPairs,
       genderSetting,
-      isAdjustMatchCount,
       isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });

@@ -191,7 +191,6 @@ export const createMatch = async (
     anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
     pairs,
     genderSetting,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
     saveAt: new Date().getTime(),
   });

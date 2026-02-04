@@ -1,14 +1,18 @@
 import CustomHeader from "@/app/components/CustomHeader";
 import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
+import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
+import { AppContext } from "@/context/AppContext";
+import { saveIsAdjustMatchCount } from "@/utils/saveStorage";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const MenuScreen: React.FC = () => {
+  const { isAdjustMatchCount, setIsAdjustMatchCount } = useContext(AppContext);
   useEffect(() => {
     // analytics().logEvent("screen_view", {
     //   screen_name: "MenuScreen",
@@ -159,6 +163,63 @@ const MenuScreen: React.FC = () => {
             </View>
           </TouchableOpacity>
         </View>
+        <View style={styles.detailSettingSection}>
+          <View style={[styles.row]}>
+            <MaterialCommunityIcons
+              name="account-plus"
+              size={24}
+              color="black"
+            />
+            <View
+              style={[
+                {
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  height: 44,
+                  marginLeft: 0.3,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  {
+                    fontSize: FONT_SIZE.body,
+                    flex: 1,
+                  },
+                ]}
+              >
+                途中参加の試合数調整
+              </Text>
+              <Toggle
+                label=""
+                checked={isAdjustMatchCount}
+                onChange={async () => {
+                  let newIsAdjustMatchCount = isAdjustMatchCount;
+                  setIsAdjustMatchCount((prev) => {
+                    newIsAdjustMatchCount = !prev;
+                    return newIsAdjustMatchCount;
+                  });
+
+                  await saveIsAdjustMatchCount(newIsAdjustMatchCount);
+
+                  // await analytics().logEvent("isAdjustMatchCount");
+                }}
+              />
+            </View>
+          </View>
+        </View>
+        <Text
+          style={{
+            paddingHorizontal: 16,
+            color: ColorPalette.greyIcon2,
+            fontSize: FONT_SIZE.small,
+            marginBottom: 16,
+          }}
+        >
+          オンにすると、途中参加したプレイヤーの試合数を他のプレイヤーの最低試合数に合わせて調整します。
+        </Text>
       </View>
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>

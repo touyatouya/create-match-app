@@ -9,13 +9,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import {
-  Entypo,
-  Feather,
-  FontAwesome5,
-  Foundation,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { Entypo, Feather, FontAwesome5, Foundation } from "@expo/vector-icons";
 // import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -26,7 +20,6 @@ const MatchMenuScreen: React.FC = () => {
     isLoading,
     pairs,
     genderSetting,
-    isAdjustMatchCount,
     setIsAdjustMatchCount,
     gameRounds,
     courts,
@@ -205,7 +198,6 @@ const MatchMenuScreen: React.FC = () => {
                       .length,
                     pairs,
                     genderSetting: genderSetting,
-                    isAdjustMatchCount: isAdjustMatchCount,
                     isPreferMatchCountOverPair: newIsPreferMatchCountOverPair,
                     saveAt: new Date().getTime(),
                   });
@@ -228,7 +220,7 @@ const MatchMenuScreen: React.FC = () => {
           {"\n"}
           オフの場合、試合数に偏りが出ますが、必ずペアで組むようになります。
         </Text>
-        <View style={styles.detailSettingSection}>
+        <View style={[styles.detailSettingSection, { marginBottom: 32 }]}>
           <TouchableOpacity
             onPress={async () => {
               setIsOpenGenderModal(true);
@@ -286,75 +278,7 @@ const MatchMenuScreen: React.FC = () => {
               />
             </View>
           </TouchableOpacity>
-          <View style={[styles.row]}>
-            <MaterialCommunityIcons
-              name="account-plus"
-              size={24}
-              color="black"
-            />
-            <View
-              style={[
-                {
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  height: 44,
-                  marginLeft: 0.3,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  {
-                    fontSize: FONT_SIZE.body,
-                    flex: 1,
-                  },
-                ]}
-              >
-                途中参加の試合数調整
-              </Text>
-              <Toggle
-                label=""
-                checked={isAdjustMatchCount}
-                onChange={async () => {
-                  let newIsAdjustMatchCount = isAdjustMatchCount;
-                  setIsAdjustMatchCount((prev) => {
-                    newIsAdjustMatchCount = !prev;
-                    return newIsAdjustMatchCount;
-                  });
-
-                  await clearGameData();
-                  await saveGameData({
-                    gameRounds,
-                    courts,
-                    generateMode: generateMode,
-                    recentPlayers: players,
-                    anonymousPlayerCount: players.filter((p) => p.isAnonymous)
-                      .length,
-                    pairs,
-                    genderSetting: genderSetting,
-                    isAdjustMatchCount: newIsAdjustMatchCount,
-                    isPreferMatchCountOverPair,
-                    saveAt: new Date().getTime(),
-                  });
-
-                  // await analytics().logEvent("isAdjustMatchCount");
-                }}
-              />
-            </View>
-          </View>
         </View>
-        <Text
-          style={{
-            paddingHorizontal: 16,
-            color: ColorPalette.greyIcon2,
-            fontSize: FONT_SIZE.small,
-            marginBottom: 16,
-          }}
-        >
-          オンにすると、途中参加したプレイヤーの試合数を他のプレイヤーの最低試合数に合わせて調整します。
-        </Text>
         <TouchableOpacity
           onPress={async () => {
             let newPlayers = players;
@@ -382,7 +306,6 @@ const MatchMenuScreen: React.FC = () => {
                 .length,
               pairs: [],
               genderSetting: { men: false, woman: false, mix: false },
-              isAdjustMatchCount: false,
               isPreferMatchCountOverPair: false,
               saveAt: new Date().getTime(),
             });

@@ -35,7 +35,6 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
     generateMode,
     players,
     pairs,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
   } = React.useContext(AppContext);
   const insets = useSafeAreaInsets();
@@ -62,7 +61,6 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
       pairs,
       genderSetting: newGenderSetting,
-      isAdjustMatchCount,
       isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
@@ -86,7 +84,6 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
       pairs,
       genderSetting: newGenderSetting,
-      isAdjustMatchCount,
       isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });
@@ -110,7 +107,6 @@ const GenderModal: React.FC<Props> = ({ isOpen, onClose }) => {
       anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
       pairs,
       genderSetting: newGenderSetting,
-      isAdjustMatchCount,
       isPreferMatchCountOverPair,
       saveAt: new Date().getTime(),
     });

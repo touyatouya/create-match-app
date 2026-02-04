@@ -21,6 +21,17 @@ export const savePlayerInfo = async (
   }
 };
 
+export const saveIsAdjustMatchCount = async (isAdjustMatchCount: boolean) => {
+  try {
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.IS_ADJUST_MATCH_COUNT,
+      JSON.stringify(isAdjustMatchCount),
+    );
+  } catch (e) {
+    console.error("保存エラー:", e);
+  }
+};
+
 export const saveGameData = async ({
   gameRounds,
   courts,
@@ -29,7 +40,6 @@ export const saveGameData = async ({
   anonymousPlayerCount,
   pairs,
   genderSetting,
-  isAdjustMatchCount,
   saveAt,
   isPreferMatchCountOverPair,
 }: {
@@ -40,7 +50,6 @@ export const saveGameData = async ({
   anonymousPlayerCount: number;
   pairs: Pair[];
   genderSetting: GenderPreferenceSetting;
-  isAdjustMatchCount: boolean;
   isPreferMatchCountOverPair: boolean;
   saveAt?: number;
 }) => {
@@ -55,7 +64,6 @@ export const saveGameData = async ({
         anonymousPlayerCount,
         pairs,
         genderSetting,
-        isAdjustMatchCount,
         isPreferMatchCountOverPair,
         saveAt,
       }),
