@@ -4,6 +4,7 @@ import {
   GameRound,
   Gender,
   GenderPreferenceSetting,
+  GenerateMode,
   Match,
   Pair,
   Player,
@@ -27,7 +28,7 @@ const makePlayers = (n: number): Player[] => {
 const makeCourts = (n: number): Court[] => {
   return Array.from({ length: n }, (_, i) => ({
     id: i + 1,
-    name: `Court${i + 1}`,
+    number: i + 1,
   }));
 };
 
@@ -38,6 +39,10 @@ describe("createMatch", () => {
     const gameRounds: GameRound[] = [];
     const pairs: Pair[] = [];
     const matches: Match[] = [];
+    const dispRound = 0;
+    const generateMode = GenerateMode.REPLACE_ALL;
+    const isAdjustMatchCount = false;
+    const isPreferMatchCountOverPair = false;
     const setPlayers = vi.fn();
     const setGameRounds = vi.fn();
     const setSwapPlayer = vi.fn();
@@ -58,11 +63,15 @@ describe("createMatch", () => {
       setGameRounds,
       pairs,
       matches,
+      dispRound,
+      generateMode,
       setSwapPlayer,
       genderSetting,
+      isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       setDispRound,
       setIsLoading,
-      setNumOfGenerate
+      setNumOfGenerate,
     );
 
     // setGameRoundsの引数から試合データを取得
@@ -95,6 +104,10 @@ describe("createMatch", () => {
       { id: 2, player1: 3, player2: 4 },
     ];
     const matches: Match[] = [];
+    const dispRound = 0;
+    const generateMode = GenerateMode.REPLACE_ALL;
+    const isAdjustMatchCount = false;
+    const isPreferMatchCountOverPair = false;
     const setPlayers = vi.fn();
     const setGameRounds = vi.fn();
     const setSwapPlayer = vi.fn();
@@ -115,11 +128,15 @@ describe("createMatch", () => {
       setGameRounds,
       pairs,
       matches,
+      dispRound,
+      generateMode,
       setSwapPlayer,
       genderSetting,
+      isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       setDispRound,
       setIsLoading,
-      setNumOfGenerate
+      setNumOfGenerate,
     );
 
     const called = setGameRounds.mock.calls[0][0];
@@ -150,6 +167,10 @@ describe("createMatch", () => {
     const gameRounds: GameRound[] = [];
     const pairs: Pair[] = [];
     const matches: Match[] = [];
+    const dispRound = 0;
+    const generateMode = GenerateMode.REPLACE_ALL;
+    const isAdjustMatchCount = false;
+    const isPreferMatchCountOverPair = false;
     const setPlayers = vi.fn();
     const setGameRounds = vi.fn();
     const setSwapPlayer = vi.fn();
@@ -170,11 +191,15 @@ describe("createMatch", () => {
       setGameRounds,
       pairs,
       matches,
+      dispRound,
+      generateMode,
       setSwapPlayer,
       genderSetting,
+      isAdjustMatchCount,
+      isPreferMatchCountOverPair,
       setDispRound,
       setIsLoading,
-      setNumOfGenerate
+      setNumOfGenerate,
     );
 
     // setPlayersの引数から試合数を取得
