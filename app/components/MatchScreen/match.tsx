@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { chunkArray } from "@/utils/chunkArray";
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import {
@@ -142,15 +143,6 @@ const Match: React.FC<MatchProps> = ({
   const restPlayers = players.filter(
     (player) => player.isJoin && !playablePlayerIds.has(player.id),
   );
-
-  // 追加: restPlayers を 2 件ずつの行に分割するヘルパー
-  const chunkArray = (arr: Player[], size = 2) => {
-    const chunks: Player[][] = [];
-    for (let i = 0; i < arr.length; i += size) {
-      chunks.push(arr.slice(i, i + size));
-    }
-    return chunks;
-  };
 
   const restRows = chunkArray(restPlayers, 2);
 
