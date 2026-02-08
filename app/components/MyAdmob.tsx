@@ -66,7 +66,7 @@ export default function MyAdmob({ size = BannerAdSize.BANNER }: Props) {
 
   const unitId = "ca-app-pub-1546884469851348/1540733171";
 
-  if (!BannerAd) {
+  if (__DEV__ || !BannerAd) {
     return (
       <View
         style={{
