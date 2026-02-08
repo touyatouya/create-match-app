@@ -146,63 +146,43 @@ const Match: React.FC<MatchProps> = ({
 
   const restRows = chunkArray(restPlayers, 2);
 
-  const changePlayer = (targetPlayerId: number, selectedPlayerId: number) => {
-    setGameRounds((prevGameRounds) => {
-      let sourceSetIndex = -1,
-        sourceMatchIndex = -1,
-        sourceTeam: "teamA" | "teamB" = "teamA",
-        sourceIndex = -1;
-
-      let targetSetIndex = -1,
-        targetMatchIndex = -1,
-        targetTeam: "teamA" | "teamB" = "teamA",
-        targetIndex = -1;
-
-      // プレイヤーBの位置を探す
-      for (let csIdx = 0; csIdx < prevGameRounds.length; csIdx++) {
-        const courts = prevGameRounds[csIdx].matches;
-        for (let mIdx = 0; mIdx < courts.length; mIdx++) {
-          const match = courts[mIdx];
-          const teamAIdx = match.teamA.indexOf(selectedPlayerId);
-          if (teamAIdx !== -1) {
-            sourceSetIndex = csIdx;
-            sourceMatchIndex = mIdx;
-            sourceTeam = "teamA";
-            sourceIndex = teamAIdx;
-          }
-          const teamBIdx = match.teamB.indexOf(selectedPlayerId);
-          if (teamBIdx !== -1) {
-            sourceSetIndex = csIdx;
-            sourceMatchIndex = mIdx;
-            sourceTeam = "teamB";
-            sourceIndex = teamBIdx;
-          }
-
-          const teamAIdxA = match.teamA.indexOf(targetPlayerId);
-          if (teamAIdxA !== -1) {
-            targetSetIndex = csIdx;
-            targetMatchIndex = mIdx;
-            targetTeam = "teamA";
-            targetIndex = teamAIdxA;
-          }
-          const teamBIdxA = match.teamB.indexOf(targetPlayerId);
-          if (teamBIdxA !== -1) {
-            targetSetIndex = csIdx;
-            targetMatchIndex = mIdx;
-            targetTeam = "teamB";
-            targetIndex = teamBIdxA;
-          }
+  const findPlayerInGameRound = (playerId: number, gameRounds: GameRound[]) => {
+    for (let grIdx = 0; grIdx < gameRounds.length; grIdx++) {
+      for (
+        let matchIdx = 0;
+        matchIdx < gameRounds[grIdx].matches.length;
+        matchIdx++
+      ) {
+        const match = gameRounds[grIdx].matches[matchIdx];
+        if (match.teamA.includes(playerId)) {
+          return {
+            gameRoundIdx: grIdx,
+            matchIdx: matchIdx,
+            team: "teamA" as const,
+            teamIdx: match.teamA.indexOf(playerId) as number,
+          };
+        } else if (match.teamB.includes(playerId)) {
+          return {
+            gameRoundIdx: grIdx,
+            team: "teamB" as const,
+            matchIdx: matchIdx,
+            teamIdx: match.teamB.indexOf(playerId) as number,
+          };
         }
       }
+    }
+    return null;
+  };
 
-      if (
-        sourceSetIndex === -1 ||
-        sourceMatchIndex === -1 ||
-        sourceIndex === -1 ||
-        targetSetIndex === -1 ||
-        targetMatchIndex === -1 ||
-        targetIndex === -1
-      ) {
+  const changePlayer = (targetPlayerId: number, selectedPlayerId: number) => {
+    setGameRounds((prevGameRounds) => {
+      const targetIdx = findPlayerInGameRound(targetPlayerId, prevGameRounds);
+      const selectedIdx = findPlayerInGameRound(
+        selectedPlayerId,
+        prevGameRounds,
+      );
+
+      if (!targetIdx || !selectedIdx) {
         return prevGameRounds;
       }
 
@@ -214,24 +194,28 @@ const Match: React.FC<MatchProps> = ({
 
             // プレイヤーAの位置をプレイヤーBに置換
             if (
-              csIdx === targetSetIndex &&
+              csIdx === targetIdx.gameRoundIdx &&
               m.id ===
-                prevGameRounds[targetSetIndex].matches[targetMatchIndex].id
+                prevGameRounds[targetIdx.gameRoundIdx].matches[
+                  targetIdx.matchIdx
+                ].id
             ) {
-              const newTeam = [...m[targetTeam]];
-              newTeam[targetIndex] = selectedPlayerId;
-              updatedMatch[targetTeam] = newTeam;
+              const newTeam = [...m[targetIdx.team]];
+              newTeam[targetIdx.teamIdx] = selectedPlayerId;
+              updatedMatch[targetIdx.team] = newTeam;
             }
 
             // プレイヤーBの位置をプレイヤーAに置換
             if (
-              csIdx === sourceSetIndex &&
+              csIdx === selectedIdx.gameRoundIdx &&
               m.id ===
-                prevGameRounds[sourceSetIndex].matches[sourceMatchIndex].id
+                prevGameRounds[selectedIdx.gameRoundIdx].matches[
+                  selectedIdx.matchIdx
+                ].id
             ) {
-              const newTeam = [...m[sourceTeam]];
-              newTeam[sourceIndex] = targetPlayerId;
-              updatedMatch[sourceTeam] = newTeam;
+              const newTeam = [...m[selectedIdx.team]];
+              newTeam[selectedIdx.teamIdx] = targetPlayerId;
+              updatedMatch[selectedIdx.team] = newTeam;
             }
 
             return updatedMatch;
