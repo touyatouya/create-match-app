@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Checkbox from "../CheckBox";
+import CourtTitle from "./courtTitle";
 import MatchPlayer from "./matchPlayer";
 import { countMatch } from "./util";
 
@@ -114,43 +114,13 @@ const RenderMatch: React.FC<MatchProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-          {generateMode === GenerateMode.FILL_ENPTY &&
-          !isNoMatch &&
-          canCheck ? (
-            <Checkbox
-              onChange={() => {
-                setGameRounds((prev) => {
-                  return prev.map((gameRound, i) => {
-                    const newMatches = gameRound.matches.map((match) => {
-                      if (!match.isFinished && match.courtId === courtId) {
-                        return {
-                          ...match,
-                          canInsertNext: !match.canInsertNext,
-                          finishRound: dispRound,
-                        };
-                      }
-                      return {
-                        ...match,
-                      };
-                    });
-
-                    return {
-                      ...gameRound,
-                      matches: newMatches,
-                    };
-                  });
-                });
-                resetSwap();
-              }}
-              label={`${courtNumber}コート`}
-              labelStyle={styles.courtName}
-              checked={item.canInsertNext}
-            />
-          ) : (
-            <Text style={[styles.courtName]}>{courtNumber}コート</Text>
-          )}
-        </View>
+        <CourtTitle
+          item={item}
+          courtId={courtId}
+          courtNumber={courtNumber}
+          canCheck={canCheck}
+          dispRound={dispRound}
+        />
         {generateMode === GenerateMode.FILL_ENPTY &&
           !isNoMatch &&
           canDelete &&
