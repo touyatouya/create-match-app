@@ -74,7 +74,7 @@ export const createMatch = async (
     .flatMap((match) => match.courtId);
 
   const avaibleCourts =
-    genareteMode === GenerateMode.FILL_ENPTY
+    genareteMode === GenerateMode.FILL_EMPTY
       ? courts.filter(
           (court) =>
             playingCourtIds == null ||

@@ -38,7 +38,7 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
 
   return (
     <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-      {generateMode === GenerateMode.FILL_ENPTY && !isNoMatch && canCheck ? (
+      {generateMode === GenerateMode.FILL_EMPTY && !isNoMatch && canCheck ? (
         <Checkbox
           onChange={() => {
             setGameRounds((prev) => {

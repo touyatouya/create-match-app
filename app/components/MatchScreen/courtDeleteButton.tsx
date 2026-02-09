@@ -45,7 +45,7 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
     (item.teamB == null || item.teamB.length === 0);
 
   if (
-    generateMode !== GenerateMode.FILL_ENPTY ||
+    generateMode !== GenerateMode.FILL_EMPTY ||
     isNoMatch ||
     !canDelete ||
     item.canInsertNext

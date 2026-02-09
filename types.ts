@@ -10,12 +10,6 @@ export interface Player {
   anonymousNumber: number | null;
 }
 
-// export interface Filter {
-//   id: number;
-//   name: string;
-//   players: number[];
-// }
-
 export enum Gender {
   男性 = "男性",
   女性 = "女性",
@@ -44,7 +38,7 @@ export interface GameRound {
 
 export enum GenerateMode {
   REPLACE_ALL = "replace_all",
-  FILL_ENPTY = "fill_empty",
+  FILL_EMPTY = "fill_empty",
 }
 
 export interface Pair {

@@ -191,7 +191,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
           key={playerId}
           style={[
             styles.playerButton,
-            generateMode === GenerateMode.FILL_ENPTY &&
+            generateMode === GenerateMode.FILL_EMPTY &&
               isFinished && { opacity: 0.5 },
           ]}
         >

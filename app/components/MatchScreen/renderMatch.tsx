@@ -61,9 +61,9 @@ const RenderMatch: React.FC<MatchProps> = ({
     <Animated.View
       style={[
         styles.matchCard,
-        generateMode === GenerateMode.FILL_ENPTY &&
+        generateMode === GenerateMode.FILL_EMPTY &&
           !isNoMatch && { paddingTop: 0, paddingBottom: 4 },
-        generateMode === GenerateMode.FILL_ENPTY &&
+        generateMode === GenerateMode.FILL_EMPTY &&
           item.canInsertNext && {
             backgroundColor: ColorPalette.finished,
           },
@@ -113,7 +113,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                   playerId={playerId}
                   partnerId={partnerId as number}
                   canSwap={
-                    generateMode === GenerateMode.FILL_ENPTY
+                    generateMode === GenerateMode.FILL_EMPTY
                       ? canSwap && !item.canInsertNext
                       : dispRound === gameRounds.length
                   }
@@ -137,7 +137,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                   playerId={playerId}
                   partnerId={partnerId as number}
                   canSwap={
-                    generateMode === GenerateMode.FILL_ENPTY
+                    generateMode === GenerateMode.FILL_EMPTY
                       ? canSwap && !item.canInsertNext
                       : dispRound === gameRounds.length
                   }

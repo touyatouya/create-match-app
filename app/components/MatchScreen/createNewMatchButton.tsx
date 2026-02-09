@@ -47,7 +47,7 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
     .flatMap((match) => match.courtId);
 
   const avaibleCourts =
-    generateMode === GenerateMode.FILL_ENPTY
+    generateMode === GenerateMode.FILL_EMPTY
       ? courts.filter(
           (court) =>
             playingCourtIds == null ||
@@ -108,7 +108,7 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
         }
       }}
       style={
-        generateMode === GenerateMode.FILL_ENPTY
+        generateMode === GenerateMode.FILL_EMPTY
           ? { marginVertical: 2 }
           : undefined
       }

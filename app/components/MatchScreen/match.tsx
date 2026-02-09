@@ -130,7 +130,7 @@ const Match: React.FC<MatchProps> = ({
         setDispRound={setDispRound}
       />
       {(gameRounds[dispRound - 1] != null ||
-        generateMode === GenerateMode.FILL_ENPTY) && (
+        generateMode === GenerateMode.FILL_EMPTY) && (
         <SectionList
           sections={sections}
           keyExtractor={(item, index) =>
@@ -153,7 +153,7 @@ const Match: React.FC<MatchProps> = ({
                   courtId={courtId}
                   courtNumber={courtNumber}
                   showMatchCount={true}
-                  canCheck={generateMode === GenerateMode.FILL_ENPTY}
+                  canCheck={generateMode === GenerateMode.FILL_EMPTY}
                   canDelete={true}
                   canSwap={true}
                   dispRound={dispRound}
@@ -175,7 +175,7 @@ const Match: React.FC<MatchProps> = ({
           }}
         />
       )}
-      {generateMode === GenerateMode.FILL_ENPTY && (
+      {generateMode === GenerateMode.FILL_EMPTY && (
         <CreateNewMatchButton
           dispRound={dispRound}
           setDispRound={setDispRound}

@@ -290,7 +290,7 @@ const PlayerScreen: React.FC = () => {
             <SegmentControl
               options={[
                 { label: "一括", value: GenerateMode.REPLACE_ALL },
-                { label: "流し込み", value: GenerateMode.FILL_ENPTY },
+                { label: "流し込み", value: GenerateMode.FILL_EMPTY },
               ]}
               value={generateMode}
               onChange={(v) => {

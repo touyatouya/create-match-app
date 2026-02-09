@@ -18,7 +18,7 @@ const FillEmptyMatchHeader: React.FC<FillEmptyMatchHeaderProps> = ({
     (gameRound) => gameRound.matches,
   );
 
-  if (generateMode !== GenerateMode.FILL_ENPTY || matches.length === 0) {
+  if (generateMode !== GenerateMode.FILL_EMPTY || matches.length === 0) {
     return null;
   }
 
