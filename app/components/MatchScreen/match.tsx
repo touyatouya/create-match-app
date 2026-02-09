@@ -23,7 +23,7 @@ import {
   Player,
 } from "../../../types";
 import CreateNewMatchButton from "./createNewMatchButton";
-import MatchHeader from "./matchHeader";
+import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import RenderMatch from "./renderMatch";
 import RestHeader from "./restHeader";
 import RestRow from "./restRow";
@@ -322,7 +322,7 @@ const Match: React.FC<MatchProps> = ({
           setDispRound={setDispRound}
         />
       )}
-      <MatchHeader resetSwap={resetSwap} />
+      <FillEmptyMatchHeader resetSwap={resetSwap} />
       {generateMode === GenerateMode.REPLACE_ALL && (
         <View
           style={{

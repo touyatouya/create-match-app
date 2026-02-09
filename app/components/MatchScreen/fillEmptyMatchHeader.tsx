@@ -5,11 +5,13 @@ import { GenerateMode, Match as MatchType } from "../../../types";
 import AllCourtCheckBox from "./allCourtCheckBox";
 import HistoryButton from "./historyButton";
 
-interface MatchHeaderProps {
+interface FillEmptyMatchHeaderProps {
   resetSwap: () => void;
 }
 
-const MatchHeader: React.FC<MatchHeaderProps> = ({ resetSwap }) => {
+const FillEmptyMatchHeader: React.FC<FillEmptyMatchHeaderProps> = ({
+  resetSwap,
+}) => {
   const { gameRounds, generateMode } = useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(
@@ -34,4 +36,4 @@ const MatchHeader: React.FC<MatchHeaderProps> = ({ resetSwap }) => {
   );
 };
 
-export default MatchHeader;
+export default FillEmptyMatchHeader;
