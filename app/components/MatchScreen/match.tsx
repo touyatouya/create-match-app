@@ -5,14 +5,8 @@ import { globalStyles } from "@/styles/global";
 import { chunkArray } from "@/utils/chunkArray";
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import {
-  getOpenAppCount,
-  markReviewRequersted,
-  shouldShowReviewRequest,
-} from "@/utils/storeReview";
-import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
-import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
   LayoutAnimation,
@@ -28,12 +22,12 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
-import PrimaryButton from "../PrimaryButton";
+import CreateNewMatchButton from "./createNewMatchButton";
 import MatchHeader from "./matchHeader";
 import RenderMatch from "./renderMatch";
 import RestHeader from "./restHeader";
 import RestRow from "./restRow";
-import { countMatch, createMatch } from "./util";
+import { countMatch } from "./util";
 
 type SectionDataItem = MatchType | MatchType[] | Player | Player[]; // Player[] は休憩中プレイヤー行用
 
@@ -81,8 +75,6 @@ const Match: React.FC<MatchProps> = ({
     pairs,
     courts,
     setIsLoading,
-    setNewGames,
-    isAdjustMatchCount,
     isPreferMatchCountOverPair,
   } = useContext(AppContext);
 
@@ -308,21 +300,6 @@ const Match: React.FC<MatchProps> = ({
     },
   ];
 
-  const playingCourtIds = gameRounds
-    .flatMap((gameRound) => gameRound.matches)
-    .filter((match) => !match.canInsertNext)
-    .flatMap((match) => match.courtId);
-
-  const avaibleCourts =
-    generateMode === GenerateMode.FILL_ENPTY
-      ? courts.filter(
-          (court) =>
-            playingCourtIds == null ||
-            playingCourtIds.length === 0 ||
-            !playingCourtIds.includes(court.id),
-        )
-      : courts;
-
   const resetSwap = () => {
     setSwap({
       player: null,
@@ -339,48 +316,10 @@ const Match: React.FC<MatchProps> = ({
   return (
     <View style={{ flex: 1 }}>
       {generateMode === GenerateMode.REPLACE_ALL && (
-        <PrimaryButton
-          text="新しい組み合わせを生成"
-          disabled={avaibleCourts.length === 0}
-          icon={
-            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-          }
-          onPress={async () => {
-            setIsLoading(true);
-            await setTimeout(() => {
-              createMatch(
-                players,
-                setPlayers,
-                courts,
-                gameRounds,
-                setGameRounds,
-                pairs,
-                matches,
-                dispRound,
-                generateMode,
-                resetSwap,
-                genderSetting,
-                isAdjustMatchCount,
-                isPreferMatchCountOverPair,
-                setDispRound,
-                setIsLoading,
-                setNewGames,
-              );
-            }, 0);
-
-            const openAppCount = await getOpenAppCount();
-            const canShow = await shouldShowReviewRequest();
-            if (
-              matches.length >= 12 &&
-              openAppCount >= 5 &&
-              canShow &&
-              (await StoreReview.hasAction())
-            ) {
-              StoreReview.requestReview();
-              markReviewRequersted();
-            }
-          }}
-          style={{ marginVertical: 2 }}
+        <CreateNewMatchButton
+          setSwap={setSwap}
+          dispRound={dispRound}
+          setDispRound={setDispRound}
         />
       )}
       <MatchHeader resetSwap={resetSwap} />
@@ -581,48 +520,10 @@ const Match: React.FC<MatchProps> = ({
         />
       )}
       {generateMode === GenerateMode.FILL_ENPTY && (
-        <PrimaryButton
-          text="新しい組み合わせを生成"
-          disabled={avaibleCourts.length === 0}
-          icon={
-            <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
-          }
-          onPress={async () => {
-            setIsLoading(true);
-            await setTimeout(() => {
-              createMatch(
-                players,
-                setPlayers,
-                courts,
-                gameRounds,
-                setGameRounds,
-                pairs,
-                matches,
-                dispRound,
-                generateMode,
-                resetSwap,
-                genderSetting,
-                isAdjustMatchCount,
-                isPreferMatchCountOverPair,
-                setDispRound,
-                setIsLoading,
-                setNewGames,
-              );
-            }, 0);
-
-            const openAppCount = await getOpenAppCount();
-            const canShow = await shouldShowReviewRequest();
-            if (
-              matches.length >= 12 &&
-              openAppCount >= 5 &&
-              canShow &&
-              (await StoreReview.hasAction())
-            ) {
-              StoreReview.requestReview();
-              markReviewRequersted();
-            }
-          }}
-          style={{ marginVertical: 2 }}
+        <CreateNewMatchButton
+          setSwap={setSwap}
+          dispRound={dispRound}
+          setDispRound={setDispRound}
         />
       )}
     </View>
