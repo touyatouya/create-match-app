@@ -50,8 +50,20 @@ type Section = {
 };
 
 interface MatchProps {
-  swapPlayer: number | null;
-  setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>;
+  swap: {
+    player: number | null;
+    matchId: number | null;
+    partner: number | null;
+    isRestPlayer: boolean;
+  };
+  setSwap: React.Dispatch<
+    React.SetStateAction<{
+      player: number | null;
+      matchId: number | null;
+      partner: number | null;
+      isRestPlayer: boolean;
+    }>
+  >;
   genderSetting: GenderPreferenceSetting;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
@@ -59,8 +71,8 @@ interface MatchProps {
 }
 
 const Match: React.FC<MatchProps> = ({
-  swapPlayer,
-  setSwapPlayer,
+  swap,
+  setSwap,
   genderSetting,
   dispRound,
   setDispRound,
@@ -80,36 +92,74 @@ const Match: React.FC<MatchProps> = ({
     isPreferMatchCountOverPair,
   } = useContext(AppContext);
 
-  const selectSwapPlayer = (id: number, partnerId?: number | null) => {
+  const selectSwapPlayer = (
+    matchId: number,
+    playerId: number,
+    partnerId: number,
+  ) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setSwapPlayer((prev) => {
-      let newSwapPlayer: number | null = null;
-      const isRestPlayerPrev = restPlayers.some(
-        (restPlayer) => restPlayer.id === prev,
-      );
-      const isRestPlayerId = restPlayers.some(
-        (restPlayer) => restPlayer.id === id,
-      );
-      if (prev === id) {
-        newSwapPlayer = null;
-      } else if (prev != null) {
-        if (partnerId != null && prev === partnerId) {
-          return id;
-        } else if (isRestPlayerId && isRestPlayerPrev) {
-          return id;
-        } else if (isRestPlayerPrev) {
-          changePlayableRestPlayer(id, prev);
-        } else if (isRestPlayerId) {
-          changePlayableRestPlayer(prev, id);
-        } else {
-          changePlayer(prev, id);
-        }
-        newSwapPlayer = null;
-      } else {
-        newSwapPlayer = id;
+    setSwap((prev) => {
+      if (prev.player === playerId) {
+        return {
+          player: null,
+          matchId: null,
+          partner: null,
+          isRestPlayer: false,
+        };
       }
 
-      return newSwapPlayer;
+      if (prev.player == null || prev.partner === playerId) {
+        return {
+          player: playerId,
+          matchId,
+          partner: partnerId,
+          isRestPlayer: false,
+        };
+      }
+
+      if (prev.isRestPlayer) {
+        changePlayableRestPlayer(matchId, playerId, prev.player);
+      } else {
+        changePlayer(matchId, playerId, prev.matchId as number, prev.player);
+      }
+
+      return {
+        player: null,
+        matchId: null,
+        partner: null,
+        isRestPlayer: false,
+      };
+    });
+  };
+
+  const selectRestSwap = (playerId: number) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSwap((prev) => {
+      if (prev.player === playerId) {
+        return {
+          player: null,
+          matchId: null,
+          partner: null,
+          isRestPlayer: false,
+        };
+      }
+
+      if (prev.player == null || prev.isRestPlayer) {
+        return {
+          player: playerId,
+          matchId: null,
+          partner: null,
+          isRestPlayer: true,
+        };
+      }
+
+      changePlayableRestPlayer(prev.matchId as number, prev.player, playerId);
+      return {
+        player: null,
+        matchId: null,
+        partner: null,
+        isRestPlayer: false,
+      };
     });
   };
 
@@ -146,76 +196,67 @@ const Match: React.FC<MatchProps> = ({
 
   const restRows = chunkArray(restPlayers, 2);
 
-  const findPlayerInGameRound = (playerId: number, gameRounds: GameRound[]) => {
-    for (let grIdx = 0; grIdx < gameRounds.length; grIdx++) {
-      for (
-        let matchIdx = 0;
-        matchIdx < gameRounds[grIdx].matches.length;
-        matchIdx++
-      ) {
-        const match = gameRounds[grIdx].matches[matchIdx];
-        if (match.teamA.includes(playerId)) {
-          return {
-            gameRoundIdx: grIdx,
-            matchIdx: matchIdx,
-            team: "teamA" as const,
-            teamIdx: match.teamA.indexOf(playerId) as number,
-          };
-        } else if (match.teamB.includes(playerId)) {
-          return {
-            gameRoundIdx: grIdx,
-            team: "teamB" as const,
-            matchIdx: matchIdx,
-            teamIdx: match.teamB.indexOf(playerId) as number,
-          };
-        }
-      }
+  const findPlayerTeamInMatch = (
+    playerId: number,
+    gameRounds: GameRound[],
+    matchId: number,
+  ) => {
+    const matches = gameRounds.flatMap((gr) => gr.matches.map((m) => m));
+    const targetMatch = matches.find((m) => m.id === matchId);
+    if (!targetMatch) return null;
+
+    if (targetMatch.teamA.includes(playerId)) {
+      return {
+        team: "teamA" as const,
+        teamIdx: targetMatch.teamA.indexOf(playerId) as number,
+      };
+    } else if (targetMatch.teamB.includes(playerId)) {
+      return {
+        team: "teamB" as const,
+        teamIdx: targetMatch.teamB.indexOf(playerId) as number,
+      };
     }
     return null;
   };
 
-  const changePlayer = (targetPlayerId: number, selectedPlayerId: number) => {
+  const changePlayer = (
+    targetMatchId: number,
+    targetPlayerId: number,
+    selectedMatchId: number,
+    selectedPlayerId: number,
+  ) => {
     setGameRounds((prevGameRounds) => {
-      const targetIdx = findPlayerInGameRound(targetPlayerId, prevGameRounds);
-      const selectedIdx = findPlayerInGameRound(
+      const targetTeam = findPlayerTeamInMatch(
+        targetPlayerId,
+        prevGameRounds,
+        targetMatchId,
+      );
+      const selectedTeam = findPlayerTeamInMatch(
         selectedPlayerId,
         prevGameRounds,
+        selectedMatchId,
       );
 
-      if (!targetIdx || !selectedIdx) {
-        return prevGameRounds;
-      }
+      if (!targetTeam || !selectedTeam) return prevGameRounds;
 
-      return prevGameRounds.map((gr, csIdx) => {
+      return prevGameRounds.map((gr) => {
         return {
           ...gr,
           matches: gr.matches.map((m) => {
             let updatedMatch = { ...m };
 
             // プレイヤーAの位置をプレイヤーBに置換
-            if (
-              csIdx === targetIdx.gameRoundIdx &&
-              m.id ===
-                prevGameRounds[targetIdx.gameRoundIdx].matches[
-                  targetIdx.matchIdx
-                ].id
-            ) {
-              const newTeam = [...m[targetIdx.team]];
-              newTeam[targetIdx.teamIdx] = selectedPlayerId;
-              updatedMatch[targetIdx.team] = newTeam;
+            if (m.id === targetMatchId) {
+              const newTeam = [...m[targetTeam.team]];
+              newTeam[targetTeam.teamIdx] = selectedPlayerId;
+              updatedMatch[targetTeam.team] = newTeam;
             }
 
             // プレイヤーBの位置をプレイヤーAに置換
-            if (
-              csIdx === selectedIdx.gameRoundIdx &&
-              m.id ===
-                prevGameRounds[selectedIdx.gameRoundIdx].matches[
-                  selectedIdx.matchIdx
-                ].id
-            ) {
-              const newTeam = [...m[selectedIdx.team]];
-              newTeam[selectedIdx.teamIdx] = targetPlayerId;
-              updatedMatch[selectedIdx.team] = newTeam;
+            if (m.id === selectedMatchId) {
+              const newTeam = [...m[selectedTeam.team]];
+              newTeam[selectedTeam.teamIdx] = targetPlayerId;
+              updatedMatch[selectedTeam.team] = newTeam;
             }
 
             return updatedMatch;
@@ -226,44 +267,37 @@ const Match: React.FC<MatchProps> = ({
   };
 
   const changePlayableRestPlayer = (
+    matchId: number,
     playablePlayerId: number,
     restPlayerId: number,
   ) => {
     let newGameRounds: GameRound[] = [];
     setGameRounds((prevGameRounds) => {
-      const playablePlayerIdx = findPlayerInGameRound(
+      const playablePlayerTeam = findPlayerTeamInMatch(
         playablePlayerId,
         prevGameRounds,
+        matchId,
       );
-
-      if (!playablePlayerIdx) {
+      if (!playablePlayerTeam) {
         return prevGameRounds;
       }
 
-      newGameRounds = prevGameRounds.map((gameRound, gameRound_i) => {
-        if (gameRound_i === playablePlayerIdx.gameRoundIdx) {
-          return {
-            ...gameRound,
-            matches: gameRound.matches.map((match) => {
-              let updatedMatch = { ...match };
+      newGameRounds = prevGameRounds.map((gameRound) => {
+        return {
+          ...gameRound,
+          matches: gameRound.matches.map((match) => {
+            let updatedMatch = { ...match };
 
-              // プレイ中プレイヤーの位置を休憩プレイヤーに置換
-              if (
-                match.id ===
-                prevGameRounds[gameRound_i].matches[playablePlayerIdx.matchIdx]
-                  .id
-              ) {
-                const newTeam = [...match[playablePlayerIdx.team]];
-                newTeam[playablePlayerIdx.teamIdx] = restPlayerId;
-                updatedMatch[playablePlayerIdx.team] = newTeam;
-              }
+            // プレイ中プレイヤーの位置を休憩プレイヤーに置換
+            if (match.id === matchId) {
+              const newTeam = [...match[playablePlayerTeam.team]];
+              newTeam[playablePlayerTeam.teamIdx] = restPlayerId;
+              updatedMatch[playablePlayerTeam.team] = newTeam;
+            }
 
-              return updatedMatch;
-            }),
-          };
-        } else {
-          return { ...gameRound };
-        }
+            return updatedMatch;
+          }),
+        };
       });
 
       return newGameRounds;
@@ -282,7 +316,7 @@ const Match: React.FC<MatchProps> = ({
             <Text
               style={[
                 styles.restingPlayerText,
-                swapPlayer === player.id && styles.restingSwapPlayerName,
+                swap.player === player.id && styles.restingSwapPlayerName,
               ]}
               numberOfLines={1}
               ellipsizeMode="tail"
@@ -318,9 +352,9 @@ const Match: React.FC<MatchProps> = ({
           key={player.id}
           style={[
             styles.restingPlayerItem,
-            swapPlayer === player.id && styles.restingSwapPlayerItem,
+            swap.player === player.id && styles.restingSwapPlayerItem,
           ]}
-          onPress={() => selectSwapPlayer(player.id)}
+          onPress={() => selectRestSwap(player.id)}
         >
           {content}
         </TouchableOpacity>
@@ -426,6 +460,15 @@ const Match: React.FC<MatchProps> = ({
     });
   };
 
+  const restSwap = () => {
+    setSwap({
+      player: null,
+      matchId: null,
+      partner: null,
+      isRestPlayer: false,
+    });
+  };
+
   useEffect(() => {
     setIsLoading(false);
   }, [gameRounds, setIsLoading]);
@@ -452,7 +495,7 @@ const Match: React.FC<MatchProps> = ({
                 matches,
                 dispRound,
                 generateMode,
-                setSwapPlayer,
+                restSwap,
                 genderSetting,
                 isAdjustMatchCount,
                 isPreferMatchCountOverPair,
@@ -493,7 +536,7 @@ const Match: React.FC<MatchProps> = ({
           <Checkbox
             onChange={() => {
               setAllMatchCanInsertNext(isAllMatchCanInsertNext);
-              setSwapPlayer(null);
+              restSwap();
             }}
             label="全コート終了"
             checked={isAllMatchCanInsertNext}
@@ -589,7 +632,7 @@ const Match: React.FC<MatchProps> = ({
                       players,
                       setPlayers,
                     );
-                    setSwapPlayer(null);
+                    restSwap();
                     setDispRound((prev) => prev - 1);
 
                     await clearGameData();
@@ -670,8 +713,8 @@ const Match: React.FC<MatchProps> = ({
                   courtMatch={courtMatch}
                   courtId={courtId}
                   courtNumber={courtNumber}
-                  swapPlayer={swapPlayer}
-                  setSwapPlayer={setSwapPlayer}
+                  swapPlayer={swap.player}
+                  restSwap={restSwap}
                   selectSwapPlayer={selectSwapPlayer}
                   showMatchCount={true}
                   canCheck={generateMode === GenerateMode.FILL_ENPTY}
@@ -732,7 +775,7 @@ const Match: React.FC<MatchProps> = ({
                 matches,
                 dispRound,
                 generateMode,
-                setSwapPlayer,
+                restSwap,
                 genderSetting,
                 isAdjustMatchCount,
                 isPreferMatchCountOverPair,

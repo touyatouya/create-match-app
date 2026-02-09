@@ -18,7 +18,12 @@ const MatchScreen: React.FC = () => {
   const { setPlayers, gameRounds, setGameRounds, isLoading, genderSetting } =
     useContext(AppContext);
 
-  const [swapPlayer, setSwapPlayer] = useState<number | null>(null);
+  const [swap, setSwap] = useState<{
+    player: number | null;
+    matchId: number | null;
+    partner: number | null;
+    isRestPlayer: boolean;
+  }>({ player: null, matchId: null, partner: null, isRestPlayer: false });
   const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
@@ -40,7 +45,12 @@ const MatchScreen: React.FC = () => {
         };
       });
     });
-    setSwapPlayer(null);
+    setSwap({
+      player: null,
+      matchId: null,
+      partner: null,
+      isRestPlayer: false,
+    });
     setDispRound(0);
 
     clearGameData();
@@ -106,8 +116,8 @@ const MatchScreen: React.FC = () => {
       />
       <View style={styles.container}>
         <Match
-          swapPlayer={swapPlayer}
-          setSwapPlayer={setSwapPlayer}
+          swap={swap}
+          setSwap={setSwap}
           genderSetting={genderSetting}
           dispRound={dispRound}
           setDispRound={setDispRound}

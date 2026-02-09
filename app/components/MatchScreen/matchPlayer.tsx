@@ -9,16 +9,22 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
 
 interface MatchPlayerProps {
+  matchId: number;
   swapPlayer: number | null;
   playerId: number;
-  selectSwapPlayer: (id: number, partnerId?: number | null) => void;
-  partnerId: number | undefined | null;
+  selectSwapPlayer: (
+    matchId: number,
+    playerId: number,
+    partnerId: number,
+  ) => void;
+  partnerId: number;
   isSwap: boolean;
   showMatchCount: boolean;
   isFinished: boolean;
 }
 
 const MatchPlayer: React.FC<MatchPlayerProps> = ({
+  matchId,
   swapPlayer,
   playerId,
   selectSwapPlayer,
@@ -38,7 +44,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             swapPlayer === playerId && styles.swapPlayerButton,
           ]}
           onPress={async () => {
-            !isFinished && selectSwapPlayer(playerId, partnerId);
+            !isFinished && selectSwapPlayer(matchId, playerId, partnerId);
 
             await analytics().logEvent("swap_player");
           }}

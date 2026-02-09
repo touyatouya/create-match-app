@@ -24,8 +24,12 @@ interface MatchProps {
   courtId: number;
   courtNumber: number;
   swapPlayer: number | null;
-  setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>;
-  selectSwapPlayer: (id: number, partnerId?: number | null) => void;
+  restSwap: () => void;
+  selectSwapPlayer: (
+    matchId: number,
+    playerId: number,
+    partnerId: number,
+  ) => void;
   canCheck: boolean;
   canDelete: boolean;
   canSwap: boolean;
@@ -39,7 +43,7 @@ const RenderMatch: React.FC<MatchProps> = ({
   courtId,
   courtNumber,
   swapPlayer,
-  setSwapPlayer,
+  restSwap,
   selectSwapPlayer,
   canCheck,
   canDelete,
@@ -138,7 +142,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                     };
                   });
                 });
-                setSwapPlayer(null);
+                restSwap();
               }}
               label={`${courtNumber}コート`}
               labelStyle={styles.courtName}
@@ -183,7 +187,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                     players,
                     setPlayers,
                   );
-                  if (setSwapPlayer) setSwapPlayer(null);
+                  if (restSwap) restSwap();
 
                   await clearGameData();
                   await saveGameData({
@@ -219,14 +223,14 @@ const RenderMatch: React.FC<MatchProps> = ({
           <View style={styles.team}>
             {item.teamA?.map((playerId) => {
               const partnerId = item.teamA.find((id) => id !== playerId);
-              // console.log("playerId1", playerId);
               return (
                 <MatchPlayer
                   key={playerId}
+                  matchId={item.id}
                   swapPlayer={swapPlayer}
                   playerId={playerId}
                   selectSwapPlayer={selectSwapPlayer}
-                  partnerId={partnerId}
+                  partnerId={partnerId as number}
                   isSwap={
                     generateMode === GenerateMode.FILL_ENPTY
                       ? canSwap && !item.canInsertNext
@@ -245,14 +249,14 @@ const RenderMatch: React.FC<MatchProps> = ({
           <View style={styles.team}>
             {item.teamB?.map((playerId) => {
               const partnerId = item.teamB.find((id) => id !== playerId);
-              // console.log("playerId4", playerId);
               return (
                 <MatchPlayer
                   key={playerId}
+                  matchId={item.id}
                   swapPlayer={swapPlayer}
                   playerId={playerId}
                   selectSwapPlayer={selectSwapPlayer}
-                  partnerId={partnerId}
+                  partnerId={partnerId as number}
                   isSwap={
                     generateMode === GenerateMode.FILL_ENPTY
                       ? canSwap && !item.canInsertNext

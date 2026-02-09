@@ -24,7 +24,7 @@ export const createMatch = async (
   matches: MatchType[],
   dispRound: number,
   genareteMode: GenerateMode,
-  setSwapPlayer: React.Dispatch<React.SetStateAction<number | null>>,
+  restSwap: () => void,
   genderSetting: GenderPreferenceSetting,
   isAdjustMatchCount: boolean,
   isPreferMatchCountOverPair: boolean,
@@ -175,7 +175,7 @@ export const createMatch = async (
     (gameRound) => gameRound.matches,
   );
   const newPlayers = countMatch(newMatches, players, setPlayers);
-  setSwapPlayer(null);
+  restSwap();
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
     setDispRound(prevGameRounds + 1);
   }
