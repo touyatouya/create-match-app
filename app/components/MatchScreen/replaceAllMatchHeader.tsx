@@ -11,20 +11,11 @@ import { GameRound, GenerateMode } from "../../../types";
 import { countMatch } from "./util";
 
 interface ReplaceAllMatchHeaderProps {
-  setSwap: React.Dispatch<
-    React.SetStateAction<{
-      player: number | null;
-      matchId: number | null;
-      partner: number | null;
-      isRestPlayer: boolean;
-    }>
-  >;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ReplaceAllMatchHeader: React.FC<ReplaceAllMatchHeaderProps> = ({
-  setSwap,
   dispRound,
   setDispRound,
 }) => {
@@ -38,6 +29,7 @@ const ReplaceAllMatchHeader: React.FC<ReplaceAllMatchHeaderProps> = ({
     courts,
     isPreferMatchCountOverPair,
     genderSetting,
+    setSwap,
   } = useContext(AppContext);
 
   const resetSwap = () => {

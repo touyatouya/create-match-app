@@ -20,16 +20,8 @@ import { countMatch } from "./util";
 
 interface MatchProps {
   item: MatchType;
-  courtMatch: MatchType[];
   courtId: number;
   courtNumber: number;
-  swapPlayer: number | null;
-  restSwap: () => void;
-  selectSwapPlayer: (
-    matchId: number,
-    playerId: number,
-    partnerId: number,
-  ) => void;
   canCheck: boolean;
   canDelete: boolean;
   canSwap: boolean;
@@ -39,12 +31,8 @@ interface MatchProps {
 
 const RenderMatch: React.FC<MatchProps> = ({
   item,
-  courtMatch,
   courtId,
   courtNumber,
-  swapPlayer,
-  restSwap,
-  selectSwapPlayer,
   canCheck,
   canDelete,
   canSwap,
@@ -63,7 +51,18 @@ const RenderMatch: React.FC<MatchProps> = ({
     newGames,
     setNewGames,
     isPreferMatchCountOverPair,
+    swap,
+    setSwap,
   } = React.useContext(AppContext);
+
+  const resetSwap = () => {
+    setSwap({
+      player: null,
+      matchId: null,
+      partner: null,
+      isRestPlayer: false,
+    });
+  };
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
@@ -142,7 +141,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                     };
                   });
                 });
-                restSwap();
+                resetSwap();
               }}
               label={`${courtNumber}コート`}
               labelStyle={styles.courtName}
@@ -187,7 +186,7 @@ const RenderMatch: React.FC<MatchProps> = ({
                     players,
                     setPlayers,
                   );
-                  if (restSwap) restSwap();
+                  resetSwap();
 
                   await clearGameData();
                   await saveGameData({
@@ -227,9 +226,8 @@ const RenderMatch: React.FC<MatchProps> = ({
                 <MatchPlayer
                   key={playerId}
                   matchId={item.id}
-                  swapPlayer={swapPlayer}
+                  swapPlayer={swap.player}
                   playerId={playerId}
-                  selectSwapPlayer={selectSwapPlayer}
                   partnerId={partnerId as number}
                   isSwap={
                     generateMode === GenerateMode.FILL_ENPTY
@@ -253,9 +251,8 @@ const RenderMatch: React.FC<MatchProps> = ({
                 <MatchPlayer
                   key={playerId}
                   matchId={item.id}
-                  swapPlayer={swapPlayer}
+                  swapPlayer={swap.player}
                   playerId={playerId}
-                  selectSwapPlayer={selectSwapPlayer}
                   partnerId={partnerId as number}
                   isSwap={
                     generateMode === GenerateMode.FILL_ENPTY

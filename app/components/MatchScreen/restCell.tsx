@@ -18,14 +18,6 @@ import { countMatch } from "./util";
 
 interface RestCellProps {
   dispRound: number;
-  setSwap: React.Dispatch<
-    React.SetStateAction<{
-      player: number | null;
-      matchId: number | null;
-      partner: number | null;
-      isRestPlayer: boolean;
-    }>
-  >;
   swap: {
     player: number | null;
     matchId: number | null;
@@ -35,13 +27,8 @@ interface RestCellProps {
   player: Player;
 }
 
-const RestCell: React.FC<RestCellProps> = ({
-  dispRound,
-  setSwap,
-  swap,
-  player,
-}) => {
-  const { players, setPlayers, gameRounds, setGameRounds } =
+const RestCell: React.FC<RestCellProps> = ({ dispRound, swap, player }) => {
+  const { players, setPlayers, gameRounds, setGameRounds, setSwap } =
     useContext(AppContext);
 
   const selectRestSwap = (playerId: number) => {

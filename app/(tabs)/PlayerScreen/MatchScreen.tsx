@@ -15,15 +15,8 @@ import Match from "../../components/MatchScreen/match";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, gameRounds, setGameRounds, isLoading } =
+  const { setPlayers, gameRounds, setGameRounds, isLoading, swap, setSwap } =
     useContext(AppContext);
-
-  const [swap, setSwap] = useState<{
-    player: number | null;
-    matchId: number | null;
-    partner: number | null;
-    isRestPlayer: boolean;
-  }>({ player: null, matchId: null, partner: null, isRestPlayer: false });
   const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
@@ -56,7 +49,7 @@ const MatchScreen: React.FC = () => {
     clearGameData();
 
     await analytics().logEvent("reset_game");
-  }, [setGameRounds, setPlayers]);
+  }, [setGameRounds, setPlayers, setSwap]);
 
   return (
     <>
@@ -116,8 +109,6 @@ const MatchScreen: React.FC = () => {
       />
       <View style={styles.container}>
         <Match
-          swap={swap}
-          setSwap={setSwap}
           dispRound={dispRound}
           setDispRound={setDispRound}
           setSnackbarVisible={setSnackbarVisible}

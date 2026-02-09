@@ -1,4 +1,5 @@
 import ColorPalette from "@/constants/color";
+import { AppContext } from "@/context/AppContext";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Player } from "../../../types";
@@ -7,23 +8,10 @@ import RestCell from "./restCell";
 interface MatchProps {
   item: Player[];
   dispRound: number;
-  setSwap: React.Dispatch<
-    React.SetStateAction<{
-      player: number | null;
-      matchId: number | null;
-      partner: number | null;
-      isRestPlayer: boolean;
-    }>
-  >;
-  swap: {
-    player: number | null;
-    matchId: number | null;
-    partner: number | null;
-    isRestPlayer: boolean;
-  };
 }
 
-const RestRow: React.FC<MatchProps> = ({ item, dispRound, setSwap, swap }) => {
+const RestRow: React.FC<MatchProps> = ({ item, dispRound }) => {
+  const { swap } = React.useContext(AppContext);
   return (
     <View style={styles.restingRow}>
       {item.map((player, idx) => (
@@ -34,12 +22,7 @@ const RestRow: React.FC<MatchProps> = ({ item, dispRound, setSwap, swap }) => {
             idx === 0 ? { marginRight: 6 } : { marginLeft: 6 },
           ]}
         >
-          <RestCell
-            dispRound={dispRound}
-            setSwap={setSwap}
-            swap={swap}
-            player={player}
-          />
+          <RestCell dispRound={dispRound} swap={swap} player={player} />
         </View>
       ))}
       {item.length === 1 && (

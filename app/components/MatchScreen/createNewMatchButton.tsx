@@ -13,20 +13,11 @@ import PrimaryButton from "../PrimaryButton";
 import { createMatch } from "./util";
 
 interface CreateNewMatchButtonProps {
-  setSwap: React.Dispatch<
-    React.SetStateAction<{
-      player: number | null;
-      matchId: number | null;
-      partner: number | null;
-      isRestPlayer: boolean;
-    }>
-  >;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
-  setSwap,
   dispRound,
   setDispRound,
 }) => {
@@ -43,6 +34,7 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
     isAdjustMatchCount,
     isPreferMatchCountOverPair,
     genderSetting,
+    setSwap,
   } = useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(

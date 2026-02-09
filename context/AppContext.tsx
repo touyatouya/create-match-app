@@ -37,6 +37,20 @@ type AppContextType = {
   setIsAdjustMatchCount: React.Dispatch<React.SetStateAction<boolean>>;
   isPreferMatchCountOverPair: boolean;
   setIsPreferMatchCountOverPair: React.Dispatch<React.SetStateAction<boolean>>;
+  swap: {
+    player: number | null;
+    matchId: number | null;
+    partner: number | null;
+    isRestPlayer: boolean;
+  };
+  setSwap: React.Dispatch<
+    React.SetStateAction<{
+      player: number | null;
+      matchId: number | null;
+      partner: number | null;
+      isRestPlayer: boolean;
+    }>
+  >;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -64,6 +78,13 @@ export const AppContext = createContext<AppContextType>({
   setIsAdjustMatchCount: () => {},
   isPreferMatchCountOverPair: false,
   setIsPreferMatchCountOverPair: () => {},
+  swap: {
+    player: null,
+    matchId: null,
+    partner: null,
+    isRestPlayer: false,
+  },
+  setSwap: () => {},
 });
 
 type AppContextProps = {
@@ -95,6 +116,17 @@ export const AppProvider = ({ children }: AppContextProps) => {
     React.useState<boolean>(false);
   const [isPreferMatchCountOverPair, setIsPreferMatchCountOverPair] =
     React.useState<boolean>(false);
+  const [swap, setSwap] = React.useState<{
+    player: number | null;
+    matchId: number | null;
+    partner: number | null;
+    isRestPlayer: boolean;
+  }>({
+    player: null,
+    matchId: null,
+    partner: null,
+    isRestPlayer: false,
+  });
 
   return (
     <AppContext.Provider
@@ -123,6 +155,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setIsAdjustMatchCount,
         isPreferMatchCountOverPair,
         setIsPreferMatchCountOverPair,
+        swap,
+        setSwap,
       }}
     >
       {children}

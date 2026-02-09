@@ -1,22 +1,15 @@
 import { AppContext } from "@/context/AppContext";
 import { chunkArray } from "@/utils/chunkArray";
 import { generateUniqId } from "@/utils/createId";
-import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
 import React, { useContext, useEffect } from "react";
-import { LayoutAnimation, SectionList, View } from "react-native";
-import {
-  GameRound,
-  GenerateMode,
-  Match as MatchType,
-  Player,
-} from "../../../types";
+import { SectionList, View } from "react-native";
+import { GenerateMode, Match as MatchType, Player } from "../../../types";
 import CreateNewMatchButton from "./createNewMatchButton";
 import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import RenderMatch from "./renderMatch";
 import ReplaceAllMatchHeader from "./replaceAllMatchHeader";
 import RestHeader from "./restHeader";
 import RestRow from "./restRow";
-import { countMatch } from "./util";
 
 type SectionDataItem = MatchType | MatchType[] | Player | Player[]; // Player[] は休憩中プレイヤー行用
 
@@ -27,81 +20,18 @@ type Section = {
 };
 
 interface MatchProps {
-  swap: {
-    player: number | null;
-    matchId: number | null;
-    partner: number | null;
-    isRestPlayer: boolean;
-  };
-  setSwap: React.Dispatch<
-    React.SetStateAction<{
-      player: number | null;
-      matchId: number | null;
-      partner: number | null;
-      isRestPlayer: boolean;
-    }>
-  >;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
   setSnackbarVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Match: React.FC<MatchProps> = ({
-  swap,
-  setSwap,
   dispRound,
   setDispRound,
   setSnackbarVisible,
 }) => {
-  const {
-    players,
-    setPlayers,
-    gameRounds,
-    setGameRounds,
-    generateMode,
-    courts,
-    setIsLoading,
-  } = useContext(AppContext);
-
-  const selectSwapPlayer = (
-    matchId: number,
-    playerId: number,
-    partnerId: number,
-  ) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setSwap((prev) => {
-      if (prev.player === playerId) {
-        return {
-          player: null,
-          matchId: null,
-          partner: null,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.player == null || prev.partner === playerId) {
-        return {
-          player: playerId,
-          matchId,
-          partner: partnerId,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.isRestPlayer) {
-        changePlayableRestPlayer(matchId, playerId, prev.player);
-      } else {
-        changePlayer(matchId, playerId, prev.matchId as number, prev.player);
-      }
-
-      return {
-        player: null,
-        matchId: null,
-        partner: null,
-        isRestPlayer: false,
-      };
-    });
-  };
+  const { players, gameRounds, generateMode, courts, setIsLoading, setSwap } =
+    useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(
     (gameRound) => gameRound.matches,
@@ -135,95 +65,6 @@ const Match: React.FC<MatchProps> = ({
   );
 
   const restRows = chunkArray(restPlayers, 2);
-
-  const changePlayer = (
-    targetMatchId: number,
-    targetPlayerId: number,
-    selectedMatchId: number,
-    selectedPlayerId: number,
-  ) => {
-    setGameRounds((prevGameRounds) => {
-      const targetTeam = findPlayerTeamInMatch(
-        targetPlayerId,
-        prevGameRounds,
-        targetMatchId,
-      );
-      const selectedTeam = findPlayerTeamInMatch(
-        selectedPlayerId,
-        prevGameRounds,
-        selectedMatchId,
-      );
-
-      if (!targetTeam || !selectedTeam) return prevGameRounds;
-
-      return prevGameRounds.map((gr) => {
-        return {
-          ...gr,
-          matches: gr.matches.map((m) => {
-            let updatedMatch = { ...m };
-
-            // プレイヤーAの位置をプレイヤーBに置換
-            if (m.id === targetMatchId) {
-              const newTeam = [...m[targetTeam.team]];
-              newTeam[targetTeam.teamIdx] = selectedPlayerId;
-              updatedMatch[targetTeam.team] = newTeam;
-            }
-
-            // プレイヤーBの位置をプレイヤーAに置換
-            if (m.id === selectedMatchId) {
-              const newTeam = [...m[selectedTeam.team]];
-              newTeam[selectedTeam.teamIdx] = targetPlayerId;
-              updatedMatch[selectedTeam.team] = newTeam;
-            }
-
-            return updatedMatch;
-          }),
-        };
-      });
-    });
-  };
-
-  const changePlayableRestPlayer = (
-    matchId: number,
-    playablePlayerId: number,
-    restPlayerId: number,
-  ) => {
-    let newGameRounds: GameRound[] = [];
-    setGameRounds((prevGameRounds) => {
-      const playablePlayerTeam = findPlayerTeamInMatch(
-        playablePlayerId,
-        prevGameRounds,
-        matchId,
-      );
-      if (!playablePlayerTeam) {
-        return prevGameRounds;
-      }
-
-      newGameRounds = prevGameRounds.map((gameRound) => {
-        return {
-          ...gameRound,
-          matches: gameRound.matches.map((match) => {
-            let updatedMatch = { ...match };
-
-            // プレイ中プレイヤーの位置を休憩プレイヤーに置換
-            if (match.id === matchId) {
-              const newTeam = [...match[playablePlayerTeam.team]];
-              newTeam[playablePlayerTeam.teamIdx] = restPlayerId;
-              updatedMatch[playablePlayerTeam.team] = newTeam;
-            }
-
-            return updatedMatch;
-          }),
-        };
-      });
-
-      return newGameRounds;
-    });
-    const matches: MatchType[] = newGameRounds.flatMap(
-      (gameRound) => gameRound.matches,
-    );
-    countMatch([...matches], players, setPlayers);
-  };
 
   const matchListWithPlaceholders: MatchType[] = (() => {
     if (generateMode === GenerateMode.REPLACE_ALL) return [];
@@ -279,14 +120,12 @@ const Match: React.FC<MatchProps> = ({
     <View style={{ flex: 1 }}>
       {generateMode === GenerateMode.REPLACE_ALL && (
         <CreateNewMatchButton
-          setSwap={setSwap}
           dispRound={dispRound}
           setDispRound={setDispRound}
         />
       )}
       <FillEmptyMatchHeader resetSwap={resetSwap} />
       <ReplaceAllMatchHeader
-        setSwap={setSwap}
         dispRound={dispRound}
         setDispRound={setDispRound}
       />
@@ -307,19 +146,12 @@ const Match: React.FC<MatchProps> = ({
               const court = courts.find((court) => court.id === match.courtId);
               const courtId = court?.id as number;
               const courtNumber = court?.number as number;
-              const courtMatch = gameRounds
-                .flatMap((gameRound) => gameRound.matches)
-                .filter((match) => match.courtId === courtId);
 
               return (
                 <RenderMatch
                   item={match}
-                  courtMatch={courtMatch}
                   courtId={courtId}
                   courtNumber={courtNumber}
-                  swapPlayer={swap.player}
-                  restSwap={resetSwap}
-                  selectSwapPlayer={selectSwapPlayer}
                   showMatchCount={true}
                   canCheck={generateMode === GenerateMode.FILL_ENPTY}
                   canDelete={true}
@@ -329,14 +161,7 @@ const Match: React.FC<MatchProps> = ({
               );
             } else if (section.type === "rest") {
               const restRow = item as Player[];
-              return (
-                <RestRow
-                  item={restRow}
-                  dispRound={dispRound}
-                  setSwap={setSwap}
-                  swap={swap}
-                />
-              );
+              return <RestRow item={restRow} dispRound={dispRound} />;
             }
             return null;
           }}
@@ -352,7 +177,6 @@ const Match: React.FC<MatchProps> = ({
       )}
       {generateMode === GenerateMode.FILL_ENPTY && (
         <CreateNewMatchButton
-          setSwap={setSwap}
           dispRound={dispRound}
           setDispRound={setDispRound}
         />
