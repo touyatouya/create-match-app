@@ -20,18 +20,19 @@ type Section = {
 };
 
 interface MatchProps {
-  dispRound: number;
-  setDispRound: React.Dispatch<React.SetStateAction<number>>;
   setSnackbarVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Match: React.FC<MatchProps> = ({
-  dispRound,
-  setDispRound,
-  setSnackbarVisible,
-}) => {
-  const { players, gameRounds, generateMode, courts, setIsLoading, setSwap } =
-    useContext(AppContext);
+const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
+  const {
+    players,
+    gameRounds,
+    generateMode,
+    courts,
+    setIsLoading,
+    setSwap,
+    dispRound,
+  } = useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(
     (gameRound) => gameRound.matches,
@@ -118,17 +119,9 @@ const Match: React.FC<MatchProps> = ({
 
   return (
     <View style={{ flex: 1 }}>
-      {generateMode === GenerateMode.REPLACE_ALL && (
-        <CreateNewMatchButton
-          dispRound={dispRound}
-          setDispRound={setDispRound}
-        />
-      )}
+      {generateMode === GenerateMode.REPLACE_ALL && <CreateNewMatchButton />}
       <FillEmptyMatchHeader resetSwap={resetSwap} />
-      <ReplaceAllMatchHeader
-        dispRound={dispRound}
-        setDispRound={setDispRound}
-      />
+      <ReplaceAllMatchHeader />
       {(gameRounds[dispRound - 1] != null ||
         generateMode === GenerateMode.FILL_EMPTY) && (
         <SectionList
@@ -156,12 +149,11 @@ const Match: React.FC<MatchProps> = ({
                   canCheck={generateMode === GenerateMode.FILL_EMPTY}
                   canDelete={true}
                   canSwap={true}
-                  dispRound={dispRound}
                 />
               );
             } else if (section.type === "rest") {
               const restRow = item as Player[];
-              return <RestRow item={restRow} dispRound={dispRound} />;
+              return <RestRow item={restRow} />;
             }
             return null;
           }}
@@ -169,18 +161,13 @@ const Match: React.FC<MatchProps> = ({
             if (section.type === "match") {
               return null;
             } else if (section.type === "rest") {
-              return <RestHeader dispRound={dispRound} />;
+              return <RestHeader />;
             }
             return null;
           }}
         />
       )}
-      {generateMode === GenerateMode.FILL_EMPTY && (
-        <CreateNewMatchButton
-          dispRound={dispRound}
-          setDispRound={setDispRound}
-        />
-      )}
+      {generateMode === GenerateMode.FILL_EMPTY && <CreateNewMatchButton />}
     </View>
   );
 };

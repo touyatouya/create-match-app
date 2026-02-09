@@ -51,6 +51,8 @@ type AppContextType = {
       isRestPlayer: boolean;
     }>
   >;
+  dispRound: number;
+  setDispRound: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -85,6 +87,8 @@ export const AppContext = createContext<AppContextType>({
     isRestPlayer: false,
   },
   setSwap: () => {},
+  dispRound: 0,
+  setDispRound: () => {},
 });
 
 type AppContextProps = {
@@ -127,6 +131,7 @@ export const AppProvider = ({ children }: AppContextProps) => {
     partner: null,
     isRestPlayer: false,
   });
+  const [dispRound, setDispRound] = React.useState<number>(0);
 
   return (
     <AppContext.Provider
@@ -157,6 +162,8 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setIsPreferMatchCountOverPair,
         swap,
         setSwap,
+        dispRound,
+        setDispRound,
       }}
     >
       {children}

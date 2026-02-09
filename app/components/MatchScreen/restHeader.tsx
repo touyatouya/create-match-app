@@ -6,12 +6,9 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { GenerateMode } from "../../../types";
 
-interface RestHeaderProps {
-  dispRound: number;
-}
-
-const RestHeader: React.FC<RestHeaderProps> = ({ dispRound }) => {
-  const { players, gameRounds, generateMode } = useContext(AppContext);
+const RestHeader: React.FC = () => {
+  const { players, gameRounds, generateMode, dispRound } =
+    useContext(AppContext);
 
   const playablePlayers = players.filter((player) => {
     if (generateMode === GenerateMode.REPLACE_ALL) {

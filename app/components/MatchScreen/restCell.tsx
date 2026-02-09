@@ -17,7 +17,6 @@ import GenderIcon from "../GenderIcon";
 import { countMatch } from "./util";
 
 interface RestCellProps {
-  dispRound: number;
   swap: {
     player: number | null;
     matchId: number | null;
@@ -27,8 +26,8 @@ interface RestCellProps {
   player: Player;
 }
 
-const RestCell: React.FC<RestCellProps> = ({ dispRound, swap, player }) => {
-  const { players, setPlayers, gameRounds, setGameRounds, setSwap } =
+const RestCell: React.FC<RestCellProps> = ({ swap, player }) => {
+  const { players, setPlayers, gameRounds, setGameRounds, setSwap, dispRound } =
     useContext(AppContext);
 
   const selectRestSwap = (playerId: number) => {

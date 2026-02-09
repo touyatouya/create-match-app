@@ -11,7 +11,6 @@ interface CourtTitleProps {
   courtId: number;
   courtNumber: number;
   canCheck: boolean;
-  dispRound: number;
 }
 
 const CourtTitle: React.FC<CourtTitleProps> = ({
@@ -19,9 +18,9 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
   courtId,
   courtNumber,
   canCheck,
-  dispRound,
 }) => {
-  const { setGameRounds, generateMode, setSwap } = React.useContext(AppContext);
+  const { setGameRounds, generateMode, setSwap, dispRound } =
+    React.useContext(AppContext);
 
   const resetSwap = () => {
     setSwap({

@@ -7,10 +7,9 @@ import RestCell from "./restCell";
 
 interface MatchProps {
   item: Player[];
-  dispRound: number;
 }
 
-const RestRow: React.FC<MatchProps> = ({ item, dispRound }) => {
+const RestRow: React.FC<MatchProps> = ({ item }) => {
   const { swap } = React.useContext(AppContext);
   return (
     <View style={styles.restingRow}>
@@ -22,7 +21,7 @@ const RestRow: React.FC<MatchProps> = ({ item, dispRound }) => {
             idx === 0 ? { marginRight: 6 } : { marginLeft: 6 },
           ]}
         >
-          <RestCell dispRound={dispRound} swap={swap} player={player} />
+          <RestCell swap={swap} player={player} />
         </View>
       ))}
       {item.length === 1 && (

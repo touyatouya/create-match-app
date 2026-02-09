@@ -10,15 +10,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { GameRound, GenerateMode } from "../../../types";
 import { countMatch } from "./util";
 
-interface ReplaceAllMatchHeaderProps {
-  dispRound: number;
-  setDispRound: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const ReplaceAllMatchHeader: React.FC<ReplaceAllMatchHeaderProps> = ({
-  dispRound,
-  setDispRound,
-}) => {
+const ReplaceAllMatchHeader: React.FC = () => {
   const {
     players,
     setPlayers,
@@ -30,6 +22,8 @@ const ReplaceAllMatchHeader: React.FC<ReplaceAllMatchHeaderProps> = ({
     isPreferMatchCountOverPair,
     genderSetting,
     setSwap,
+    dispRound,
+    setDispRound,
   } = useContext(AppContext);
 
   const resetSwap = () => {

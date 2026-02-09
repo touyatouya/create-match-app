@@ -16,7 +16,6 @@ interface MatchProps {
   canDelete: boolean;
   canSwap: boolean;
   showMatchCount: boolean;
-  dispRound: number;
 }
 
 const RenderMatch: React.FC<MatchProps> = ({
@@ -27,9 +26,8 @@ const RenderMatch: React.FC<MatchProps> = ({
   canDelete,
   canSwap,
   showMatchCount,
-  dispRound,
 }) => {
-  const { gameRounds, generateMode, newGames, setNewGames } =
+  const { gameRounds, generateMode, newGames, setNewGames, dispRound } =
     React.useContext(AppContext);
 
   const isNoMatch =
@@ -87,7 +85,6 @@ const RenderMatch: React.FC<MatchProps> = ({
           courtId={courtId}
           courtNumber={courtNumber}
           canCheck={canCheck}
-          dispRound={dispRound}
         />
         <CourtDeleteButton
           item={item}

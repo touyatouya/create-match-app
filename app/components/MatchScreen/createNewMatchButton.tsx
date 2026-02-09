@@ -12,15 +12,7 @@ import { GenerateMode, Match as MatchType } from "../../../types";
 import PrimaryButton from "../PrimaryButton";
 import { createMatch } from "./util";
 
-interface CreateNewMatchButtonProps {
-  dispRound: number;
-  setDispRound: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
-  dispRound,
-  setDispRound,
-}) => {
+const CreateNewMatchButton: React.FC = () => {
   const {
     players,
     setPlayers,
@@ -35,6 +27,7 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
     isPreferMatchCountOverPair,
     genderSetting,
     setSwap,
+    setDispRound,
   } = useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(

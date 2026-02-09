@@ -15,9 +15,14 @@ import Match from "../../components/MatchScreen/match";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, gameRounds, setGameRounds, isLoading, setSwap } =
-    useContext(AppContext);
-  const [dispRound, setDispRound] = React.useState<number>(gameRounds.length);
+  const {
+    setPlayers,
+    gameRounds,
+    setGameRounds,
+    isLoading,
+    setSwap,
+    setDispRound,
+  } = useContext(AppContext);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   useEffect(() => {
@@ -25,7 +30,8 @@ const MatchScreen: React.FC = () => {
       screen_name: "MatchScreen",
     });
     saveOpenApp();
-  }, []);
+    setDispRound(gameRounds.length >= 0 ? gameRounds.length : 0);
+  }, [gameRounds.length, setDispRound]);
 
   const resetGameRound = useCallback(async () => {
     setGameRounds([]);
@@ -49,7 +55,7 @@ const MatchScreen: React.FC = () => {
     clearGameData();
 
     await analytics().logEvent("reset_game");
-  }, [setGameRounds, setPlayers, setSwap]);
+  }, [setGameRounds, setPlayers, setSwap, setDispRound]);
 
   return (
     <>
@@ -108,11 +114,7 @@ const MatchScreen: React.FC = () => {
         disabled={isLoading}
       />
       <View style={styles.container}>
-        <Match
-          dispRound={dispRound}
-          setDispRound={setDispRound}
-          setSnackbarVisible={setSnackbarVisible}
-        />
+        <Match setSnackbarVisible={setSnackbarVisible} />
       </View>
       <AdCompleteSnackbar
         visiable={snackbarVisible}
