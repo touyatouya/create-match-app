@@ -231,41 +231,17 @@ const Match: React.FC<MatchProps> = ({
   ) => {
     let newGameRounds: GameRound[] = [];
     setGameRounds((prevGameRounds) => {
-      let playablePlayerMatchIndex = -1,
-        playablePlayerTeam: "teamA" | "teamB" = "teamA",
-        playablePlayerIndex = -1;
-
-      // 対象の巡目インデックス（dispRound が範囲外のとき安全にクランプ）
-      const targetRoundIndex = Math.max(
-        0,
-        Math.min(prevGameRounds.length - 1, dispRound - 1),
+      const playablePlayerIdx = findPlayerInGameRound(
+        playablePlayerId,
+        prevGameRounds,
       );
 
-      // プレイ中プレイヤーの位置を探す
-      const courts = prevGameRounds[targetRoundIndex].matches;
-      for (let match_i = 0; match_i < courts.length; match_i++) {
-        const match = courts[match_i];
-
-        const teamAIdx = match.teamA.indexOf(playablePlayerId);
-        if (teamAIdx !== -1) {
-          playablePlayerMatchIndex = match_i;
-          playablePlayerTeam = "teamA";
-          playablePlayerIndex = teamAIdx;
-        }
-        const teamBIdx = match.teamB.indexOf(playablePlayerId);
-        if (teamBIdx !== -1) {
-          playablePlayerMatchIndex = match_i;
-          playablePlayerTeam = "teamB";
-          playablePlayerIndex = teamBIdx;
-        }
-      }
-
-      if (playablePlayerMatchIndex === -1 || playablePlayerIndex === -1) {
+      if (!playablePlayerIdx) {
         return prevGameRounds;
       }
 
       newGameRounds = prevGameRounds.map((gameRound, gameRound_i) => {
-        if (gameRound_i === targetRoundIndex) {
+        if (gameRound_i === playablePlayerIdx.gameRoundIdx) {
           return {
             ...gameRound,
             matches: gameRound.matches.map((match) => {
@@ -274,11 +250,12 @@ const Match: React.FC<MatchProps> = ({
               // プレイ中プレイヤーの位置を休憩プレイヤーに置換
               if (
                 match.id ===
-                prevGameRounds[gameRound_i].matches[playablePlayerMatchIndex].id
+                prevGameRounds[gameRound_i].matches[playablePlayerIdx.matchIdx]
+                  .id
               ) {
-                const newTeam = [...match[playablePlayerTeam]];
-                newTeam[playablePlayerIndex] = restPlayerId;
-                updatedMatch[playablePlayerTeam] = newTeam;
+                const newTeam = [...match[playablePlayerIdx.team]];
+                newTeam[playablePlayerIdx.teamIdx] = restPlayerId;
+                updatedMatch[playablePlayerIdx.team] = newTeam;
               }
 
               return updatedMatch;
