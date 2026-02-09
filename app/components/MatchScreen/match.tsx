@@ -38,6 +38,7 @@ import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
 import MatchHeader from "./matchHeader";
 import RenderMatch from "./renderMatch";
+import RestHeader from "./restHeader";
 import { countMatch, createMatch } from "./util";
 
 type SectionDataItem = MatchType | MatchType[] | Player | Player[]; // Player[] は休憩中プレイヤー行用
@@ -682,23 +683,7 @@ const Match: React.FC<MatchProps> = ({
             if (section.type === "match") {
               return null;
             } else if (section.type === "rest") {
-              return (
-                <View style={styles.restingHeader}>
-                  <View style={styles.restingTitle}>
-                    <Feather
-                      name="coffee"
-                      size={20}
-                      color={ColorPalette.blackText}
-                    />
-                    <Text style={styles.restingSectionTitle}>
-                      休憩中のプレイヤー
-                    </Text>
-                  </View>
-                  <Text style={styles.restingCount}>
-                    {restPlayers.length}人
-                  </Text>
-                </View>
-              );
+              return <RestHeader dispRound={dispRound} />;
             }
             return null;
           }}
@@ -788,27 +773,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: ColorPalette.filterItemName,
     marginHorizontal: 6,
-  },
-  restingHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 4,
-    backgroundColor: ColorPalette.pageBackground,
-  },
-  restingTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  restingSectionTitle: {
-    fontSize: FONT_SIZE.body,
-    fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
-    marginLeft: 6,
-  },
-  restingCount: {
-    fontSize: FONT_SIZE.subsubheading,
-    fontWeight: "600",
   },
   restingPlayerItem: {
     flexDirection: "row",
