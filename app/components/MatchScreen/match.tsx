@@ -10,19 +10,13 @@ import {
   markReviewRequersted,
   shouldShowReviewRequest,
 } from "@/utils/storeReview";
-import {
-  AntDesign,
-  Feather,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
   LayoutAnimation,
   SectionList,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -34,11 +28,11 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
-import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
 import MatchHeader from "./matchHeader";
 import RenderMatch from "./renderMatch";
 import RestHeader from "./restHeader";
+import RestRow from "./restRow";
 import { countMatch, createMatch } from "./util";
 
 type SectionDataItem = MatchType | MatchType[] | Player | Player[]; // Player[] は休憩中プレイヤー行用
@@ -123,37 +117,6 @@ const Match: React.FC<MatchProps> = ({
         changePlayer(matchId, playerId, prev.matchId as number, prev.player);
       }
 
-      return {
-        player: null,
-        matchId: null,
-        partner: null,
-        isRestPlayer: false,
-      };
-    });
-  };
-
-  const selectRestSwap = (playerId: number) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setSwap((prev) => {
-      if (prev.player === playerId) {
-        return {
-          player: null,
-          matchId: null,
-          partner: null,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.player == null || prev.isRestPlayer) {
-        return {
-          player: playerId,
-          matchId: null,
-          partner: null,
-          isRestPlayer: true,
-        };
-      }
-
-      changePlayableRestPlayer(prev.matchId as number, prev.player, playerId);
       return {
         player: null,
         matchId: null,
@@ -307,85 +270,6 @@ const Match: React.FC<MatchProps> = ({
     );
     countMatch([...matches], players, setPlayers);
   };
-
-  const renderRestCell = (player: Player) => {
-    const content = (
-      <>
-        <View style={styles.restingPlayerName}>
-          <View style={{ flex: 4 }}>
-            <Text
-              style={[
-                styles.restingPlayerText,
-                swap.player === player.id && styles.restingSwapPlayerName,
-              ]}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {player.name}
-            </Text>
-          </View>
-          {players.find((p) => p.id === player.id)?.isRest && (
-            <View style={{ flex: 1 }}>
-              <Feather name="coffee" size={14} color={ColorPalette.blackText} />
-            </View>
-          )}
-        </View>
-        <View style={styles.subInfo}>
-          <Text style={styles.getGameCount}>{player.matchCount}</Text>
-          <Text style={styles.playerGender}>
-            <GenderIcon gender={player.gender} size={18} />
-          </Text>
-          {dispRound === gameRounds.length && (
-            <Ionicons
-              name="swap-horizontal"
-              size={14}
-              color={ColorPalette.secondary}
-            />
-          )}
-        </View>
-      </>
-    );
-
-    if (dispRound === gameRounds.length) {
-      return (
-        <TouchableOpacity
-          key={player.id}
-          style={[
-            styles.restingPlayerItem,
-            swap.player === player.id && styles.restingSwapPlayerItem,
-          ]}
-          onPress={() => selectRestSwap(player.id)}
-        >
-          {content}
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <View key={player.id} style={styles.restingPlayerItem}>
-          {content}
-        </View>
-      );
-    }
-  };
-
-  const renderRestingRow = ({ item }: { item: Player[] }) => (
-    <View style={styles.restingRow}>
-      {item.map((player, idx) => (
-        <View
-          key={player.id}
-          style={[
-            styles.restingCell,
-            idx === 0 ? { marginRight: 6 } : { marginLeft: 6 },
-          ]}
-        >
-          {renderRestCell(player)}
-        </View>
-      ))}
-      {item.length === 1 && (
-        <View style={[styles.restingCell, { marginLeft: 6 }]} />
-      )}
-    </View>
-  );
 
   const matchListWithPlaceholders: MatchType[] = (() => {
     if (generateMode === GenerateMode.REPLACE_ALL) return [];
@@ -675,7 +559,14 @@ const Match: React.FC<MatchProps> = ({
               ); // 例: カード表示など
             } else if (section.type === "rest") {
               const restRow = item as Player[];
-              return renderRestingRow({ item: restRow });
+              return (
+                <RestRow
+                  item={restRow}
+                  dispRound={dispRound}
+                  setSwap={setSwap}
+                  swap={swap}
+                />
+              );
             }
             return null;
           }}
@@ -737,88 +628,5 @@ const Match: React.FC<MatchProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  item: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: ColorPalette.borderline,
-    paddingVertical: 16,
-  },
-  subInfo: {
-    flex: 1.7,
-    flexDirection: "row",
-    alignItems: "center",
-    display: "flex",
-  },
-  getGameCount: {
-    flex: 1,
-    fontSize: FONT_SIZE.tiny,
-  },
-  teams: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  team: {
-    flex: 1,
-    gap: 4,
-  },
-  playerGender: {
-    flex: 1,
-  },
-  vsText: {
-    fontSize: FONT_SIZE.tiny,
-    fontWeight: "bold",
-    color: ColorPalette.filterItemName,
-    marginHorizontal: 6,
-  },
-  restingPlayerItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: ColorPalette.restPlayerBackground,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: ColorPalette.borderline,
-    ...globalStyles.touch,
-  },
-  restingSwapPlayerItem: {
-    backgroundColor: ColorPalette.thirdry,
-    borderColor: ColorPalette.secondary,
-  },
-  restingPlayerName: {
-    flex: 3,
-    marginLeft: 3,
-    marginRight: 3,
-    flexDirection: "row",
-    gap: 4,
-    alignItems: "center",
-  },
-  restingPlayerText: {
-    fontSize: FONT_SIZE.small,
-    color: ColorPalette.filterItemName,
-  },
-  restingSwapPlayerName: {
-    flex: 4,
-    color: ColorPalette.blackText,
-  },
-  restingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  restingCell: {
-    flex: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: ColorPalette.borderline,
-    marginVertical: 8,
-  },
-});
 
 export default Match;
