@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
+import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import {
@@ -72,29 +73,6 @@ const RestCell: React.FC<RestCellProps> = ({
         isRestPlayer: false,
       };
     });
-  };
-
-  const findPlayerTeamInMatch = (
-    playerId: number,
-    gameRounds: GameRound[],
-    matchId: number,
-  ) => {
-    const matches = gameRounds.flatMap((gr) => gr.matches.map((m) => m));
-    const targetMatch = matches.find((m) => m.id === matchId);
-    if (!targetMatch) return null;
-
-    if (targetMatch.teamA.includes(playerId)) {
-      return {
-        team: "teamA" as const,
-        teamIdx: targetMatch.teamA.indexOf(playerId) as number,
-      };
-    } else if (targetMatch.teamB.includes(playerId)) {
-      return {
-        team: "teamB" as const,
-        teamIdx: targetMatch.teamB.indexOf(playerId) as number,
-      };
-    }
-    return null;
   };
 
   const changePlayableRestPlayer = (

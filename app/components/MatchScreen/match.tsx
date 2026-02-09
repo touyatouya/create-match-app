@@ -1,6 +1,7 @@
 import { AppContext } from "@/context/AppContext";
 import { chunkArray } from "@/utils/chunkArray";
 import { generateUniqId } from "@/utils/createId";
+import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
 import React, { useContext, useEffect } from "react";
 import { LayoutAnimation, SectionList, View } from "react-native";
 import {
@@ -134,29 +135,6 @@ const Match: React.FC<MatchProps> = ({
   );
 
   const restRows = chunkArray(restPlayers, 2);
-
-  const findPlayerTeamInMatch = (
-    playerId: number,
-    gameRounds: GameRound[],
-    matchId: number,
-  ) => {
-    const matches = gameRounds.flatMap((gr) => gr.matches.map((m) => m));
-    const targetMatch = matches.find((m) => m.id === matchId);
-    if (!targetMatch) return null;
-
-    if (targetMatch.teamA.includes(playerId)) {
-      return {
-        team: "teamA" as const,
-        teamIdx: targetMatch.teamA.indexOf(playerId) as number,
-      };
-    } else if (targetMatch.teamB.includes(playerId)) {
-      return {
-        team: "teamB" as const,
-        teamIdx: targetMatch.teamB.indexOf(playerId) as number,
-      };
-    }
-    return null;
-  };
 
   const changePlayer = (
     targetMatchId: number,
@@ -348,7 +326,7 @@ const Match: React.FC<MatchProps> = ({
                   canSwap={true}
                   dispRound={dispRound}
                 />
-              ); // 例: カード表示など
+              );
             } else if (section.type === "rest") {
               const restRow = item as Player[];
               return (
