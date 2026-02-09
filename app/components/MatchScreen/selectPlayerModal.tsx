@@ -234,7 +234,7 @@
 //   restingSectionTitle: {
 //     fontSize: 18,
 //     fontWeight: "bold",
-//     color: ColorPalette.sectionTitie,
+//     color: ColorPalette.sectionTitle,
 //   },
 //   container: {
 //     flex: 1,
@@ -243,7 +243,7 @@
 //   title: {
 //     fontSize: 20,
 //     fontWeight: "bold",
-//     color: ColorPalette.sectionTitie,
+//     color: ColorPalette.sectionTitle,
 //   },
 // });
 

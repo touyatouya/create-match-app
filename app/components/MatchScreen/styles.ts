@@ -18,12 +18,12 @@ export const MarchScreenStyles = StyleSheet.create({
   sectionText: {
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
   },
   subSectionText: {
     fontSize: FONT_SIZE.small,
     fontWeight: 500,
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
     marginBottom: 8,
   },
   settingTitle: {

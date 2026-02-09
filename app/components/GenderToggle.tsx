@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: FONT_SIZE.body,
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
   },
   button: {
     paddingVertical: 10,

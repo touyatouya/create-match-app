@@ -29,7 +29,7 @@ const ColorPalette = {
   checkboxBorder: "white",
   toggleBorder: "#999",
   remove: "#FF6B6B",
-  sectionTitie: "#333",
+  sectionTitle: "#333",
   danger: "#F44336",
   normalIcon: "black",
   greyIcon1: "#00000033",

@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: FONT_SIZE.body,
     fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
     marginLeft: 6,
   },
   restingCount: {

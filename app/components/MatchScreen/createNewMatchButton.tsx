@@ -46,13 +46,11 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
     .filter((match) => !match.canInsertNext)
     .flatMap((match) => match.courtId);
 
-  const avaibleCourts =
+  const availableCourts =
     generateMode === GenerateMode.FILL_EMPTY
       ? courts.filter(
           (court) =>
-            playingCourtIds == null ||
-            playingCourtIds.length === 0 ||
-            !playingCourtIds.includes(court.id),
+            playingCourtIds.length === 0 || !playingCourtIds.includes(court.id),
         )
       : courts;
 
@@ -68,7 +66,7 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
   return (
     <PrimaryButton
       text="新しい組み合わせを生成"
-      disabled={avaibleCourts.length === 0}
+      disabled={availableCourts.length === 0}
       icon={
         <Ionicons name="refresh" size={24} color={ColorPalette.whiteText} />
       }

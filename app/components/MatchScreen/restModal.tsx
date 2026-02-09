@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
   },
   body: {
     paddingHorizontal: 16,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   restingSectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
   },
   container: {
     paddingVertical: 8,

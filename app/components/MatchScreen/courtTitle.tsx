@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   courtName: {
     fontSize: FONT_SIZE.small,
     fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
+    color: ColorPalette.sectionTitle,
   },
 });
 
