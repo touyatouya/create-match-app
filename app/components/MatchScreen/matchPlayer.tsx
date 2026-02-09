@@ -17,24 +17,22 @@ import { countMatch } from "./util";
 
 interface MatchPlayerProps {
   matchId: number;
-  swapPlayer: number | null;
   playerId: number;
   partnerId: number;
-  isSwap: boolean;
+  canSwap: boolean;
   showMatchCount: boolean;
   isFinished: boolean;
 }
 
 const MatchPlayer: React.FC<MatchPlayerProps> = ({
   matchId,
-  swapPlayer,
   playerId,
   partnerId,
-  isSwap,
+  canSwap,
   showMatchCount,
   isFinished,
 }) => {
-  const { generateMode, setGameRounds, players, setPlayers, setSwap } =
+  const { generateMode, setGameRounds, players, setPlayers, swap, setSwap } =
     React.useContext(AppContext);
 
   const changePlayer = (
@@ -168,12 +166,12 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
 
   return (
     <>
-      {isSwap ? (
+      {canSwap ? (
         <TouchableOpacity
           key={playerId}
           style={[
             styles.playerButton,
-            swapPlayer === playerId && styles.swapPlayerButton,
+            swap.player === playerId && styles.swapPlayerButton,
           ]}
           onPress={async () => {
             !isFinished && selectSwapPlayer(matchId, playerId, partnerId);

@@ -29,7 +29,7 @@ const RenderMatch: React.FC<MatchProps> = ({
   showMatchCount,
   dispRound,
 }) => {
-  const { gameRounds, generateMode, newGames, setNewGames, swap } =
+  const { gameRounds, generateMode, newGames, setNewGames } =
     React.useContext(AppContext);
 
   const isNoMatch =
@@ -110,10 +110,9 @@ const RenderMatch: React.FC<MatchProps> = ({
                 <MatchPlayer
                   key={playerId}
                   matchId={item.id}
-                  swapPlayer={swap.player}
                   playerId={playerId}
                   partnerId={partnerId as number}
-                  isSwap={
+                  canSwap={
                     generateMode === GenerateMode.FILL_ENPTY
                       ? canSwap && !item.canInsertNext
                       : dispRound === gameRounds.length
@@ -135,10 +134,9 @@ const RenderMatch: React.FC<MatchProps> = ({
                 <MatchPlayer
                   key={playerId}
                   matchId={item.id}
-                  swapPlayer={swap.player}
                   playerId={playerId}
                   partnerId={partnerId as number}
-                  isSwap={
+                  canSwap={
                     generateMode === GenerateMode.FILL_ENPTY
                       ? canSwap && !item.canInsertNext
                       : dispRound === gameRounds.length
