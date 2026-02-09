@@ -1,22 +1,12 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
-import { GameRound, GenerateMode, Match as MatchType, Player } from "@/types";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import { MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
+import { GenerateMode, Match as MatchType } from "@/types";
 import React from "react";
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Animated, StyleSheet, Text, View } from "react-native";
+import CourtDeleteButton from "./courtDeleteButton";
 import CourtTitle from "./courtTitle";
 import MatchPlayer from "./matchPlayer";
-import { countMatch } from "./util";
 
 interface MatchProps {
   item: MatchType;
@@ -39,30 +29,8 @@ const RenderMatch: React.FC<MatchProps> = ({
   showMatchCount,
   dispRound,
 }) => {
-  const {
-    courts,
-    gameRounds,
-    setGameRounds,
-    generateMode,
-    players,
-    setPlayers,
-    pairs,
-    genderSetting,
-    newGames,
-    setNewGames,
-    isPreferMatchCountOverPair,
-    swap,
-    setSwap,
-  } = React.useContext(AppContext);
-
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { gameRounds, generateMode, newGames, setNewGames, swap } =
+    React.useContext(AppContext);
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
@@ -121,65 +89,11 @@ const RenderMatch: React.FC<MatchProps> = ({
           canCheck={canCheck}
           dispRound={dispRound}
         />
-        {generateMode === GenerateMode.FILL_ENPTY &&
-          !isNoMatch &&
-          canDelete &&
-          !item.canInsertNext && (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <TouchableOpacity
-                style={{
-                  ...globalStyles.touch,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-                onPress={async () => {
-                  let newGameRounds: GameRound[] = [];
-                  setGameRounds((prev) => {
-                    newGameRounds = prev.map((gameRound) => {
-                      const newMatches = gameRound.matches.filter(
-                        (match) =>
-                          !(!match.isFinished && match.courtId === courtId),
-                      );
-
-                      return {
-                        ...gameRound,
-                        matches: newMatches,
-                      };
-                    });
-                    return newGameRounds;
-                  });
-                  const newMatch = newGameRounds.flatMap(
-                    (gameRound) => gameRound.matches,
-                  );
-                  const newPlayers: Player[] = countMatch(
-                    newMatch,
-                    players,
-                    setPlayers,
-                  );
-                  resetSwap();
-
-                  await clearGameData();
-                  await saveGameData({
-                    gameRounds: newGameRounds,
-                    courts,
-                    generateMode: generateMode,
-                    recentPlayers: newPlayers,
-                    anonymousPlayerCount: newPlayers.filter(
-                      (p) => p.isAnonymous,
-                    ).length,
-                    pairs,
-                    genderSetting,
-                    isPreferMatchCountOverPair,
-                    saveAt: new Date().getTime(),
-                  });
-
-                  await analytics().logEvent("delete_match_by_court");
-                }}
-              >
-                <MaterialIcons name="delete-outline" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-          )}
+        <CourtDeleteButton
+          item={item}
+          courtId={courtId}
+          canDelete={canDelete}
+        />
       </View>
 
       {item.teamA?.length === 0 || item.teamB?.length === 0 ? (
@@ -249,17 +163,6 @@ const styles = StyleSheet.create({
     borderColor: ColorPalette.borderline,
     paddingVertical: 16,
   },
-  subInfo: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    display: "flex",
-  },
-  getGameCount: {
-    flex: 1,
-    fontSize: FONT_SIZE.small,
-    marginRight: 8,
-  },
   matchCard: {
     backgroundColor: ColorPalette.background,
     borderRadius: 8,
@@ -270,9 +173,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  finishedMatchCard: {
-    backgroundColor: ColorPalette.finished2,
   },
   courtName: {
     fontSize: FONT_SIZE.small,
@@ -293,64 +193,11 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 4,
   },
-  playerGender: {
-    flex: 1,
-    marginRight: 8,
-  },
   vsText: {
     fontSize: FONT_SIZE.tiny,
     fontWeight: "bold",
     color: ColorPalette.filterItemName,
     marginHorizontal: 6,
-  },
-  restingHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  restingTitle: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  restingSectionTitle: {
-    fontSize: FONT_SIZE.subsubheading,
-    fontWeight: "bold",
-    color: ColorPalette.sectionTitie,
-  },
-  restingCount: {
-    fontSize: FONT_SIZE.subheading,
-    fontWeight: "600",
-  },
-  restingPlayerItem: {
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    backgroundColor: ColorPalette.restPlayerBackground,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginBottom: 4,
-    borderWidth: 1,
-    borderColor: ColorPalette.borderline,
-    flex: 1,
-    ...globalStyles.touch,
-  },
-  restingSwapPlayerItem: {
-    flex: 1,
-    backgroundColor: ColorPalette.thirdry,
-    borderColor: ColorPalette.secondary,
-  },
-  restingPlayerName: {
-    flex: 4,
-    marginLeft: 6,
-    fontSize: FONT_SIZE.heading,
-    color: ColorPalette.filterItemName,
-    marginRight: 5,
-  },
-  restingSwapPlayerName: {
-    flex: 2,
-    color: ColorPalette.blackText,
   },
 });
 
