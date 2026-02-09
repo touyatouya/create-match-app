@@ -83,14 +83,12 @@ const CreateNewMatchButton: React.FC<CreateNewMatchButtonProps> = ({
             setGameRounds,
             pairs,
             matches,
-            dispRound,
             generateMode,
             resetSwap,
             genderSetting,
             isAdjustMatchCount,
             isPreferMatchCountOverPair,
             setDispRound,
-            setIsLoading,
             setNewGames,
           );
         }, 0);

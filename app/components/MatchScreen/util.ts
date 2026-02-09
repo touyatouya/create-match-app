@@ -22,14 +22,12 @@ export const createMatch = async (
   setGameRounds: (value: React.SetStateAction<GameRound[]>) => void,
   pairs: Pair[],
   matches: MatchType[],
-  dispRound: number,
   genareteMode: GenerateMode,
   restSwap: () => void,
   genderSetting: GenderPreferenceSetting,
   isAdjustMatchCount: boolean,
   isPreferMatchCountOverPair: boolean,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
 ): Promise<void> => {
   const notFinishedMatches =
