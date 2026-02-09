@@ -17,7 +17,6 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
-import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import React, { useContext, useEffect } from "react";
 import {
@@ -35,9 +34,9 @@ import {
   Match as MatchType,
   Player,
 } from "../../../types";
-import Checkbox from "../CheckBox";
 import GenderIcon from "../GenderIcon";
 import PrimaryButton from "../PrimaryButton";
+import MatchHeader from "./matchHeader";
 import RenderMatch from "./renderMatch";
 import { countMatch, createMatch } from "./util";
 
@@ -439,28 +438,7 @@ const Match: React.FC<MatchProps> = ({
         )
       : courts;
 
-  const isAllMatchCanInsertNext = gameRounds.every((gameRound) =>
-    gameRound.matches.every((match) => match.canInsertNext),
-  );
-
-  const setAllMatchCanInsertNext = (isAllMatchCanInsertNext: boolean) => {
-    setGameRounds((prev) => {
-      return prev.map((gameRound) => {
-        const newMatches = gameRound.matches.map((match) => {
-          if (!match.isFinished) {
-            return {
-              ...match,
-              canInsertNext: !isAllMatchCanInsertNext,
-            };
-          }
-          return match;
-        });
-        return { ...gameRound, matches: newMatches };
-      });
-    });
-  };
-
-  const restSwap = () => {
+  const resetSwap = () => {
     setSwap({
       player: null,
       matchId: null,
@@ -495,7 +473,7 @@ const Match: React.FC<MatchProps> = ({
                 matches,
                 dispRound,
                 generateMode,
-                restSwap,
+                resetSwap,
                 genderSetting,
                 isAdjustMatchCount,
                 isPreferMatchCountOverPair,
@@ -520,36 +498,7 @@ const Match: React.FC<MatchProps> = ({
           style={{ marginVertical: 2 }}
         />
       )}
-      {/* {generateMode === GenerateMode.FILL_ENPTY && (
-        <Text style={{ alignSelf: "center" }}>
-          チェックしたコートに試合を入れます
-        </Text>
-      )} */}
-      {generateMode === GenerateMode.FILL_ENPTY && matches.length > 0 && (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Checkbox
-            onChange={() => {
-              setAllMatchCanInsertNext(isAllMatchCanInsertNext);
-              restSwap();
-            }}
-            label="全コート終了"
-            checked={isAllMatchCanInsertNext}
-          />
-          <TouchableOpacity
-            onPress={() =>
-              router.push({ pathname: "/PlayerScreen/HistoryScreen" })
-            }
-          >
-            <AntDesign name="history" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      )}
+      <MatchHeader resetSwap={resetSwap} />
       {generateMode === GenerateMode.REPLACE_ALL && (
         <View
           style={{
@@ -632,7 +581,7 @@ const Match: React.FC<MatchProps> = ({
                       players,
                       setPlayers,
                     );
-                    restSwap();
+                    resetSwap();
                     setDispRound((prev) => prev - 1);
 
                     await clearGameData();
@@ -714,7 +663,7 @@ const Match: React.FC<MatchProps> = ({
                   courtId={courtId}
                   courtNumber={courtNumber}
                   swapPlayer={swap.player}
-                  restSwap={restSwap}
+                  restSwap={resetSwap}
                   selectSwapPlayer={selectSwapPlayer}
                   showMatchCount={true}
                   canCheck={generateMode === GenerateMode.FILL_ENPTY}
@@ -775,7 +724,7 @@ const Match: React.FC<MatchProps> = ({
                 matches,
                 dispRound,
                 generateMode,
-                restSwap,
+                resetSwap,
                 genderSetting,
                 isAdjustMatchCount,
                 isPreferMatchCountOverPair,
