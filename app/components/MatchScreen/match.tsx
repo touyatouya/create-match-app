@@ -1,23 +1,10 @@
-import ColorPalette from "@/constants/color";
-import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { globalStyles } from "@/styles/global";
 import { chunkArray } from "@/utils/chunkArray";
 import { generateUniqId } from "@/utils/createId";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
-import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
-import {
-  LayoutAnimation,
-  SectionList,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { LayoutAnimation, SectionList, View } from "react-native";
 import {
   GameRound,
-  GenderPreferenceSetting,
   GenerateMode,
   Match as MatchType,
   Player,
@@ -25,6 +12,7 @@ import {
 import CreateNewMatchButton from "./createNewMatchButton";
 import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import RenderMatch from "./renderMatch";
+import ReplaceAllMatchHeader from "./replaceAllMatchHeader";
 import RestHeader from "./restHeader";
 import RestRow from "./restRow";
 import { countMatch } from "./util";
@@ -52,7 +40,6 @@ interface MatchProps {
       isRestPlayer: boolean;
     }>
   >;
-  genderSetting: GenderPreferenceSetting;
   dispRound: number;
   setDispRound: React.Dispatch<React.SetStateAction<number>>;
   setSnackbarVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -61,7 +48,6 @@ interface MatchProps {
 const Match: React.FC<MatchProps> = ({
   swap,
   setSwap,
-  genderSetting,
   dispRound,
   setDispRound,
   setSnackbarVisible,
@@ -72,10 +58,8 @@ const Match: React.FC<MatchProps> = ({
     gameRounds,
     setGameRounds,
     generateMode,
-    pairs,
     courts,
     setIsLoading,
-    isPreferMatchCountOverPair,
   } = useContext(AppContext);
 
   const selectSwapPlayer = (
@@ -323,142 +307,11 @@ const Match: React.FC<MatchProps> = ({
         />
       )}
       <FillEmptyMatchHeader resetSwap={resetSwap} />
-      {generateMode === GenerateMode.REPLACE_ALL && (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          {gameRounds[dispRound - 2] != null ? (
-            <TouchableOpacity
-              style={{
-                ...globalStyles.touch,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={async () => {
-                setDispRound((prev) => prev - 1);
-
-                await analytics().logEvent("prev_gameRound");
-              }}
-            >
-              <AntDesign
-                name="left"
-                size={20}
-                color={ColorPalette.normalIcon}
-              />
-            </TouchableOpacity>
-          ) : (
-            <View style={{ ...globalStyles.touch }}></View>
-          )}
-          {dispRound > 0 && (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {gameRounds[dispRound] == null && (
-                <View style={{ ...globalStyles.touch }}></View>
-              )}
-              <Text
-                style={{
-                  fontSize: FONT_SIZE.subheading,
-                  marginHorizontal: 8,
-                }}
-              >
-                {dispRound}巡目
-              </Text>
-              {gameRounds[dispRound] == null && (
-                <TouchableOpacity
-                  style={{
-                    ...globalStyles.touch,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  onPress={async () => {
-                    let newGameRounds: GameRound[] = [];
-                    setGameRounds((prev) => {
-                      newGameRounds = prev.slice(0, -1);
-                      if (newGameRounds.length > 0) {
-                        newGameRounds[newGameRounds.length - 1] = {
-                          ...newGameRounds[newGameRounds.length - 1],
-                          matches: newGameRounds[
-                            newGameRounds.length - 1
-                          ].matches.map((m) => ({
-                            ...m,
-                            isFinished: false,
-                            canInsertNext: false,
-                          })),
-                        };
-                      }
-                      return newGameRounds;
-                    });
-                    const newMatch = newGameRounds.flatMap(
-                      (gameRound) => gameRound.matches,
-                    );
-                    const newPlayers = countMatch(
-                      newMatch,
-                      players,
-                      setPlayers,
-                    );
-                    resetSwap();
-                    setDispRound((prev) => prev - 1);
-
-                    await clearGameData();
-                    await saveGameData({
-                      gameRounds: newGameRounds,
-                      courts,
-                      generateMode: generateMode,
-                      recentPlayers: newPlayers,
-                      anonymousPlayerCount: newPlayers.filter(
-                        (p) => p.isAnonymous,
-                      ).length,
-                      pairs,
-                      genderSetting,
-                      isPreferMatchCountOverPair,
-                      saveAt: new Date().getTime(),
-                    });
-
-                    await analytics().logEvent("delete_game");
-                  }}
-                >
-                  <MaterialIcons
-                    name="delete-outline"
-                    size={24}
-                    color="black"
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-          {gameRounds[dispRound] != null ? (
-            <TouchableOpacity
-              style={{
-                ...globalStyles.touch,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              onPress={async () => {
-                setDispRound((prev) => prev + 1);
-
-                await analytics().logEvent("next_gameRound");
-              }}
-            >
-              <AntDesign
-                name="right"
-                size={20}
-                color={ColorPalette.normalIcon}
-              />
-            </TouchableOpacity>
-          ) : (
-            <View style={{ ...globalStyles.touch }}></View>
-          )}
-        </View>
-      )}
+      <ReplaceAllMatchHeader
+        setSwap={setSwap}
+        dispRound={dispRound}
+        setDispRound={setDispRound}
+      />
       {(gameRounds[dispRound - 1] != null ||
         generateMode === GenerateMode.FILL_ENPTY) && (
         <SectionList

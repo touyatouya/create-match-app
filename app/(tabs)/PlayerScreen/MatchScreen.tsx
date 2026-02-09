@@ -15,7 +15,7 @@ import Match from "../../components/MatchScreen/match";
 import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
-  const { setPlayers, gameRounds, setGameRounds, isLoading, genderSetting } =
+  const { setPlayers, gameRounds, setGameRounds, isLoading } =
     useContext(AppContext);
 
   const [swap, setSwap] = useState<{
@@ -118,7 +118,6 @@ const MatchScreen: React.FC = () => {
         <Match
           swap={swap}
           setSwap={setSwap}
-          genderSetting={genderSetting}
           dispRound={dispRound}
           setDispRound={setDispRound}
           setSnackbarVisible={setSnackbarVisible}
