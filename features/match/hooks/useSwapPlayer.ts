@@ -126,5 +126,25 @@ export const useSwapPlayer = () => {
     resetSwap();
   };
 
-  return { selectSwapPlayer };
+  const selectRestSwap = (playerId: Player["id"]) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (swap.player === playerId) {
+      resetSwap();
+      return;
+    }
+
+    if (swap.player == null || swap.isRestPlayer) {
+      setSwap({
+        player: playerId,
+        matchId: null,
+        partner: null,
+        isRestPlayer: true,
+      });
+      return;
+    }
+
+    changePlayableRestPlayer(swap.matchId as number, swap.player, playerId);
+    resetSwap();
+  };
+  return { selectSwapPlayer, selectRestSwap };
 };

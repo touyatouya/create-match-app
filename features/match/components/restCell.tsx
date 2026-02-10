@@ -1,106 +1,22 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { findPlayerTeamInMatch } from "@/features/match/logic/findPlayerTeamInMatch";
-import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import GenderIcon from "@/ui/GenderIcon";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";
-import {
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { GameRound, Match as MatchType, Player } from "../../../types";
-import { flatGrToM } from "../logic/flatGrToM";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Player } from "../../../types";
+import { useSwapPlayer } from "../hooks/useSwapPlayer";
 
 interface RestCellProps {
-  swap: {
-    player: number | null;
-    matchId: number | null;
-    partner: number | null;
-    isRestPlayer: boolean;
-  };
   player: Player;
 }
 
-const RestCell: React.FC<RestCellProps> = ({ swap, player }) => {
-  const { players, setPlayers, gameRounds, setGameRounds, setSwap, dispRound } =
-    useContext(AppContext);
+const RestCell: React.FC<RestCellProps> = ({ player }) => {
+  const { gameRounds, dispRound, swap } = useContext(AppContext);
 
-  const selectRestSwap = (playerId: number) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setSwap((prev) => {
-      if (prev.player === playerId) {
-        return {
-          player: null,
-          matchId: null,
-          partner: null,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.player == null || prev.isRestPlayer) {
-        return {
-          player: playerId,
-          matchId: null,
-          partner: null,
-          isRestPlayer: true,
-        };
-      }
-
-      changePlayableRestPlayer(prev.matchId as number, prev.player, playerId);
-      return {
-        player: null,
-        matchId: null,
-        partner: null,
-        isRestPlayer: false,
-      };
-    });
-  };
-
-  const changePlayableRestPlayer = (
-    matchId: number,
-    playablePlayerId: number,
-    restPlayerId: number,
-  ) => {
-    let newGameRounds: GameRound[] = [];
-    setGameRounds((prevGameRounds) => {
-      const playablePlayerTeam = findPlayerTeamInMatch(
-        playablePlayerId,
-        prevGameRounds,
-        matchId,
-      );
-      if (!playablePlayerTeam) {
-        return prevGameRounds;
-      }
-
-      newGameRounds = prevGameRounds.map((gameRound) => {
-        return {
-          ...gameRound,
-          matches: gameRound.matches.map((match) => {
-            let updatedMatch = { ...match };
-
-            // プレイ中プレイヤーの位置を休憩プレイヤーに置換
-            if (match.id === matchId) {
-              const newTeam = [...match[playablePlayerTeam.team]];
-              newTeam[playablePlayerTeam.teamIdx] = restPlayerId;
-              updatedMatch[playablePlayerTeam.team] = newTeam;
-            }
-
-            return updatedMatch;
-          }),
-        };
-      });
-
-      return newGameRounds;
-    });
-    const matches: MatchType[] = flatGrToM(newGameRounds);
-    countMatch([...matches], players, setPlayers);
-  };
+  const { selectRestSwap } = useSwapPlayer();
 
   return (
     <TouchableOpacity
@@ -158,10 +74,6 @@ const styles = StyleSheet.create({
   getGameCount: {
     flex: 1,
     fontSize: FONT_SIZE.tiny,
-  },
-  team: {
-    flex: 1,
-    gap: 4,
   },
   playerGender: {
     flex: 1,

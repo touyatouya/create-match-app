@@ -1,5 +1,4 @@
 import ColorPalette from "@/constants/color";
-import { AppContext } from "@/context/AppContext";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Player } from "../../../types";
@@ -10,7 +9,6 @@ interface MatchProps {
 }
 
 const RestRow: React.FC<MatchProps> = ({ item }) => {
-  const { swap } = React.useContext(AppContext);
   return (
     <View style={styles.restingRow}>
       {item.map((player, idx) => (
@@ -21,7 +19,7 @@ const RestRow: React.FC<MatchProps> = ({ item }) => {
             idx === 0 ? { marginRight: 6 } : { marginLeft: 6 },
           ]}
         >
-          <RestCell swap={swap} player={player} />
+          <RestCell player={player} />
         </View>
       ))}
       {item.length === 1 && (
