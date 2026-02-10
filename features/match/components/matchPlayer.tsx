@@ -1,9 +1,9 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { findPlayerTeamInMatch } from "@/features/match/logic/findPlayerTeamInMatch";
 import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import { GameRound, GenerateMode, Match } from "@/types";
-import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
 import { Ionicons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
 import React from "react";

@@ -1,10 +1,10 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { findPlayerTeamInMatch } from "@/features/match/logic/findPlayerTeamInMatch";
 import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import GenderIcon from "@/ui/GenderIcon";
-import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import {

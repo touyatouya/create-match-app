@@ -1,9 +1,9 @@
-import { GameRound } from "@/types";
+import { GameRound, Match, Player } from "@/types";
 
 export const findPlayerTeamInMatch = (
-  playerId: number,
+  playerId: Player["id"],
   gameRounds: GameRound[],
-  matchId: number,
+  matchId: Match["id"],
 ) => {
   const matches = gameRounds.flatMap((gr) => gr.matches.map((m) => m));
   const targetMatch = matches.find((m) => m.id === matchId);
