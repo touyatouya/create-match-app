@@ -4,7 +4,7 @@ export const findPlayerTeamInMatch = (
   playerId: Player["id"],
   gameRounds: GameRound[],
   matchId: Match["id"],
-) => {
+): { team: "teamA" | "teamB"; teamIdx: number } | null => {
   const matches = gameRounds.flatMap((gr) => gr.matches.map((m) => m));
   const targetMatch = matches.find((m) => m.id === matchId);
   if (!targetMatch) return null;

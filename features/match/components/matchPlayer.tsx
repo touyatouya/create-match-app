@@ -1,19 +1,12 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import { findPlayerTeamInMatch } from "@/features/match/logic/findPlayerTeamInMatch";
-import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
-import { GameRound, GenerateMode, Match } from "@/types";
+import { GenerateMode } from "@/types";
 import { Ionicons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
 import React from "react";
-import {
-  LayoutAnimation,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { flatGrToM } from "../logic/flatGrToM";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSwapPlayer } from "../hooks/useSwapPlayer";
 import { default as PlayerInfo } from "./playerInfo";
 
 interface MatchPlayerProps {
@@ -33,135 +26,8 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   showMatchCount,
   isFinished,
 }) => {
-  const { generateMode, setGameRounds, players, setPlayers, swap, setSwap } =
-    React.useContext(AppContext);
-
-  const changePlayer = (
-    targetMatchId: number,
-    targetPlayerId: number,
-    selectedMatchId: number,
-    selectedPlayerId: number,
-  ) => {
-    setGameRounds((prevGameRounds) => {
-      const targetTeam = findPlayerTeamInMatch(
-        targetPlayerId,
-        prevGameRounds,
-        targetMatchId,
-      );
-      const selectedTeam = findPlayerTeamInMatch(
-        selectedPlayerId,
-        prevGameRounds,
-        selectedMatchId,
-      );
-
-      if (!targetTeam || !selectedTeam) return prevGameRounds;
-
-      return prevGameRounds.map((gr) => {
-        return {
-          ...gr,
-          matches: gr.matches.map((m) => {
-            let updatedMatch = { ...m };
-
-            // プレイヤーAの位置をプレイヤーBに置換
-            if (m.id === targetMatchId) {
-              const newTeam = [...m[targetTeam.team]];
-              newTeam[targetTeam.teamIdx] = selectedPlayerId;
-              updatedMatch[targetTeam.team] = newTeam;
-            }
-
-            // プレイヤーBの位置をプレイヤーAに置換
-            if (m.id === selectedMatchId) {
-              const newTeam = [...m[selectedTeam.team]];
-              newTeam[selectedTeam.teamIdx] = targetPlayerId;
-              updatedMatch[selectedTeam.team] = newTeam;
-            }
-
-            return updatedMatch;
-          }),
-        };
-      });
-    });
-  };
-
-  const changePlayableRestPlayer = (
-    matchId: number,
-    playablePlayerId: number,
-    restPlayerId: number,
-  ) => {
-    let newGameRounds: GameRound[] = [];
-    setGameRounds((prevGameRounds) => {
-      const playablePlayerTeam = findPlayerTeamInMatch(
-        playablePlayerId,
-        prevGameRounds,
-        matchId,
-      );
-      if (!playablePlayerTeam) {
-        return prevGameRounds;
-      }
-
-      newGameRounds = prevGameRounds.map((gameRound) => {
-        return {
-          ...gameRound,
-          matches: gameRound.matches.map((match) => {
-            let updatedMatch = { ...match };
-
-            // プレイ中プレイヤーの位置を休憩プレイヤーに置換
-            if (match.id === matchId) {
-              const newTeam = [...match[playablePlayerTeam.team]];
-              newTeam[playablePlayerTeam.teamIdx] = restPlayerId;
-              updatedMatch[playablePlayerTeam.team] = newTeam;
-            }
-
-            return updatedMatch;
-          }),
-        };
-      });
-
-      return newGameRounds;
-    });
-    const matches: Match[] = flatGrToM(newGameRounds);
-    countMatch([...matches], players, setPlayers);
-  };
-
-  const selectSwapPlayer = (
-    matchId: number,
-    playerId: number,
-    partnerId: number,
-  ) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setSwap((prev) => {
-      if (prev.player === playerId) {
-        return {
-          player: null,
-          matchId: null,
-          partner: null,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.player == null || prev.partner === playerId) {
-        return {
-          player: playerId,
-          matchId,
-          partner: partnerId,
-          isRestPlayer: false,
-        };
-      }
-
-      if (prev.isRestPlayer) {
-        changePlayableRestPlayer(matchId, playerId, prev.player);
-      } else {
-        changePlayer(matchId, playerId, prev.matchId as number, prev.player);
-      }
-
-      return {
-        player: null,
-        matchId: null,
-        partner: null,
-        isRestPlayer: false,
-      };
-    });
-  };
+  const { swap, generateMode } = React.useContext(AppContext);
+  const { selectSwapPlayer } = useSwapPlayer();
 
   return (
     <>
