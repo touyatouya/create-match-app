@@ -1,33 +1,19 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
 import React, { useContext } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { GameRound, GenerateMode, Match } from "../../../types";
-import { useResetSwap } from "../hooks/useResetSwap";
-import { flatGrToM } from "../logic/flatGrToM";
+import { GenerateMode } from "../../../types";
+import { useDeleteGr } from "../hooks/useDeleteGr";
+import { useMoveDispRound } from "../hooks/useMoveDispRound";
 
 const ReplaceAllMatchHeader: React.FC = () => {
-  const {
-    players,
-    setPlayers,
-    gameRounds,
-    setGameRounds,
-    generateMode,
-    pairs,
-    courts,
-    isPreferMatchCountOverPair,
-    genderSetting,
-    dispRound,
-    setDispRound,
-  } = useContext(AppContext);
+  const { gameRounds, generateMode, dispRound } = useContext(AppContext);
 
-  const { resetSwap } = useResetSwap();
+  const { deleteLastGr } = useDeleteGr();
+  const { moveDispRound } = useMoveDispRound();
 
   if (generateMode !== GenerateMode.REPLACE_ALL) return null;
 
@@ -46,11 +32,7 @@ const ReplaceAllMatchHeader: React.FC = () => {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onPress={async () => {
-            setDispRound((prev) => prev - 1);
-
-            await analytics().logEvent("prev_gameRound");
-          }}
+          onPress={() => moveDispRound("prev")}
         >
           <AntDesign name="left" size={20} color={ColorPalette.normalIcon} />
         </TouchableOpacity>
@@ -84,43 +66,7 @@ const ReplaceAllMatchHeader: React.FC = () => {
                 alignItems: "center",
               }}
               onPress={async () => {
-                let newGameRounds: GameRound[] = [];
-                setGameRounds((prev) => {
-                  newGameRounds = prev.slice(0, -1);
-                  if (newGameRounds.length > 0) {
-                    newGameRounds[newGameRounds.length - 1] = {
-                      ...newGameRounds[newGameRounds.length - 1],
-                      matches: newGameRounds[
-                        newGameRounds.length - 1
-                      ].matches.map((m) => ({
-                        ...m,
-                        isFinished: false,
-                        canInsertNext: false,
-                      })),
-                    };
-                  }
-                  return newGameRounds;
-                });
-                const newMatch: Match[] = flatGrToM(newGameRounds);
-                const newPlayers = countMatch(newMatch, players, setPlayers);
-                resetSwap();
-                setDispRound((prev) => prev - 1);
-
-                await clearGameData();
-                await saveGameData({
-                  gameRounds: newGameRounds,
-                  courts,
-                  generateMode: generateMode,
-                  recentPlayers: newPlayers,
-                  anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous)
-                    .length,
-                  pairs,
-                  genderSetting,
-                  isPreferMatchCountOverPair,
-                  saveAt: new Date().getTime(),
-                });
-
-                await analytics().logEvent("delete_game");
+                await deleteLastGr();
               }}
             >
               <MaterialIcons name="delete-outline" size={24} color="black" />
@@ -135,11 +81,7 @@ const ReplaceAllMatchHeader: React.FC = () => {
             justifyContent: "center",
             alignItems: "center",
           }}
-          onPress={async () => {
-            setDispRound((prev) => prev + 1);
-
-            await analytics().logEvent("next_gameRound");
-          }}
+          onPress={() => moveDispRound("next")}
         >
           <AntDesign name="right" size={20} color={ColorPalette.normalIcon} />
         </TouchableOpacity>
