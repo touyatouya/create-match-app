@@ -1,10 +1,8 @@
 import { AppContext } from "@/context/AppContext";
-import { countMatch } from "@/features/match/logic/utils";
+import { useDeleteMatchByCourt } from "@/features/match/hooks/useDeleteMatchByCourt";
 import { globalStyles } from "@/styles/global";
-import { GameRound, GenerateMode, Match as MatchType, Player } from "@/types";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
+import { GenerateMode, Match as MatchType } from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
-import analytics from "@react-native-firebase/analytics";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 
@@ -19,26 +17,9 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
   courtId,
   canDelete,
 }) => {
-  const {
-    courts,
-    setGameRounds,
-    generateMode,
-    players,
-    setPlayers,
-    pairs,
-    genderSetting,
-    isPreferMatchCountOverPair,
-    setSwap,
-  } = React.useContext(AppContext);
+  const { generateMode } = React.useContext(AppContext);
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { deleteByCourt } = useDeleteMatchByCourt();
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
@@ -54,38 +35,7 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
   }
 
   const handleDelete = async () => {
-    let newGameRounds: GameRound[] = [];
-    setGameRounds((prev) => {
-      newGameRounds = prev.map((gameRound) => {
-        const newMatches = gameRound.matches.filter(
-          (match) => !(!match.isFinished && match.courtId === courtId),
-        );
-
-        return {
-          ...gameRound,
-          matches: newMatches,
-        };
-      });
-      return newGameRounds;
-    });
-    const newMatch = newGameRounds.flatMap((gameRound) => gameRound.matches);
-    const newPlayers: Player[] = countMatch(newMatch, players, setPlayers);
-    resetSwap();
-
-    await clearGameData();
-    await saveGameData({
-      gameRounds: newGameRounds,
-      courts,
-      generateMode: generateMode,
-      recentPlayers: newPlayers,
-      anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
-      pairs,
-      genderSetting,
-      isPreferMatchCountOverPair,
-      saveAt: new Date().getTime(),
-    });
-
-    await analytics().logEvent("delete_match_by_court");
+    deleteByCourt(courtId);
   };
 
   return (
