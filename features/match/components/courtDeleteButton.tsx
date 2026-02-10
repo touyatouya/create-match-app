@@ -34,10 +34,6 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
     return null;
   }
 
-  const handleDelete = async () => {
-    deleteByCourt(courtId);
-  };
-
   return (
     <View style={{ flexDirection: "row", alignItems: "center" }}>
       <TouchableOpacity
@@ -46,7 +42,7 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
           justifyContent: "center",
           alignItems: "center",
         }}
-        onPress={() => handleDelete()}
+        onPress={() => deleteByCourt(courtId)}
       >
         <MaterialIcons name="delete-outline" size={24} color="black" />
       </TouchableOpacity>

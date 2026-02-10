@@ -1,39 +1,18 @@
-import { AppContext } from "@/context/AppContext";
+import { useAllCourtToggle } from "@/features/match/hooks/useAllCourtToggle";
 import Checkbox from "@/ui/CheckBox";
-import React, { useContext } from "react";
+import React from "react";
 
 interface AllCourtCheckBoxProps {
   resetSwap: () => void;
 }
 
 const AllCourtCheckBox: React.FC<AllCourtCheckBoxProps> = ({ resetSwap }) => {
-  const { gameRounds, setGameRounds } = useContext(AppContext);
-
-  const isAllMatchCanInsertNext = gameRounds.every((gameRound) =>
-    gameRound.matches.every((match) => match.canInsertNext),
-  );
-
-  const setAllMatchCanInsertNext = (isAllMatchCanInsertNext: boolean) => {
-    setGameRounds((prev) => {
-      return prev.map((gameRound) => {
-        const newMatches = gameRound.matches.map((match) => {
-          if (!match.isFinished) {
-            return {
-              ...match,
-              canInsertNext: !isAllMatchCanInsertNext,
-            };
-          }
-          return match;
-        });
-        return { ...gameRound, matches: newMatches };
-      });
-    });
-  };
+  const { toggleAllCourt, isAllMatchCanInsertNext } = useAllCourtToggle();
 
   return (
     <Checkbox
       onChange={() => {
-        setAllMatchCanInsertNext(isAllMatchCanInsertNext);
+        toggleAllCourt();
         resetSwap();
       }}
       label="全コート終了"

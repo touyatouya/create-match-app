@@ -6,7 +6,7 @@ import analytics from "@react-native-firebase/analytics";
 import { useContext } from "react";
 import { countMatch } from "../logic/utils";
 
-export function useDeleteMatchByCourt() {
+export const useDeleteMatchByCourt = () => {
   const {
     courts,
     gameRounds,
@@ -56,4 +56,4 @@ export function useDeleteMatchByCourt() {
   };
 
   return { deleteByCourt };
-}
+};
