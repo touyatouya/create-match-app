@@ -1,10 +1,10 @@
-import CustomHeader from "@/app/components/CustomHeader";
-import GenderToggle from "@/app/components/GenderToggle";
-import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { Gender, Player } from "@/types";
+import CustomHeader from "@/ui/CustomHeader";
+import GenderToggle from "@/ui/GenderToggle";
+import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { Foundation, Ionicons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";

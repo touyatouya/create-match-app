@@ -1,4 +1,4 @@
-import ListEmptyText from "../ListEmptyText";
+import ListEmptyText from "@/ui/ListEmptyText";
 
 interface SectionFooterProps {
   message: string;

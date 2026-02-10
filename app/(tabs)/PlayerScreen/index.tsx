@@ -1,9 +1,16 @@
-import SegmentControl from "@/app/components/SegmentControl";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { STORAGE_KEYS } from "@/constants/storage";
 import { AppContext } from "@/context/AppContext";
+import AddPlayerModal from "@/features/player/components/addPlayerModal";
+import FabModal from "@/features/player/components/fabModal";
+import PlayerTable from "@/features/player/components/playerTable";
+import PlayerTableHeader from "@/features/player/components/playerTableHeader";
 import { globalStyles } from "@/styles/global";
+import CustomHeader from "@/ui/CustomHeader";
+import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
+import PrimaryButton from "@/ui/PrimaryButton";
+import SegmentControl from "@/ui/SegmentControl";
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData } from "@/utils/saveStorage";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -21,13 +28,6 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { GenerateMode, Player } from "../../../types";
-import CustomHeader from "../../components/CustomHeader";
-import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
-import AddPlayerModal from "../../components/PlayerScreen/addPlayerModal";
-import FabModal from "../../components/PlayerScreen/fabModal";
-import PlayerTable from "../../components/PlayerScreen/playerTable";
-import PlayerTableHeader from "../../components/PlayerScreen/playerTableHeader";
-import PrimaryButton from "../../components/PrimaryButton";
 
 const PlayerScreen: React.FC = () => {
   const {

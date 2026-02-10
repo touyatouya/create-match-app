@@ -1,11 +1,11 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { getPlayerName } from "@/features/match/logic/utils";
+import GenderIcon from "@/ui/GenderIcon";
 import { Feather } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import GenderIcon from "../GenderIcon";
-import { getPlayerName } from "./util";
 
 interface PlayerInfoProps {
   playerId: number | null;

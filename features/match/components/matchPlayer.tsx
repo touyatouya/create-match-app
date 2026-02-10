@@ -1,5 +1,6 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import { GameRound, GenerateMode, Match } from "@/types";
 import { findPlayerTeamInMatch } from "@/utils/findPlayerTeamInMatch";
@@ -13,7 +14,6 @@ import {
   View,
 } from "react-native";
 import { default as PlayerInfo } from "./playerInfo";
-import { countMatch } from "./util";
 
 interface MatchPlayerProps {
   matchId: number;

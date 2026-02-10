@@ -1,6 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
@@ -8,7 +9,6 @@ import analytics from "@react-native-firebase/analytics";
 import React, { useContext } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { GameRound, GenerateMode } from "../../../types";
-import { countMatch } from "./util";
 
 const ReplaceAllMatchHeader: React.FC = () => {
   const {

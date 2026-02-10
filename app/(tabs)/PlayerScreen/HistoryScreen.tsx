@@ -1,8 +1,8 @@
-import CustomHeader from "@/app/components/CustomHeader";
-import Loading from "@/app/components/Loading";
-import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import CustomHeader from "@/ui/CustomHeader";
+import Loading from "@/ui/Loading";
+import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
 import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { SectionList, StyleSheet, Text, View } from "react-native";

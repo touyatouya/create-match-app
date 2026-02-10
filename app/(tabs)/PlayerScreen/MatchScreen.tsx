@@ -1,6 +1,11 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import Match from "@/features/match/components/match";
 import { globalStyles } from "@/styles/global";
+import AdCompleteSnackbar from "@/ui/AdCompleteSnackbar";
+import CustomHeader from "@/ui/CustomHeader";
+import Loading from "@/ui/Loading";
+import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
 import { clearGameData } from "@/utils/saveStorage";
 import { saveOpenApp } from "@/utils/storeReview";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,11 +13,6 @@ import analytics from "@react-native-firebase/analytics";
 import { router } from "expo-router";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
-import AdCompleteSnackbar from "../../components/AdCompleteSnackbar";
-import CustomHeader from "../../components/CustomHeader";
-import Loading from "../../components/Loading";
-import Match from "../../components/MatchScreen/match";
-import MyAdmob, { BannerAdSize } from "../../components/MyAdmob";
 
 const MatchScreen: React.FC = () => {
   const {

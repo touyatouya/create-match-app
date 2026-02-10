@@ -1,4 +1,5 @@
 import { AppContext } from "@/context/AppContext";
+import { countMatch } from "@/features/match/logic/utils";
 import { globalStyles } from "@/styles/global";
 import { GameRound, GenerateMode, Match as MatchType, Player } from "@/types";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
@@ -6,7 +7,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
-import { countMatch } from "./util";
 
 interface CourtDeleteButtonProps {
   item: MatchType;

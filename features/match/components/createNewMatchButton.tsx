@@ -1,5 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
+import { createMatch } from "@/features/match/logic/utils";
+import PrimaryButton from "@/ui/PrimaryButton";
 import {
   getOpenAppCount,
   markReviewRequersted,
@@ -9,8 +11,6 @@ import { Ionicons } from "@expo/vector-icons";
 import * as StoreReview from "expo-store-review";
 import React, { useContext } from "react";
 import { GenerateMode, Match as MatchType } from "../../../types";
-import PrimaryButton from "../PrimaryButton";
-import { createMatch } from "./util";
 
 const CreateNewMatchButton: React.FC = () => {
   const {

@@ -1,6 +1,6 @@
 import { AppContext } from "@/context/AppContext";
+import Checkbox from "@/ui/CheckBox";
 import React, { useContext } from "react";
-import Checkbox from "../CheckBox";
 
 interface AllCourtCheckBoxProps {
   resetSwap: () => void;

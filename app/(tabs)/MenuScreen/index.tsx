@@ -1,9 +1,9 @@
-import CustomHeader from "@/app/components/CustomHeader";
-import MyAdmob, { BannerAdSize } from "@/app/components/MyAdmob";
-import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import CustomHeader from "@/ui/CustomHeader";
+import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
+import Toggle from "@/ui/Toggle";
 import { saveIsAdjustMatchCount } from "@/utils/saveStorage";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";

@@ -1,14 +1,14 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { playerScreenStyles } from "@/features/player/styles";
+import { Sort } from "@/features/player/types";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
+import Checkbox from "@/ui/CheckBox";
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Checkbox from "../CheckBox";
-import { playerScreenStyles } from "./styles";
-import { Sort } from "./types";
 
 interface PlayerTableHeaderProps {
   filteredPlayers: Player[];

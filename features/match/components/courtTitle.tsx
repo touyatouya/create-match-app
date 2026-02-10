@@ -2,9 +2,9 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { GenerateMode, Match as MatchType } from "@/types";
+import Checkbox from "@/ui/CheckBox";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import Checkbox from "../CheckBox";
 
 interface CourtTitleProps {
   item: MatchType;

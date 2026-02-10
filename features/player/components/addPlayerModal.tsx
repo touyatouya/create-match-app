@@ -18,11 +18,11 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player, Rank } from "@/types";
+import GenderToggle from "@/ui/GenderToggle";
+import TextInput from "@/ui/TextInput";
 import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
-import TextInput from "../../components/TextInput";
-import GenderToggle from "../GenderToggle";
 
 interface Props {
   isOpen: boolean;

@@ -1,8 +1,9 @@
-import Toggle from "@/app/components/Toggle";
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { MarchScreenStyles } from "@/features/match/styles";
 import { globalStyles } from "@/styles/global";
+import Toggle from "@/ui/Toggle";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
@@ -19,7 +20,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { MarchScreenStyles } from "./styles";
 
 interface Props {
   isOpen: boolean;

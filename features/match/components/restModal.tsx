@@ -3,6 +3,9 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
 import { Pair, Player } from "@/types";
+import PlayerItem from "@/ui/PlayerItem";
+import PrimaryButton from "@/ui/PrimaryButton";
+import RestPlayerItem from "@/ui/RestPlayerItem";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
@@ -21,9 +24,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import PlayerItem from "../PlayerItem";
-import PrimaryButton from "../PrimaryButton";
-import RestPlayerItem from "../RestPlayerItem";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;

@@ -1,10 +1,10 @@
 import { AppContext } from "@/context/AppContext";
 import { Player } from "@/types";
+import ListEmptyText from "@/ui/ListEmptyText";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import { useContext, useRef } from "react";
 import { LayoutAnimation, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
-import ListEmptyText from "../ListEmptyText";
 import PlayerRow from "./playerRow";
 
 interface PlayerTableProps {

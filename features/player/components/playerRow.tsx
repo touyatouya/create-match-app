@@ -1,13 +1,13 @@
 import ColorPalette from "@/constants/color";
+import { playerScreenStyles } from "@/features/player/styles";
 import { globalStyles } from "@/styles/global";
 import { Player } from "@/types";
+import Checkbox from "@/ui/CheckBox";
+import GenderIcon from "@/ui/GenderIcon";
+import RemoveButton from "@/ui/RemoveButton";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Checkbox from "../CheckBox";
-import GenderIcon from "../GenderIcon";
-import RemoveButton from "../RemoveButton";
-import { playerScreenStyles } from "./styles";
 
 interface PlayerRowProps {
   item: Player;
