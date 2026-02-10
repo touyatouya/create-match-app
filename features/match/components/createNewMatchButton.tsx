@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as StoreReview from "expo-store-review";
 import React, { useContext } from "react";
 import { GenerateMode, Match as MatchType } from "../../../types";
+import { useResetSwap } from "../hooks/useResetSwap";
 
 const CreateNewMatchButton: React.FC = () => {
   const {
@@ -47,14 +48,7 @@ const CreateNewMatchButton: React.FC = () => {
         )
       : courts;
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { resetSwap } = useResetSwap();
 
   return (
     <PrimaryButton

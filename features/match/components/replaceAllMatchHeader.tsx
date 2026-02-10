@@ -9,6 +9,7 @@ import analytics from "@react-native-firebase/analytics";
 import React, { useContext } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { GameRound, GenerateMode } from "../../../types";
+import { useResetSwap } from "../hooks/useResetSwap";
 
 const ReplaceAllMatchHeader: React.FC = () => {
   const {
@@ -21,19 +22,11 @@ const ReplaceAllMatchHeader: React.FC = () => {
     courts,
     isPreferMatchCountOverPair,
     genderSetting,
-    setSwap,
     dispRound,
     setDispRound,
   } = useContext(AppContext);
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { resetSwap } = useResetSwap();
 
   if (generateMode !== GenerateMode.REPLACE_ALL) return null;
 

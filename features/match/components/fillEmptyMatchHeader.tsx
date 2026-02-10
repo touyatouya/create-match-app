@@ -5,13 +5,7 @@ import { GenerateMode, Match as MatchType } from "../../../types";
 import AllCourtCheckBox from "./allCourtCheckBox";
 import HistoryButton from "./historyButton";
 
-interface FillEmptyMatchHeaderProps {
-  resetSwap: () => void;
-}
-
-const FillEmptyMatchHeader: React.FC<FillEmptyMatchHeaderProps> = ({
-  resetSwap,
-}) => {
+const FillEmptyMatchHeader: React.FC = () => {
   const { gameRounds, generateMode } = useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(
@@ -30,7 +24,7 @@ const FillEmptyMatchHeader: React.FC<FillEmptyMatchHeaderProps> = ({
         justifyContent: "space-between",
       }}
     >
-      <AllCourtCheckBox resetSwap={resetSwap} />
+      <AllCourtCheckBox />
       <HistoryButton />
     </View>
   );

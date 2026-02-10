@@ -1,13 +1,11 @@
 import { useAllCourtToggle } from "@/features/match/hooks/useAllCourtToggle";
 import Checkbox from "@/ui/CheckBox";
 import React from "react";
+import { useResetSwap } from "../hooks/useResetSwap";
 
-interface AllCourtCheckBoxProps {
-  resetSwap: () => void;
-}
-
-const AllCourtCheckBox: React.FC<AllCourtCheckBoxProps> = ({ resetSwap }) => {
+const AllCourtCheckBox: React.FC = () => {
   const { toggleAllCourt, isAllMatchCanInsertNext } = useAllCourtToggle();
+  const { resetSwap } = useResetSwap();
 
   return (
     <Checkbox

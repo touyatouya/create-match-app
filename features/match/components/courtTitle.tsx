@@ -5,6 +5,7 @@ import { GenerateMode, Match as MatchType } from "@/types";
 import Checkbox from "@/ui/CheckBox";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useResetSwap } from "../hooks/useResetSwap";
 
 interface CourtTitleProps {
   item: MatchType;
@@ -19,17 +20,10 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
   courtNumber,
   canCheck,
 }) => {
-  const { setGameRounds, generateMode, setSwap, dispRound } =
+  const { setGameRounds, generateMode, dispRound } =
     React.useContext(AppContext);
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { resetSwap } = useResetSwap();
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&

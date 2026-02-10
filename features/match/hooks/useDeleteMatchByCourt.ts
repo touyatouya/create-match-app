@@ -5,6 +5,7 @@ import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
 import { useContext } from "react";
 import { countMatch } from "../logic/utils";
+import { useResetSwap } from "./useResetSwap";
 
 export const useDeleteMatchByCourt = () => {
   const {
@@ -17,17 +18,9 @@ export const useDeleteMatchByCourt = () => {
     pairs,
     genderSetting,
     isPreferMatchCountOverPair,
-    setSwap,
   } = useContext(AppContext);
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
+  const { resetSwap } = useResetSwap();
 
   const deleteByCourt = async (courtId: Court["id"]) => {
     const newGameRounds = deleteMatchesByCourt(gameRounds, courtId);

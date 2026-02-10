@@ -24,15 +24,8 @@ interface MatchProps {
 }
 
 const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
-  const {
-    players,
-    gameRounds,
-    generateMode,
-    courts,
-    setIsLoading,
-    setSwap,
-    dispRound,
-  } = useContext(AppContext);
+  const { players, gameRounds, generateMode, courts, setIsLoading, dispRound } =
+    useContext(AppContext);
 
   const matches: MatchType[] = gameRounds.flatMap(
     (gameRound) => gameRound.matches,
@@ -104,15 +97,6 @@ const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
     },
   ];
 
-  const resetSwap = () => {
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-  };
-
   useEffect(() => {
     setIsLoading(false);
   }, [gameRounds, setIsLoading]);
@@ -120,7 +104,7 @@ const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
   return (
     <View style={{ flex: 1 }}>
       {generateMode === GenerateMode.REPLACE_ALL && <CreateNewMatchButton />}
-      <FillEmptyMatchHeader resetSwap={resetSwap} />
+      <FillEmptyMatchHeader />
       <ReplaceAllMatchHeader />
       {(gameRounds[dispRound - 1] != null ||
         generateMode === GenerateMode.FILL_EMPTY) && (
