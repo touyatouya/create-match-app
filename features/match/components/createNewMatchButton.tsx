@@ -27,7 +27,6 @@ const CreateNewMatchButton: React.FC = () => {
     isAdjustMatchCount,
     isPreferMatchCountOverPair,
     genderSetting,
-    setSwap,
     setDispRound,
   } = useContext(AppContext);
 

@@ -5,7 +5,7 @@ import { GenerateMode, Match as MatchType } from "@/types";
 import Checkbox from "@/ui/CheckBox";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useResetSwap } from "../hooks/useResetSwap";
+import { useCourtToggle } from "../hooks/useCourtToggle";
 
 interface CourtTitleProps {
   item: MatchType;
@@ -20,10 +20,9 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
   courtNumber,
   canCheck,
 }) => {
-  const { setGameRounds, generateMode, dispRound } =
-    React.useContext(AppContext);
+  const { generateMode, dispRound } = React.useContext(AppContext);
 
-  const { resetSwap } = useResetSwap();
+  const { toggleCourtCanInsertNext } = useCourtToggle();
 
   const isNoMatch =
     (item.teamA == null || item.teamA.length === 0) &&
@@ -33,30 +32,7 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
     <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
       {generateMode === GenerateMode.FILL_EMPTY && !isNoMatch && canCheck ? (
         <Checkbox
-          onChange={() => {
-            setGameRounds((prev) => {
-              return prev.map((gameRound, i) => {
-                const newMatches = gameRound.matches.map((match) => {
-                  if (!match.isFinished && match.courtId === courtId) {
-                    return {
-                      ...match,
-                      canInsertNext: !match.canInsertNext,
-                      finishRound: dispRound,
-                    };
-                  }
-                  return {
-                    ...match,
-                  };
-                });
-
-                return {
-                  ...gameRound,
-                  matches: newMatches,
-                };
-              });
-            });
-            resetSwap();
-          }}
+          onChange={() => toggleCourtCanInsertNext(courtId, dispRound)}
           label={`${courtNumber}コート`}
           labelStyle={styles.courtName}
           checked={item.canInsertNext}
