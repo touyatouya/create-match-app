@@ -69,7 +69,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
         <TouchableOpacity
           onPress={() =>
             router.push({
-              pathname: "/PlayerScreen/PlayerEditScreen",
+              pathname: "/Player/PlayerEdit",
               params: { playerId: item.id },
             })
           }

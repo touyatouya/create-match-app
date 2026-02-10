@@ -101,7 +101,7 @@ const MatchScreen: React.FC = () => {
             <TouchableOpacity
               onPress={() => {
                 if (isLoading) return;
-                router.push({ pathname: "/PlayerScreen/MatchMenuScreen" });
+                router.push({ pathname: "/Player/MatchMenu" });
               }}
               style={globalStyles.headerRight}
             >

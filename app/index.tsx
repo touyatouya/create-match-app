@@ -205,7 +205,7 @@ export default function Index() {
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <Redirect href="/(tabs)/PlayerScreen" />
+      <Redirect href="/(tabs)/Player" />
     </SafeAreaProvider>
   );
 }

@@ -6,7 +6,7 @@ export default function TabsLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="PlayerScreen"
+        name="Player"
         options={{
           tabBarLabel: "試合",
           tabBarIcon: ({ color }) => (
@@ -20,7 +20,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="MenuScreen"
+        name="Menu"
         options={{
           tabBarLabel: "メニュー",
           tabBarIcon: ({ color, size }) => (

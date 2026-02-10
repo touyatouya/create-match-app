@@ -133,7 +133,7 @@ const PlayerScreen: React.FC = () => {
   };
 
   const toMatchScreen = async () => {
-    router.push({ pathname: "/PlayerScreen/MatchScreen" });
+    router.push({ pathname: "/Player/Match" });
 
     await analytics().logEvent("to_match_screen", {
       player_count: players.length,
