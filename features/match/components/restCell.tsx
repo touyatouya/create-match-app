@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { GameRound, Match as MatchType, Player } from "../../../types";
+import { flatGrToM } from "../logic/flatGrToM";
 
 interface RestCellProps {
   swap: {
@@ -97,9 +98,7 @@ const RestCell: React.FC<RestCellProps> = ({ swap, player }) => {
 
       return newGameRounds;
     });
-    const matches: MatchType[] = newGameRounds.flatMap(
-      (gameRound) => gameRound.matches,
-    );
+    const matches: MatchType[] = flatGrToM(newGameRounds);
     countMatch([...matches], players, setPlayers);
   };
 

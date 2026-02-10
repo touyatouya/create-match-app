@@ -8,8 +8,9 @@ import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
 import React, { useContext } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { GameRound, GenerateMode } from "../../../types";
+import { GameRound, GenerateMode, Match } from "../../../types";
 import { useResetSwap } from "../hooks/useResetSwap";
+import { flatGrToM } from "../logic/flatGrToM";
 
 const ReplaceAllMatchHeader: React.FC = () => {
   const {
@@ -100,9 +101,7 @@ const ReplaceAllMatchHeader: React.FC = () => {
                   }
                   return newGameRounds;
                 });
-                const newMatch = newGameRounds.flatMap(
-                  (gameRound) => gameRound.matches,
-                );
+                const newMatch: Match[] = flatGrToM(newGameRounds);
                 const newPlayers = countMatch(newMatch, players, setPlayers);
                 resetSwap();
                 setDispRound((prev) => prev - 1);

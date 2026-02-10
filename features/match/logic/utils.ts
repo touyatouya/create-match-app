@@ -13,6 +13,7 @@ import {
   Pair,
   Player,
 } from "../../../types";
+import { flatGrToM } from "./flatGrToM";
 
 export const createMatch = async (
   players: Player[],
@@ -169,9 +170,7 @@ export const createMatch = async (
     }
   });
 
-  const newMatches: MatchType[] = newGameRounds.flatMap(
-    (gameRound) => gameRound.matches,
-  );
+  const newMatches: MatchType[] = flatGrToM(newGameRounds);
   const newPlayers = countMatch(newMatches, players, setPlayers);
   restSwap();
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {

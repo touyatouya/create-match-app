@@ -4,6 +4,7 @@ import { generateUniqId } from "@/utils/createId";
 import React, { useContext, useEffect } from "react";
 import { SectionList, View } from "react-native";
 import { GenerateMode, Match as MatchType, Player } from "../../../types";
+import { flatGrToM } from "../logic/flatGrToM";
 import CreateNewMatchButton from "./createNewMatchButton";
 import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import RenderMatch from "./renderMatch";
@@ -27,9 +28,7 @@ const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
   const { players, gameRounds, generateMode, courts, setIsLoading, dispRound } =
     useContext(AppContext);
 
-  const matches: MatchType[] = gameRounds.flatMap(
-    (gameRound) => gameRound.matches,
-  );
+  const matches: MatchType[] = flatGrToM(gameRounds);
 
   const playablePlayers = players.filter((player) => {
     if (generateMode === GenerateMode.REPLACE_ALL) {

@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { flatGrToM } from "../logic/flatGrToM";
 import { default as PlayerInfo } from "./playerInfo";
 
 interface MatchPlayerProps {
@@ -118,9 +119,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
 
       return newGameRounds;
     });
-    const matches: Match[] = newGameRounds.flatMap(
-      (gameRound) => gameRound.matches,
-    );
+    const matches: Match[] = flatGrToM(newGameRounds);
     countMatch([...matches], players, setPlayers);
   };
 

@@ -12,6 +12,7 @@ import * as StoreReview from "expo-store-review";
 import React, { useContext } from "react";
 import { GenerateMode, Match as MatchType } from "../../../types";
 import { useResetSwap } from "../hooks/useResetSwap";
+import { flatGrToM } from "../logic/flatGrToM";
 
 const CreateNewMatchButton: React.FC = () => {
   const {
@@ -30,9 +31,7 @@ const CreateNewMatchButton: React.FC = () => {
     setDispRound,
   } = useContext(AppContext);
 
-  const matches: MatchType[] = gameRounds.flatMap(
-    (gameRound) => gameRound.matches,
-  );
+  const matches: MatchType[] = flatGrToM(gameRounds);
 
   const playingCourtIds = gameRounds
     .flatMap((gameRound) => gameRound.matches)

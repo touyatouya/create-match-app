@@ -2,15 +2,14 @@ import { AppContext } from "@/context/AppContext";
 import React, { useContext } from "react";
 import { View } from "react-native";
 import { GenerateMode, Match as MatchType } from "../../../types";
+import { flatGrToM } from "../logic/flatGrToM";
 import AllCourtCheckBox from "./allCourtCheckBox";
 import HistoryButton from "./historyButton";
 
 const FillEmptyMatchHeader: React.FC = () => {
   const { gameRounds, generateMode } = useContext(AppContext);
 
-  const matches: MatchType[] = gameRounds.flatMap(
-    (gameRound) => gameRound.matches,
-  );
+  const matches: MatchType[] = flatGrToM(gameRounds);
 
   if (generateMode !== GenerateMode.FILL_EMPTY || matches.length === 0) {
     return null;
