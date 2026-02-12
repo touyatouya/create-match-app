@@ -1,29 +1,16 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import Match from "@/features/match/components/match";
-import { globalStyles } from "@/styles/global";
-import AdCompleteSnackbar from "@/ui/AdCompleteSnackbar";
-import CustomHeader from "@/ui/CustomHeader";
 import Loading from "@/ui/Loading";
 import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
-import { clearGameData } from "@/utils/saveStorage";
 import { saveOpenApp } from "@/utils/storeReview";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
-import { router } from "expo-router";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useContext, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import MatchScreenHeader from "./matchScreenHeader";
 
 const MatchScreen: React.FC = () => {
-  const {
-    setPlayers,
-    gameRounds,
-    setGameRounds,
-    isLoading,
-    setSwap,
-    setDispRound,
-  } = useContext(AppContext);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const { gameRounds, isLoading, setDispRound } = useContext(AppContext);
 
   useEffect(() => {
     analytics().logEvent("screen_view", {
@@ -33,95 +20,13 @@ const MatchScreen: React.FC = () => {
     setDispRound(gameRounds.length >= 0 ? gameRounds.length : 0);
   }, [gameRounds.length, setDispRound]);
 
-  const resetGameRound = useCallback(async () => {
-    setGameRounds([]);
-    setPlayers((prev) => {
-      return prev.map((player) => {
-        return {
-          ...player,
-          isRest: false,
-          matchCount: 0,
-        };
-      });
-    });
-    setSwap({
-      player: null,
-      matchId: null,
-      partner: null,
-      isRestPlayer: false,
-    });
-    setDispRound(0);
-
-    clearGameData();
-
-    await analytics().logEvent("reset_game");
-  }, [setGameRounds, setPlayers, setSwap, setDispRound]);
-
   return (
     <>
       {isLoading && <Loading />}
-      <CustomHeader
-        title="試合"
-        headerRight={() => (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 32,
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => {
-                if (isLoading) return;
-                Alert.alert(
-                  "確認",
-                  "全ての組み合わせを削除しますがよろしいですか？",
-                  [
-                    {
-                      text: "キャンセル",
-                      style: "cancel",
-                    },
-                    {
-                      text: "削除",
-                      onPress: resetGameRound,
-                      style: "destructive",
-                    },
-                  ],
-                );
-              }}
-              style={globalStyles.headerRight}
-            >
-              <MaterialCommunityIcons
-                name="delete-alert-outline"
-                size={24}
-                color="black"
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (isLoading) return;
-                router.push({ pathname: "/Player/MatchMenu" });
-              }}
-              style={globalStyles.headerRight}
-            >
-              <AntDesign name="menu" size={20} color="black" />
-            </TouchableOpacity>
-          </View>
-        )}
-        isSlideScreen
-        headerLeftText="試合準備"
-        disabled={isLoading}
-      />
+      <MatchScreenHeader />
       <View style={styles.container}>
-        <Match setSnackbarVisible={setSnackbarVisible} />
+        <Match />
       </View>
-      <AdCompleteSnackbar
-        visiable={snackbarVisible}
-        message={`あと5回試合作成できるようになりました！`}
-        onDismiss={() => setSnackbarVisible(false)}
-        onPressLabel={() => setSnackbarVisible(false)}
-      />
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>
   );
@@ -134,18 +39,6 @@ const styles = StyleSheet.create({
     backgroundColor: ColorPalette.pageBackground,
     borderTopWidth: 0.5,
     borderTopColor: ColorPalette.pageHeaderFooterBorder,
-  },
-  segment: {
-    flexDirection: "row",
-    backgroundColor: ColorPalette.whiteIcon,
-    borderRadius: 8,
-  },
-  detailSetting: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: ColorPalette.borderline,
-    marginBottom: 4,
   },
 });
 

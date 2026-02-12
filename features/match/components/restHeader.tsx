@@ -4,38 +4,21 @@ import { AppContext } from "@/context/AppContext";
 import { Feather } from "@expo/vector-icons";
 import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { GenerateMode } from "../../../types";
+import { getPlayingPlayers } from "../logic/getPlayingPlayers";
+import { getRestingPlayers } from "../logic/getRestingPlayers";
 
 const RestHeader: React.FC = () => {
   const { players, gameRounds, generateMode, dispRound } =
     useContext(AppContext);
 
-  const playablePlayers = players.filter((player) => {
-    if (generateMode === GenerateMode.REPLACE_ALL) {
-      return gameRounds[dispRound - 1]?.matches.some((match) => {
-        return (
-          match.teamA.some((playerId) => playerId === player.id) ||
-          match.teamB.some((playerId) => playerId === player.id)
-        );
-      });
-    } else {
-      return gameRounds
-        .flatMap((gameRound) => gameRound.matches)
-        .filter((match) => !match.isFinished || !match.canInsertNext)
-        .some((match) => {
-          return (
-            match.teamA.some((playerId) => playerId === player.id) ||
-            match.teamB.some((playerId) => playerId === player.id)
-          );
-        });
-    }
-  });
-
-  const playablePlayerIds = new Set(playablePlayers.map((p) => p.id));
-
-  const restPlayers = players.filter(
-    (player) => player.isJoin && !playablePlayerIds.has(player.id),
+  const playingPlayers = getPlayingPlayers(
+    players,
+    gameRounds,
+    generateMode,
+    dispRound,
   );
+
+  const restPlayers = getRestingPlayers(players, playingPlayers);
 
   return (
     <View style={styles.restingHeader}>

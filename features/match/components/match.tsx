@@ -20,11 +20,7 @@ type Section = {
   data: SectionDataItem[];
 };
 
-interface MatchProps {
-  setSnackbarVisible: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const Match: React.FC<MatchProps> = ({ setSnackbarVisible }) => {
+const Match: React.FC = () => {
   const { players, gameRounds, generateMode, courts, setIsLoading, dispRound } =
     useContext(AppContext);
 

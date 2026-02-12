@@ -6,12 +6,10 @@ import { Pair, Player } from "@/types";
 import PlayerItem from "@/ui/PlayerItem";
 import PrimaryButton from "@/ui/PrimaryButton";
 import RestPlayerItem from "@/ui/RestPlayerItem";
-import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import analytics from "@react-native-firebase/analytics";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import {
-  Alert,
   Keyboard,
   Modal,
   SectionList,
@@ -24,6 +22,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useRest } from "../hooks/useRest";
 import SectionFooter from "./sectionFooter";
 
 type SectionDataItem = Pair | Player;
@@ -40,108 +39,16 @@ interface Props {
 }
 
 const RestModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const {
-    players,
-    setPlayers,
-    courts,
-    gameRounds,
-    generateMode,
-    pairs,
-    genderSetting,
-    isPreferMatchCountOverPair,
-  } = useContext(AppContext);
-  const [selectedPlayer, setSelectedPlayer] = useState<number[]>([]);
+  const { players } = useContext(AppContext);
   const insets = useSafeAreaInsets();
+  const { selectedPlayer, selectPlayer, createRestPlayer, removeRestPlayer } =
+    useRest();
 
   useEffect(() => {
     analytics().logEvent("screen_view", {
       screen_name: "RestModal",
     });
   }, []);
-
-  const selectPlayer = (id: number) => {
-    setSelectedPlayer((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
-    );
-  };
-
-  const createRestPlayer = async () => {
-    if (selectedPlayer.length < 1) {
-      return Alert.alert("1人以上選んでください", "", [
-        {
-          text: "OK",
-          style: "cancel",
-        },
-      ]);
-    }
-
-    const joinPlayerCount = players.filter((p) => p.isJoin).length;
-    const playablePlayerCount = players.filter(
-      (p) => p.isJoin && !p.isRest && !selectedPlayer.includes(p.id),
-    ).length;
-    const needPlayerCount = courts.length * 4;
-    if (playablePlayerCount < needPlayerCount) {
-      return Alert.alert(
-        `休憩にできません`,
-        `試合作成に必要な人数が足りなくなります\n休憩にしたい場合は、コート数を減らしてください\n休憩にできる人数: ${joinPlayerCount - needPlayerCount}人\n試合作成に必要な人数: ${needPlayerCount}人\n参加中人数: ${joinPlayerCount}人`,
-        [
-          {
-            text: "OK",
-            style: "cancel",
-          },
-        ],
-      );
-    }
-
-    if (selectedPlayer.length < 1) {
-      return Alert.alert("1人以上選んでください", "", [
-        {
-          text: "OK",
-          style: "cancel",
-        },
-      ]);
-    }
-
-    let newPlayers = players;
-    setPlayers((prev) => {
-      newPlayers = prev.map((player) => {
-        if (selectedPlayer.includes(player.id)) {
-          return { ...player, isRest: true };
-        }
-        return player;
-      });
-      return newPlayers;
-    });
-    setSelectedPlayer([]);
-
-    await clearGameData();
-    await saveGameData({
-      gameRounds,
-      courts,
-      generateMode: generateMode,
-      recentPlayers: newPlayers,
-      anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
-      pairs,
-      genderSetting,
-      isPreferMatchCountOverPair,
-      saveAt: new Date().getTime(),
-    });
-
-    await analytics().logEvent("create_rest_player");
-  };
-
-  const removeRestPlayer = async (id: number) => {
-    setPlayers((prev) =>
-      prev.map((player) => {
-        if (player.id === id) {
-          return { ...player, isRest: false };
-        }
-        return player;
-      }),
-    );
-
-    await analytics().logEvent("remove_rest_player");
-  };
 
   const restPlayers = players.filter((player) => player.isRest);
   const noRestPlayers = players.filter((player) => !player.isRest);
@@ -274,10 +181,6 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZE.subsubheading,
     fontWeight: "bold",
     color: ColorPalette.sectionTitle,
-  },
-  body: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
   },
   pairHeader: {
     flexDirection: "row",
