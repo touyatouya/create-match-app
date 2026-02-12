@@ -7,7 +7,7 @@ import { fillMatch } from "../logic/fillMatch";
 import { flatGrToM } from "../logic/flatGrToM";
 import { getPlayingPlayers } from "../logic/getPlayingPlayers";
 import { getRestingPlayers } from "../logic/getRestingPlayers";
-import RenderMatch from "./renderMatch";
+import Match from "./match";
 import RestHeader from "./restHeader";
 import RestRow from "./restRow";
 
@@ -76,11 +76,7 @@ const Matchup: React.FC = () => {
           const courtNumber = court?.number as number;
 
           return (
-            <RenderMatch
-              item={match}
-              courtId={courtId}
-              courtNumber={courtNumber}
-            />
+            <Match item={match} courtId={courtId} courtNumber={courtNumber} />
           );
         } else if (section.type === "rest") {
           const restRow = item as Player[];

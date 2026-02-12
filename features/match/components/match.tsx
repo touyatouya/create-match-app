@@ -14,7 +14,7 @@ interface MatchProps {
   courtNumber: number;
 }
 
-const RenderMatch: React.FC<MatchProps> = ({ item, courtId, courtNumber }) => {
+const Match: React.FC<MatchProps> = ({ item, courtId, courtNumber }) => {
   const { gameRounds, generateMode, newGames, setNewGames, dispRound } =
     React.useContext(AppContext);
 
@@ -146,11 +146,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  courtName: {
-    fontSize: FONT_SIZE.small,
-    fontWeight: "bold",
-    color: ColorPalette.sectionTitle,
-  },
   empty: {
     flexDirection: "row",
     justifyContent: "center",
@@ -173,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RenderMatch;
+export default Match;
