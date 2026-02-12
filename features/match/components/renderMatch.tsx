@@ -12,21 +12,9 @@ interface MatchProps {
   item: MatchType;
   courtId: number;
   courtNumber: number;
-  canCheck: boolean;
-  canDelete: boolean;
-  canSwap: boolean;
-  showMatchCount: boolean;
 }
 
-const RenderMatch: React.FC<MatchProps> = ({
-  item,
-  courtId,
-  courtNumber,
-  canCheck,
-  canDelete,
-  canSwap,
-  showMatchCount,
-}) => {
+const RenderMatch: React.FC<MatchProps> = ({ item, courtId, courtNumber }) => {
   const { gameRounds, generateMode, newGames, setNewGames, dispRound } =
     React.useContext(AppContext);
 
@@ -80,17 +68,8 @@ const RenderMatch: React.FC<MatchProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <CourtTitle
-          item={item}
-          courtId={courtId}
-          courtNumber={courtNumber}
-          canCheck={canCheck}
-        />
-        <CourtDeleteButton
-          item={item}
-          courtId={courtId}
-          canDelete={canDelete}
-        />
+        <CourtTitle item={item} courtId={courtId} courtNumber={courtNumber} />
+        <CourtDeleteButton item={item} courtId={courtId} />
       </View>
 
       {item.teamA?.length === 0 || item.teamB?.length === 0 ? (
@@ -111,10 +90,9 @@ const RenderMatch: React.FC<MatchProps> = ({
                   partnerId={partnerId as number}
                   canSwap={
                     generateMode === GenerateMode.FILL_EMPTY
-                      ? canSwap && !item.canInsertNext
+                      ? !item.canInsertNext
                       : dispRound === gameRounds.length
                   }
-                  showMatchCount={showMatchCount}
                   isFinished={item.canInsertNext}
                 />
               );
@@ -135,10 +113,9 @@ const RenderMatch: React.FC<MatchProps> = ({
                   partnerId={partnerId as number}
                   canSwap={
                     generateMode === GenerateMode.FILL_EMPTY
-                      ? canSwap && !item.canInsertNext
+                      ? !item.canInsertNext
                       : dispRound === gameRounds.length
                   }
-                  showMatchCount={showMatchCount}
                   isFinished={item.canInsertNext}
                 />
               );

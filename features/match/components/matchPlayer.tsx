@@ -14,7 +14,6 @@ interface MatchPlayerProps {
   playerId: number;
   partnerId: number;
   canSwap: boolean;
-  showMatchCount: boolean;
   isFinished: boolean;
 }
 
@@ -23,7 +22,6 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
   playerId,
   partnerId,
   canSwap,
-  showMatchCount,
   isFinished,
 }) => {
   const { swap, generateMode } = React.useContext(AppContext);
@@ -44,7 +42,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
             await analytics().logEvent("swap_player");
           }}
         >
-          <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
+          <PlayerInfo playerId={playerId} />
           <Ionicons
             name="swap-horizontal"
             size={14}
@@ -60,7 +58,7 @@ const MatchPlayer: React.FC<MatchPlayerProps> = ({
               isFinished && { opacity: 0.5 },
           ]}
         >
-          <PlayerInfo playerId={playerId} showMatchCount={showMatchCount} />
+          <PlayerInfo playerId={playerId} />
         </View>
       )}
     </>

@@ -9,13 +9,9 @@ import { StyleSheet, Text, View } from "react-native";
 
 interface PlayerInfoProps {
   playerId: number | null;
-  showMatchCount: boolean;
 }
 
-const PlayerInfo: React.FC<PlayerInfoProps> = ({
-  playerId,
-  showMatchCount,
-}) => {
+const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
   const { players } = useContext(AppContext);
 
   const getGender = (id: number) => {
@@ -45,9 +41,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
 
       {playerId != null && (
         <View style={styles.subInfo}>
-          {showMatchCount && (
-            <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
-          )}
+          <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
           <Text style={styles.playerGender}>
             <GenderIcon gender={getGender(playerId)} size={18} />
           </Text>

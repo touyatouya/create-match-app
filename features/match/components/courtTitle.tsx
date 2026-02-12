@@ -11,14 +11,12 @@ interface CourtTitleProps {
   item: MatchType;
   courtId: number;
   courtNumber: number;
-  canCheck: boolean;
 }
 
 const CourtTitle: React.FC<CourtTitleProps> = ({
   item,
   courtId,
   courtNumber,
-  canCheck,
 }) => {
   const { generateMode, dispRound } = React.useContext(AppContext);
 
@@ -30,7 +28,7 @@ const CourtTitle: React.FC<CourtTitleProps> = ({
 
   return (
     <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
-      {generateMode === GenerateMode.FILL_EMPTY && !isNoMatch && canCheck ? (
+      {generateMode === GenerateMode.FILL_EMPTY && !isNoMatch ? (
         <Checkbox
           onChange={() => toggleCourtCanInsertNext(courtId, dispRound)}
           label={`${courtNumber}コート`}

@@ -80,10 +80,6 @@ const Matchup: React.FC = () => {
               item={match}
               courtId={courtId}
               courtNumber={courtNumber}
-              showMatchCount={true}
-              canCheck={generateMode === GenerateMode.FILL_EMPTY}
-              canDelete={true}
-              canSwap={true}
             />
           );
         } else if (section.type === "rest") {

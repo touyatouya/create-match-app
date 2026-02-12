@@ -9,13 +9,11 @@ import { TouchableOpacity, View } from "react-native";
 interface CourtDeleteButtonProps {
   item: MatchType;
   courtId: number;
-  canDelete: boolean;
 }
 
 const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
   item,
   courtId,
-  canDelete,
 }) => {
   const { generateMode } = React.useContext(AppContext);
 
@@ -28,7 +26,6 @@ const CourtDeleteButton: React.FC<CourtDeleteButtonProps> = ({
   if (
     generateMode !== GenerateMode.FILL_EMPTY ||
     isNoMatch ||
-    !canDelete ||
     item.canInsertNext
   ) {
     return null;
