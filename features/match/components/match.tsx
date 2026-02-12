@@ -1,10 +1,12 @@
 import { AppContext } from "@/context/AppContext";
 import { chunkArray } from "@/utils/chunkArray";
-import { generateUniqId } from "@/utils/createId";
 import React, { useContext, useEffect } from "react";
 import { SectionList, View } from "react-native";
 import { GenerateMode, Match as MatchType, Player } from "../../../types";
+import { fillMatch } from "../logic/fillMatch";
 import { flatGrToM } from "../logic/flatGrToM";
+import { getPlayingPlayers } from "../logic/getPlayingPlayers";
+import { getRestingPlayers } from "../logic/getRestingPlayers";
 import CreateNewMatchButton from "./createNewMatchButton";
 import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import RenderMatch from "./renderMatch";
@@ -25,56 +27,16 @@ const Match: React.FC = () => {
     useContext(AppContext);
 
   const matches: MatchType[] = flatGrToM(gameRounds);
+  const matchListWithPlaceholders: MatchType[] = fillMatch(matches, courts);
 
-  const playablePlayers = players.filter((player) => {
-    if (generateMode === GenerateMode.REPLACE_ALL) {
-      return gameRounds[dispRound - 1]?.matches.some((match) => {
-        return (
-          match.teamA.some((playerId) => playerId === player.id) ||
-          match.teamB.some((playerId) => playerId === player.id)
-        );
-      });
-    } else {
-      return gameRounds
-        .flatMap((gameRound) => gameRound.matches)
-        .filter((match) => !match.isFinished || !match.canInsertNext)
-        .some((match) => {
-          return (
-            match.teamA.some((playerId) => playerId === player.id) ||
-            match.teamB.some((playerId) => playerId === player.id)
-          );
-        });
-    }
-  });
-
-  const playablePlayerIds = new Set(playablePlayers.map((p) => p.id));
-
-  const restPlayers = players.filter(
-    (player) => player.isJoin && !playablePlayerIds.has(player.id),
+  const playingPlayers = getPlayingPlayers(
+    players,
+    gameRounds,
+    generateMode,
+    dispRound,
   );
-
+  const restPlayers = getRestingPlayers(players, playingPlayers);
   const restRows = chunkArray(restPlayers, 2);
-
-  const matchListWithPlaceholders: MatchType[] = (() => {
-    if (generateMode === GenerateMode.REPLACE_ALL) return [];
-    const active = matches.filter((m) => !m.isFinished);
-    const sortedCourts = courts.slice().sort((a, b) => a.number - b.number);
-    return sortedCourts.map((court) => {
-      const m = active.find((am) => am.courtId === court.id);
-      if (m == null) {
-        return {
-          id: generateUniqId(matches.map((m) => m.id)),
-          courtId: court.id,
-          teamA: [],
-          teamB: [],
-          isFinished: false,
-          canInsertNext: true,
-          finishRound: null,
-        };
-      }
-      return m;
-    });
-  })();
 
   const sections: Section[] = [
     {

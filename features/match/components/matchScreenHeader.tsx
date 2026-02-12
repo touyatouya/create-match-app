@@ -28,10 +28,7 @@ const MatchScreenHeader: React.FC = () => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              if (isLoading) return;
-              router.push({ pathname: "/Player/MatchMenu" });
-            }}
+            onPress={() => router.push({ pathname: "/Player/MatchMenu" })}
             style={globalStyles.headerRight}
           >
             <AntDesign name="menu" size={20} color="black" />

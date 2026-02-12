@@ -1,16 +1,21 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
-import Match from "@/features/match/components/match";
+import { GenerateMode } from "@/types";
 import Loading from "@/ui/Loading";
 import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
 import { saveOpenApp } from "@/utils/storeReview";
 import analytics from "@react-native-firebase/analytics";
 import React, { useContext, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
+import CreateNewMatchButton from "./createNewMatchButton";
+import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import MatchScreenHeader from "./matchScreenHeader";
+import Matches from "./matches";
+import ReplaceAllMatchHeader from "./replaceAllMatchHeader";
 
 const MatchScreen: React.FC = () => {
-  const { gameRounds, isLoading, setDispRound } = useContext(AppContext);
+  const { gameRounds, isLoading, setDispRound, generateMode, setIsLoading } =
+    useContext(AppContext);
 
   useEffect(() => {
     analytics().logEvent("screen_view", {
@@ -20,12 +25,24 @@ const MatchScreen: React.FC = () => {
     setDispRound(gameRounds.length >= 0 ? gameRounds.length : 0);
   }, [gameRounds.length, setDispRound]);
 
+  useEffect(() => {
+    setIsLoading(false);
+  }, [gameRounds, setIsLoading]);
+
   return (
     <>
       {isLoading && <Loading />}
       <MatchScreenHeader />
       <View style={styles.container}>
-        <Match />
+        <View style={{ flex: 1 }}>
+          {generateMode === GenerateMode.REPLACE_ALL && (
+            <CreateNewMatchButton />
+          )}
+          <FillEmptyMatchHeader />
+          <ReplaceAllMatchHeader />
+          <Matches />
+          {generateMode === GenerateMode.FILL_EMPTY && <CreateNewMatchButton />}
+        </View>
       </View>
       <MyAdmob size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} />
     </>

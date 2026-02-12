@@ -6,8 +6,7 @@ import { Alert } from "react-native";
 import { useResetSwap } from "./useResetSwap";
 
 export const useResetGr = () => {
-  const { setPlayers, setGameRounds, isLoading, setDispRound } =
-    useContext(AppContext);
+  const { setPlayers, setGameRounds, setDispRound } = useContext(AppContext);
 
   const { resetSwap } = useResetSwap();
 
@@ -31,7 +30,6 @@ export const useResetGr = () => {
   };
 
   const confirmReset = () => {
-    if (isLoading) return;
     Alert.alert("確認", "全ての組み合わせを削除しますがよろしいですか？", [
       {
         text: "キャンセル",
