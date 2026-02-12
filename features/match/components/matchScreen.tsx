@@ -10,7 +10,7 @@ import { StyleSheet, View } from "react-native";
 import CreateNewMatchButton from "./createNewMatchButton";
 import FillEmptyMatchHeader from "./fillEmptyMatchHeader";
 import MatchScreenHeader from "./matchScreenHeader";
-import Matches from "./matches";
+import Matchup from "./matchup";
 import ReplaceAllMatchHeader from "./replaceAllMatchHeader";
 
 const MatchScreen: React.FC = () => {
@@ -40,7 +40,7 @@ const MatchScreen: React.FC = () => {
           )}
           <FillEmptyMatchHeader />
           <ReplaceAllMatchHeader />
-          <Matches />
+          <Matchup />
           {generateMode === GenerateMode.FILL_EMPTY && <CreateNewMatchButton />}
         </View>
       </View>

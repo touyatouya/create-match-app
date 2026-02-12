@@ -19,7 +19,7 @@ type Section = {
   data: SectionDataItem[];
 };
 
-const Matches: React.FC = () => {
+const Matchup: React.FC = () => {
   const { players, gameRounds, generateMode, courts, dispRound } =
     useContext(AppContext);
 
@@ -104,4 +104,4 @@ const Matches: React.FC = () => {
   );
 };
 
-export default Matches;
+export default Matchup;
