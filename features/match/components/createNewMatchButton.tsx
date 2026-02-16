@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as StoreReview from "expo-store-review";
 import React, { useContext } from "react";
 import { GenerateMode, Match as MatchType } from "../../../types";
+import { useCountMatch } from "../hooks/useCountMatch";
 import { useResetSwap } from "../hooks/useResetSwap";
 import { flatGrToM } from "../logic/flatGrToM";
 
@@ -47,6 +48,7 @@ const CreateNewMatchButton: React.FC = () => {
       : courts;
 
   const { resetSwap } = useResetSwap();
+  const { countMatch } = useCountMatch();
 
   return (
     <PrimaryButton
@@ -60,7 +62,6 @@ const CreateNewMatchButton: React.FC = () => {
         await setTimeout(() => {
           createMatch(
             players,
-            setPlayers,
             courts,
             gameRounds,
             setGameRounds,
@@ -73,6 +74,7 @@ const CreateNewMatchButton: React.FC = () => {
             isPreferMatchCountOverPair,
             setDispRound,
             setNewGames,
+            countMatch,
           );
         }, 0);
 

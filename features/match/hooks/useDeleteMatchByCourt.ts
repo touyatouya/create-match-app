@@ -5,7 +5,7 @@ import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
 import { useContext } from "react";
 import { flatGrToM } from "../logic/flatGrToM";
-import { countMatch } from "../logic/utils";
+import { useCountMatch } from "./useCountMatch";
 import { useResetSwap } from "./useResetSwap";
 
 export const useDeleteMatchByCourt = () => {
@@ -15,13 +15,13 @@ export const useDeleteMatchByCourt = () => {
     setGameRounds,
     generateMode,
     players,
-    setPlayers,
     pairs,
     genderSetting,
     isPreferMatchCountOverPair,
   } = useContext(AppContext);
 
   const { resetSwap } = useResetSwap();
+  const { countMatch } = useCountMatch();
 
   const deleteByCourt = async (courtId: Court["id"]) => {
     const newGameRounds = deleteMatchesByCourt(gameRounds, courtId);
@@ -29,7 +29,7 @@ export const useDeleteMatchByCourt = () => {
     setGameRounds(newGameRounds);
 
     const newMatch: Match[] = flatGrToM(newGameRounds);
-    const newPlayers = countMatch(newMatch, players, setPlayers);
+    const newPlayers = countMatch(newMatch, players);
 
     resetSwap();
 

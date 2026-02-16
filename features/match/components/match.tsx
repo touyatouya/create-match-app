@@ -61,13 +61,7 @@ const Match: React.FC<MatchProps> = ({ item, courtId, courtNumber }) => {
         isNew && { opacity: anim },
       ]}
     >
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <View style={styles.matchCardHeader}>
         <CourtTitle item={item} courtId={courtId} courtNumber={courtNumber} />
         <CourtDeleteButton item={item} courtId={courtId} />
       </View>
@@ -145,6 +139,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  matchCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   empty: {
     flexDirection: "row",

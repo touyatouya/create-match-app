@@ -1,26 +1,23 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
-import { getPlayerName } from "@/features/match/logic/utils";
+import { getPlayerGender } from "@/shared/logic/getPlayerGender";
+import { getPlayerMc } from "@/shared/logic/getPlayerMc";
+import { getPlayerName } from "@/shared/logic/getPlayerName";
 import GenderIcon from "@/ui/GenderIcon";
 import { Feather } from "@expo/vector-icons";
 import { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 interface PlayerInfoProps {
-  playerId: number | null;
+  playerId: number;
 }
 
 const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
   const { players } = useContext(AppContext);
 
-  const getGender = (id: number) => {
-    return players.find((player) => player.id === id)?.gender;
-  };
-
-  const getGameCount = (id: number) => {
-    return players.find((player) => player.id === id)?.matchCount;
-  };
+  const gender = getPlayerGender(playerId, players);
+  const gameCount = getPlayerMc(playerId, players);
 
   return (
     <View style={styles.playerInfo}>
@@ -41,9 +38,9 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
 
       {playerId != null && (
         <View style={styles.subInfo}>
-          <Text style={styles.getGameCount}>{getGameCount(playerId)}</Text>
+          <Text style={styles.getGameCount}>{gameCount}</Text>
           <Text style={styles.playerGender}>
-            <GenderIcon gender={getGender(playerId)} size={18} />
+            <GenderIcon gender={gender} size={18} />
           </Text>
         </View>
       )}

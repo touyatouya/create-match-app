@@ -17,7 +17,6 @@ import { flatGrToM } from "./flatGrToM";
 
 export const createMatch = async (
   players: Player[],
-  setPlayers: (value: React.SetStateAction<Player[]>) => void,
   courts: Court[],
   gameRounds: GameRound[],
   setGameRounds: (value: React.SetStateAction<GameRound[]>) => void,
@@ -30,6 +29,7 @@ export const createMatch = async (
   isPreferMatchCountOverPair: boolean,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
+  countMatch: (match: MatchType[], players: Player[]) => Player[],
 ): Promise<void> => {
   const notFinishedMatches =
     genareteMode === GenerateMode.REPLACE_ALL
@@ -171,7 +171,7 @@ export const createMatch = async (
   });
 
   const newMatches: MatchType[] = flatGrToM(newGameRounds);
-  const newPlayers = countMatch(newMatches, players, setPlayers);
+  const newPlayers = countMatch(newMatches, players);
   restSwap();
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
     setDispRound(prevGameRounds + 1);
@@ -545,28 +545,6 @@ export const findPairedPlayers = (
   }
 
   return pairPlayers;
-};
-
-export const countMatch = (
-  newMatches: MatchType[],
-  players: Player[],
-  setPlayers: (value: React.SetStateAction<Player[]>) => void,
-): Player[] => {
-  // プレイヤー毎の試合数カウント
-  const playedPlayerIds: number[] = newMatches.flatMap((match) => [
-    ...match.teamA,
-    ...match.teamB,
-  ]);
-
-  const matchCountedPlayers: Player[] = players.map((player) => {
-    return {
-      ...player,
-      matchCount: playedPlayerIds.filter((item) => item === player.id).length,
-    };
-  });
-
-  setPlayers(matchCountedPlayers);
-  return matchCountedPlayers;
 };
 
 export const countPairedBefore = (
@@ -1029,8 +1007,4 @@ export const getCombinations = <T>(arr: T[], k: number): T[][] => {
   const withoutFirst = getCombinations(rest, k);
 
   return [...withFirst, ...withoutFirst];
-};
-
-export const getPlayerName = (id: number, players: Player[]) => {
-  return players.find((player) => player.id === id)?.name;
 };

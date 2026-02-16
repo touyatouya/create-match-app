@@ -5,12 +5,14 @@ import { LayoutAnimation } from "react-native";
 import { findPlayerTeamInMatch } from "../logic/findPlayerTeamInMatch";
 import { flatGrToM } from "../logic/flatGrToM";
 import { replacePlayerInMatch } from "../logic/replacePlayerInMatch";
-import { countMatch } from "../logic/utils";
+import { useCountMatch } from "./useCountMatch";
 import { useResetSwap } from "./useResetSwap";
 
 export const useSwapPlayer = () => {
-  const { gameRounds, setGameRounds, players, setPlayers, swap, setSwap } =
+  const { gameRounds, setGameRounds, players, swap, setSwap } =
     useContext(AppContext);
+
+  const { countMatch } = useCountMatch();
 
   const changePlayer = (
     targetMatchId: Match["id"],
@@ -92,7 +94,7 @@ export const useSwapPlayer = () => {
 
     setGameRounds(newGameRounds);
     const matches: Match[] = flatGrToM(newGameRounds);
-    countMatch([...matches], players, setPlayers);
+    countMatch([...matches], players);
   };
 
   const { resetSwap } = useResetSwap();
