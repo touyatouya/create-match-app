@@ -27,8 +27,6 @@ type AppContextType = {
   >;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isRestore: boolean | null;
-  setIsRestore: React.Dispatch<React.SetStateAction<boolean | null>>;
   newGames: Match["id"][];
   setNewGames: React.Dispatch<React.SetStateAction<Match["id"][]>>;
   isAdjustMatchCount: boolean;
@@ -68,8 +66,6 @@ export const AppContext = createContext<AppContextType>({
   setGenderSetting: () => {},
   isLoading: false,
   setIsLoading: () => {},
-  isRestore: null,
-  setIsRestore: () => {},
   newGames: [],
   setNewGames: () => {},
   isAdjustMatchCount: false,
@@ -108,7 +104,6 @@ export const AppProvider = ({ children }: AppContextProps) => {
       mix: false,
     });
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [isRestore, setIsRestore] = React.useState<boolean | null>(null);
   const [newGames, setNewGames] = React.useState<Match["id"][]>([]);
   const [isAdjustMatchCount, setIsAdjustMatchCount] =
     React.useState<boolean>(false);
@@ -144,8 +139,6 @@ export const AppProvider = ({ children }: AppContextProps) => {
         setGenderSetting,
         isLoading,
         setIsLoading,
-        isRestore,
-        setIsRestore,
         newGames,
         setNewGames,
         isAdjustMatchCount,

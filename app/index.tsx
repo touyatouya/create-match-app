@@ -1,6 +1,7 @@
 import { SESSION_MILLISECONDS, STORAGE_KEYS } from "@/constants/storage";
 import { AppContext } from "@/context/AppContext";
 import { Court, GameRound, Pair, Player } from "@/types";
+import Loading from "@/ui/Loading";
 import { isVersionNewer } from "@/utils/isVersionNewer";
 import { clearGameData } from "@/utils/saveStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,7 +10,7 @@ import firestore, {
 } from "@react-native-firebase/firestore";
 import Constants from "expo-constants";
 import { Redirect } from "expo-router";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 import {
   SafeAreaProvider,
@@ -17,6 +18,7 @@ import {
 } from "react-native-safe-area-context";
 
 export default function Index() {
+  const [isRestore, setIsRestore] = useState<boolean | null>(null);
   const {
     setGameRounds,
     setCourts,
@@ -24,7 +26,6 @@ export default function Index() {
     setPlayers,
     setGenderSetting,
     setGenerateMode,
-    setIsRestore,
     setIsAdjustMatchCount,
     setIsPreferMatchCountOverPair,
   } = useContext(AppContext);
@@ -195,9 +196,18 @@ export default function Index() {
     setIsAdjustMatchCount,
   ]);
 
+  if (isRestore == null) {
+    return <Loading />;
+  }
+
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <Redirect href="/(tabs)/Player" />
+      <Redirect
+        href={{
+          pathname: "/(tabs)/Player",
+          params: { isRestore: isRestore.toString() },
+        }}
+      />
     </SafeAreaProvider>
   );
 }

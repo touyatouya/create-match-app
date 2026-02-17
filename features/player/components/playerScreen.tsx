@@ -17,8 +17,14 @@ import { clearGameData } from "@/utils/saveStorage";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import analytics from "@react-native-firebase/analytics";
-import { router } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Alert,
   Pressable,
@@ -41,7 +47,6 @@ const PlayerScreen: React.FC = () => {
     setGameRounds,
     generateMode,
     setGenerateMode,
-    isRestore,
     isAdjustMatchCount,
   } = useContext(AppContext);
   const [isEdit, setIsEdit] = React.useState(false);
@@ -50,6 +55,20 @@ const PlayerScreen: React.FC = () => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const TOOLTIP_WIDTH = 260;
   const isAddingRef = useRef(false);
+  const { isRestore } = useLocalSearchParams<{
+    isRestore: string;
+  }>();
+
+  const shouldRestore = isRestore === "false";
+
+  const toMatchScreen = useCallback(async () => {
+    router.push({ pathname: "/Player/Match" });
+
+    await analytics().logEvent("to_match_screen", {
+      player_count: players.length,
+      court_count: courts.length,
+    });
+  }, [courts.length, players.length]);
 
   useEffect(() => {
     analytics().logEvent("screen_view", {
@@ -57,8 +76,7 @@ const PlayerScreen: React.FC = () => {
     });
 
     const loadData = async () => {
-      if (isRestore == null) return;
-      if (isRestore) {
+      if (!shouldRestore) {
         toMatchScreen();
         return;
       }
@@ -86,16 +104,7 @@ const PlayerScreen: React.FC = () => {
       }
     };
     loadData();
-  }, [isRestore, setPlayers]);
-
-  const toMatchScreen = async () => {
-    router.push({ pathname: "/Player/Match" });
-
-    await analytics().logEvent("to_match_screen", {
-      player_count: players.length,
-      court_count: courts.length,
-    });
-  };
+  }, [shouldRestore, setPlayers, toMatchScreen]);
 
   const joinedPlayer = players.filter((player) => player.isJoin);
 
