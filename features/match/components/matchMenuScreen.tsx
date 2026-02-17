@@ -194,8 +194,6 @@ const MatchMenuScreen: React.FC = () => {
                     courts,
                     generateMode: generateMode,
                     recentPlayers: players,
-                    anonymousPlayerCount: players.filter((p) => p.isAnonymous)
-                      .length,
                     pairs,
                     genderSetting: genderSetting,
                     isPreferMatchCountOverPair: newIsPreferMatchCountOverPair,
@@ -302,8 +300,6 @@ const MatchMenuScreen: React.FC = () => {
               courts,
               generateMode: generateMode,
               recentPlayers: newPlayers,
-              anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous)
-                .length,
               pairs: [],
               genderSetting: { men: false, woman: false, mix: false },
               isPreferMatchCountOverPair: false,

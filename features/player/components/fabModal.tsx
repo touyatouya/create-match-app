@@ -1,11 +1,9 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import ColorPalette from "@/constants/color";
-import { AppContext } from "@/context/AppContext";
-import { Gender, Player, Rank } from "@/types";
-import { generateUniqId } from "@/utils/createId";
 import analytics from "@react-native-firebase/analytics";
+import { useAddPlayer } from "../hooks/useAddPlayer";
 
 interface Props {
   isOpen: boolean;
@@ -20,44 +18,10 @@ const FabModal: React.FC<Props> = ({
   setAddModalVisible,
   isAddingRef,
 }) => {
-  const {
-    players,
-    setPlayers,
-    anonymousPlayerCount,
-    setAnonymousPlayerCount,
-    isAdjustMatchCount,
-  } = useContext(AppContext);
+  const { addPlayer } = useAddPlayer();
 
   const addAnonymousPlayer = async (): Promise<void> => {
-    const existingIds = players.map((player) => player.id);
-    const newId = generateUniqId(existingIds);
-
-    setAnonymousPlayerCount((prev) => prev + 1);
-
-    let newPlayers: Player[] = [];
-    setPlayers((prev) => {
-      const otherMatchCounts = prev
-        .filter((pl) => pl.isJoin)
-        .map((pl) => pl.matchCount);
-      const minMatchCount =
-        otherMatchCounts.length > 0 ? Math.min(...otherMatchCounts) : 0;
-      newPlayers = [
-        ...prev,
-        {
-          id: newId,
-          name: (anonymousPlayerCount + 1).toString(),
-          gender: Gender.未設定,
-          matchCount: isAdjustMatchCount ? minMatchCount : 0,
-          isJoin: true,
-          isRest: false,
-          rank: Rank.未設定,
-          isAnonymous: true,
-          anonymousNumber: anonymousPlayerCount + 1,
-        },
-      ];
-
-      return newPlayers;
-    });
+    addPlayer(true, "");
     setMenuVisible(false);
     isAddingRef.current = true;
 

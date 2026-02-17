@@ -1,11 +1,9 @@
 import { AppContext } from "@/context/AppContext";
-import { GameRound, Match } from "@/types";
+import { GameRound } from "@/types";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
 import { useContext } from "react";
-import { flatGrToM } from "../logic/flatGrToM";
 import { sliceLastGr } from "../logic/sliceLastGr";
-import { useCountMatch } from "./useCountMatch";
 import { useResetSwap } from "./useResetSwap";
 
 export const useDeleteGr = () => {
@@ -22,13 +20,10 @@ export const useDeleteGr = () => {
   } = useContext(AppContext);
 
   const { resetSwap } = useResetSwap();
-  const { countMatch } = useCountMatch();
 
   const deleteLastGr = async () => {
     const newGameRounds: GameRound[] = sliceLastGr(gameRounds);
     setGameRounds(newGameRounds);
-    const newMatch: Match[] = flatGrToM(newGameRounds);
-    const newPlayers = countMatch(newMatch, players);
     resetSwap();
     setDispRound((prev) => prev - 1);
 
@@ -37,8 +32,7 @@ export const useDeleteGr = () => {
       gameRounds: newGameRounds,
       courts,
       generateMode: generateMode,
-      recentPlayers: newPlayers,
-      anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
+      recentPlayers: players,
       pairs,
       genderSetting,
       isPreferMatchCountOverPair,

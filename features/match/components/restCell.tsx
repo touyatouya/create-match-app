@@ -1,6 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { getMatchCount } from "@/shared/logic/getMatchCount";
 import { globalStyles } from "@/styles/global";
 import GenderIcon from "@/ui/GenderIcon";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -48,7 +49,9 @@ const RestCell: React.FC<RestCellProps> = ({ player }) => {
         )}
       </View>
       <View style={styles.subInfo}>
-        <Text style={styles.getGameCount}>{player.matchCount}</Text>
+        <Text style={styles.getGameCount}>
+          {getMatchCount(player.id, gameRounds)}
+        </Text>
         <Text style={styles.playerGender}>
           <GenderIcon gender={player.gender} size={18} />
         </Text>

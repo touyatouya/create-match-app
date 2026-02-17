@@ -24,7 +24,6 @@ export default function Index() {
     setPlayers,
     setGenderSetting,
     setGenerateMode,
-    setAnonymousPlayerCount,
     setIsRestore,
     setIsAdjustMatchCount,
     setIsPreferMatchCountOverPair,
@@ -111,7 +110,7 @@ export default function Index() {
           id: parsedRecentPlayers[i].id,
           name: parsedRecentPlayers[i].name,
           gender: parsedRecentPlayers[i].gender,
-          matchCount: parsedRecentPlayers[i].matchCount,
+          matchOffset: parsedRecentPlayers[i].matchOffset,
           isRest: parsedRecentPlayers[i].isRest,
           isJoin: parsedRecentPlayers[i].isJoin,
           rank: parsedRecentPlayers[i].rank,
@@ -145,12 +144,6 @@ export default function Index() {
       setGenerateMode(parsedGenerateMode);
 
       setIsRestore(true);
-
-      // 匿名参加者数
-      const parsedAnonymousPlayerCount = parsedGameData.anonymousPlayerCount;
-      if (parsedAnonymousPlayerCount != null) {
-        setAnonymousPlayerCount(parsedAnonymousPlayerCount);
-      }
 
       // ペア
       const parsedPairs = parsedGameData.pairs;
@@ -191,7 +184,6 @@ export default function Index() {
     };
     loadIsAdjustMatchCount();
   }, [
-    setAnonymousPlayerCount,
     setCourts,
     setGameRounds,
     setGenerateMode,

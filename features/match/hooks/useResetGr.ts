@@ -17,7 +17,7 @@ export const useResetGr = () => {
         return {
           ...player,
           isRest: false,
-          matchCount: 0,
+          matchOffset: 0,
         };
       });
     });

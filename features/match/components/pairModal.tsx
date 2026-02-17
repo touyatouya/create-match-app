@@ -102,7 +102,6 @@ const PairModal: React.FC<Props> = ({ isOpen, onClose }) => {
       courts,
       generateMode: generateMode,
       recentPlayers: players,
-      anonymousPlayerCount: players.filter((p) => p.isAnonymous).length,
       pairs: newPairs,
       genderSetting,
       isPreferMatchCountOverPair,

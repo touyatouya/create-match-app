@@ -2,7 +2,7 @@ export interface Player {
   id: number;
   name: string;
   gender: Gender;
-  matchCount: number;
+  matchOffset: number;
   isRest: boolean;
   isJoin: boolean;
   rank: Rank;

@@ -1,4 +1,5 @@
 import ColorPalette from "@/constants/color";
+import { AppContext } from "@/context/AppContext";
 import { playerScreenStyles } from "@/features/player/styles";
 import { globalStyles } from "@/styles/global";
 import { Player } from "@/types";
@@ -7,7 +8,9 @@ import GenderIcon from "@/ui/GenderIcon";
 import RemoveButton from "@/ui/RemoveButton";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useContext } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { getMatchCount } from "../../../shared/logic/getMatchCount";
 
 interface PlayerRowProps {
   item: Player;
@@ -23,6 +26,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
   joinPlayer,
   removePlayer,
 }) => {
+  const { gameRounds } = useContext(AppContext);
   const isJoin = item.isJoin;
 
   return (
@@ -52,7 +56,9 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
         >
           <GenderIcon gender={item.gender} />
         </Text>
-        <Text style={[playerScreenStyles.cellMatch]}>{item.matchCount}</Text>
+        <Text style={[playerScreenStyles.cellMatch]}>
+          {getMatchCount(item.id, gameRounds)}
+        </Text>
       </TouchableOpacity>
       {isEdit ? (
         <TouchableOpacity

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   Keyboard,
@@ -15,67 +15,30 @@ import {
 
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
-import { AppContext } from "@/context/AppContext";
 import { globalStyles } from "@/styles/global";
-import { Gender, Player, Rank } from "@/types";
+import { Gender } from "@/types";
 import GenderToggle from "@/ui/GenderToggle";
 import TextInput from "@/ui/TextInput";
-import { generateUniqId } from "@/utils/createId";
 import { savePlayerInfo } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
+import { useAddPlayer } from "../hooks/useAddPlayer";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  // setDefaultOrderPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   isAddingRef: React.RefObject<boolean>;
 }
 
-const AddPlayerModal: React.FC<Props> = ({
-  isOpen,
-  onClose,
-  // setDefaultOrderPlayers,
-  isAddingRef,
-}) => {
-  const { players, setPlayers, isAdjustMatchCount } = useContext(AppContext);
-
+const AddPlayerModal: React.FC<Props> = ({ isOpen, onClose, isAddingRef }) => {
   const [name, setName] = useState("");
   const [gender, setGender] = useState<Gender>(Gender.未設定);
+  const { addPlayer: setNewPlayer } = useAddPlayer();
 
   const textInputRef = useRef<TextInputOrigin>(null);
 
   const addPlayer = async (): Promise<void> => {
     if (name.trim() === "") return;
-
-    const existingIds = players.map((player) => player.id);
-    const newId = generateUniqId(existingIds);
-
-    let newPlayers: Player[] = [];
-    setPlayers((prev) => {
-      const otherMatchCounts = prev
-        .filter((pl) => pl.isJoin)
-        .map((pl) => pl.matchCount);
-      const minMatchCount =
-        otherMatchCounts.length > 0 ? Math.min(...otherMatchCounts) : 0;
-      newPlayers = [
-        ...prev,
-        {
-          id: newId,
-          name: name,
-          gender: gender,
-          matchCount: isAdjustMatchCount ? minMatchCount : 0,
-          isJoin: true,
-          isRest: false,
-          rank: Rank.未設定,
-          isAnonymous: false,
-          anonymousNumber: null,
-        },
-      ];
-
-      return newPlayers;
-    });
-    // setDefaultOrderPlayers(newPlayers);
-
+    const newPlayers = setNewPlayer(false, name);
     isAddingRef.current = true;
 
     savePlayerInfo(

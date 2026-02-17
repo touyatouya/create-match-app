@@ -1,4 +1,5 @@
 import { AppContext } from "@/context/AppContext";
+import { attachMatchOffset } from "@/shared/logic/attachMatchOffset";
 import { Player } from "@/types";
 import ListEmptyText from "@/ui/ListEmptyText";
 import { savePlayerInfo } from "@/utils/saveStorage";
@@ -17,8 +18,14 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   isEdit,
   isAddingRef,
 }) => {
-  const { players, setPlayers, pairs, setPairs, isAdjustMatchCount } =
-    useContext(AppContext);
+  const {
+    players,
+    setPlayers,
+    pairs,
+    setPairs,
+    gameRounds,
+    isAdjustMatchCount,
+  } = useContext(AppContext);
 
   const flatListRef = useRef<any>(null);
 
@@ -30,7 +37,8 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   };
 
   const joinPlayer = (id: number): void => {
-    const targetPlayer = players.find((player) => player.id === id);
+    let targetPlayer = players.find((player) => player.id === id);
+    if (targetPlayer == null) return;
 
     if (targetPlayer?.isJoin) {
       const updatePairs = pairs.filter(
@@ -38,28 +46,17 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
       );
       setPairs(updatePairs);
     }
+    targetPlayer.isJoin = true;
 
-    setPlayers((prev) => {
-      return prev.map((p) => {
-        if (p.id === id) {
-          const otherMatchCounts = prev
-            .filter((pl) => pl.isJoin && pl.id !== id)
-            .map((pl) => pl.matchCount);
-          const minMatchCount =
-            otherMatchCounts.length > 0
-              ? Math.min(...otherMatchCounts)
-              : p.matchCount;
-
-          return {
-            ...p,
-            isJoin: !p.isJoin,
-            matchCount: isAdjustMatchCount ? minMatchCount : p.matchCount,
-          };
-        } else {
-          return p;
-        }
-      });
+    if (isAdjustMatchCount) {
+      targetPlayer = attachMatchOffset(targetPlayer, gameRounds, players);
+    }
+    const newPlayers = players.map((p) => {
+      if (p.id === id) return targetPlayer;
+      return p;
     });
+
+    setPlayers(newPlayers);
   };
 
   const removePlayer = (id: number): void => {

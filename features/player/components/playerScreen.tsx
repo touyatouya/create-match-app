@@ -6,6 +6,7 @@ import AddPlayerModal from "@/features/player/components/addPlayerModal";
 import FabModal from "@/features/player/components/fabModal";
 import PlayerTable from "@/features/player/components/playerTable";
 import PlayerTableHeader from "@/features/player/components/playerTableHeader";
+import { attachMatchOffset } from "@/shared/logic/attachMatchOffset";
 import { globalStyles } from "@/styles/global";
 import CustomHeader from "@/ui/CustomHeader";
 import MyAdmob, { BannerAdSize } from "@/ui/MyAdmob";
@@ -73,7 +74,7 @@ const PlayerScreen: React.FC = () => {
             id: parsedPlayers[i].id,
             name: parsedPlayers[i].name,
             gender: parsedPlayers[i].gender,
-            matchCount: 0,
+            matchOffset: 0,
             isJoin: false,
             isRest: false,
             rank: parsedPlayers[i].rank,
@@ -87,26 +88,32 @@ const PlayerScreen: React.FC = () => {
     loadData();
   }, [isRestore, setPlayers]);
 
+  const toMatchScreen = async () => {
+    router.push({ pathname: "/Player/Match" });
+
+    await analytics().logEvent("to_match_screen", {
+      player_count: players.length,
+      court_count: courts.length,
+    });
+  };
+
   const joinedPlayer = players.filter((player) => player.isJoin);
 
   const joinAllPlayer = () => {
-    setPlayers((prev) => {
-      return prev.map((player) => {
-        const joinedMatchCounts = prev
-          .filter((pl) => pl.isJoin)
-          .map((pl) => pl.matchCount);
-        const minCount =
-          joinedMatchCounts.length > 0
-            ? Math.min(...joinedMatchCounts)
-            : player.matchCount;
-
-        return {
-          ...player,
-          isJoin: true,
-          matchCount: isAdjustMatchCount ? minCount : player.matchCount,
-        };
-      });
+    let newPlayers = players.map((p) => {
+      return {
+        ...p,
+        isJoin: true,
+      };
     });
+
+    if (isAdjustMatchCount) {
+      newPlayers = newPlayers.map((p) => {
+        return attachMatchOffset(p, gameRounds, players);
+      });
+    }
+
+    setPlayers(newPlayers);
   };
 
   const noJoinAllPlayer = () => {
@@ -129,15 +136,6 @@ const PlayerScreen: React.FC = () => {
     setCourts((prev) => {
       if (prev.length === 1) return prev;
       return prev.filter((_, index) => prev.length - 1 !== index);
-    });
-  };
-
-  const toMatchScreen = async () => {
-    router.push({ pathname: "/Player/Match" });
-
-    await analytics().logEvent("to_match_screen", {
-      player_count: players.length,
-      court_count: courts.length,
     });
   };
 
@@ -313,7 +311,7 @@ const PlayerScreen: React.FC = () => {
                               return {
                                 ...player,
                                 isRest: false,
-                                matchCount: 0,
+                                matchOffset: 0,
                               };
                             });
                           });

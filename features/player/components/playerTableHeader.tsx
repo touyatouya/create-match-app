@@ -3,6 +3,7 @@ import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { playerScreenStyles } from "@/features/player/styles";
 import { Sort } from "@/features/player/types";
+import { getMatchCount } from "@/shared/logic/getMatchCount";
 import { globalStyles } from "@/styles/global";
 import { Gender, Player } from "@/types";
 import Checkbox from "@/ui/CheckBox";
@@ -27,7 +28,7 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
   joinAllPlayer,
   noJoinAllPlayer,
 }) => {
-  const { players, setPlayers } = useContext(AppContext);
+  const { players, setPlayers, gameRounds } = useContext(AppContext);
 
   const [isSortedMatchCount, setIsSortedMatchCount] =
     React.useState<Sort | null>(null);
@@ -37,7 +38,15 @@ const PlayerTableHeader: React.FC<PlayerTableHeaderProps> = ({
   const sortMatchCount = () => {
     const nextSortOrder = isSortedMatchCount === "asc" ? "desc" : "asc";
 
-    const sorted = [...players].sort((a, b) => {
+    const playersWithMatchCount: (Player & { matchCount: number })[] =
+      players.map((p) => {
+        return {
+          ...p,
+          matchCount: getMatchCount(p.id, gameRounds) + p.matchOffset,
+        };
+      });
+
+    const sorted = [...playersWithMatchCount].sort((a, b) => {
       return nextSortOrder === "asc"
         ? a.matchCount - b.matchCount
         : b.matchCount - a.matchCount;

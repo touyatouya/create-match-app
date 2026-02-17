@@ -1,3 +1,4 @@
+import { getMatchCount } from "@/shared/logic/getMatchCount";
 import { generateUniqId } from "@/utils/createId";
 import { clearGameData, saveGameData } from "@/utils/saveStorage";
 import analytics from "@react-native-firebase/analytics";
@@ -13,7 +14,6 @@ import {
   Pair,
   Player,
 } from "../../../types";
-import { flatGrToM } from "./flatGrToM";
 
 export const createMatch = async (
   players: Player[],
@@ -29,7 +29,6 @@ export const createMatch = async (
   isPreferMatchCountOverPair: boolean,
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
-  countMatch: (match: MatchType[], players: Player[]) => Player[],
 ): Promise<void> => {
   const notFinishedMatches =
     genareteMode === GenerateMode.REPLACE_ALL
@@ -40,7 +39,7 @@ export const createMatch = async (
     ...match.teamA,
     ...match.teamB,
   ]);
-  const sortedPlayer: Player[] = players
+  const sortedPlayer: (Player & { matchCount: number })[] = players
     .filter(
       (player) =>
         player.isJoin &&
@@ -49,6 +48,12 @@ export const createMatch = async (
           playingPlayer.length === 0 ||
           !playingPlayer.includes(player.id)),
     )
+    .map((p) => {
+      return {
+        ...p,
+        matchCount: getMatchCount(p.id, gameRounds) + p.matchOffset,
+      };
+    })
     .sort((a, b) => a.matchCount - b.matchCount);
 
   let separatedPlayers: Player[][] = [];
@@ -170,8 +175,6 @@ export const createMatch = async (
     }
   });
 
-  const newMatches: MatchType[] = flatGrToM(newGameRounds);
-  const newPlayers = countMatch(newMatches, players);
   restSwap();
   if (prevGameRounds === 0 || prevGameRounds <= updatedGameRounds) {
     setDispRound(prevGameRounds + 1);
@@ -185,8 +188,7 @@ export const createMatch = async (
     gameRounds: newGameRounds,
     courts,
     generateMode: genareteMode,
-    recentPlayers: newPlayers,
-    anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
+    recentPlayers: players,
     pairs,
     genderSetting,
     isPreferMatchCountOverPair,

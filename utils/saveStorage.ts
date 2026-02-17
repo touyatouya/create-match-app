@@ -37,7 +37,6 @@ export const saveGameData = async ({
   courts,
   generateMode,
   recentPlayers,
-  anonymousPlayerCount,
   pairs,
   genderSetting,
   saveAt,
@@ -47,7 +46,6 @@ export const saveGameData = async ({
   courts: Court[];
   generateMode: GenerateMode;
   recentPlayers: Player[];
-  anonymousPlayerCount: number;
   pairs: Pair[];
   genderSetting: GenderPreferenceSetting;
   isPreferMatchCountOverPair: boolean;
@@ -61,7 +59,6 @@ export const saveGameData = async ({
         courts,
         generateMode,
         recentPlayers,
-        anonymousPlayerCount,
         pairs,
         genderSetting,
         isPreferMatchCountOverPair,

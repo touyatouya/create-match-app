@@ -78,7 +78,6 @@ export const useRest = () => {
       courts,
       generateMode: generateMode,
       recentPlayers: newPlayers,
-      anonymousPlayerCount: newPlayers.filter((p) => p.isAnonymous).length,
       pairs,
       genderSetting,
       isPreferMatchCountOverPair,
