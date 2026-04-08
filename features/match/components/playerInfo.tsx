@@ -1,8 +1,8 @@
 import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
+import { getMatchCount } from "@/shared/logic/getMatchCount";
 import { getPlayerGender } from "@/shared/logic/getPlayerGender";
-import { getPlayerMc } from "@/shared/logic/getPlayerMc";
 import { getPlayerName } from "@/shared/logic/getPlayerName";
 import GenderIcon from "@/ui/GenderIcon";
 import { Feather } from "@expo/vector-icons";
@@ -14,10 +14,10 @@ interface PlayerInfoProps {
 }
 
 const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
-  const { players } = useContext(AppContext);
+  const { players, gameRounds } = useContext(AppContext);
 
   const gender = getPlayerGender(playerId, players);
-  const gameCount = getPlayerMc(playerId, players);
+  const gameCount = getMatchCount(playerId, gameRounds);
 
   return (
     <View style={styles.playerInfo}>
