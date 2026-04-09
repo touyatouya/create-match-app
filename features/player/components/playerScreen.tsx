@@ -68,7 +68,9 @@ const PlayerScreen: React.FC = () => {
       player_count: players.length,
       court_count: courts.length,
     });
-  }, [courts.length, players.length]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     analytics().logEvent("screen_view", {

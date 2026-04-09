@@ -20,7 +20,7 @@ const FabModal: React.FC<Props> = ({
 }) => {
   const { addPlayer } = useAddPlayer();
 
-  const addAnonymousPlayer = async (): Promise<void> => {
+  const addAnonymousPlayer = async () => {
     addPlayer(true, "");
     setMenuVisible(false);
     isAddingRef.current = true;
