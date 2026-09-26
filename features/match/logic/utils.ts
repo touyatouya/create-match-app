@@ -246,7 +246,7 @@ export function selectBestGameRounds(
   // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
     [...joinedPlayers],
-    50,
+    500,
     courts,
     joinedPairs,
     initialGameRounds,
@@ -600,7 +600,7 @@ const countFacedBefore = (
  */
 const getRandomGroupPartitions = (
   players: number[],
-  trials = 50,
+  trials = 500,
   courts: Court[] = [],
   pairs: Pair[] = [],
   initialGameRounds: GameRound[] = [],
@@ -716,24 +716,89 @@ const combineLimited = (
   teamA: number[];
   teamB: number[];
 }[][] => {
-  const results: { teamA: number[]; teamB: number[] }[][] = [];
-  // 組み合わせの総数を計算
+  const results: {
+    teamA: number[];
+    teamB: number[];
+  }[][] = [];
+
+  if (sets.length === 0 || sets.some((set) => set.length === 0)) {
+    return results;
+  }
+
+  // 組み合わせの総数
   const total = sets.reduce((acc, curr) => acc * curr.length, 1);
-  // 生成する組み合わせの数を制限
-  const maxTry = Math.min(total, limit);
 
-  const getRandomIndex = (n: number) => Math.floor(Math.random() * n);
+  // 全組み合わせを取得できるなら、全て取得する
+  if (total <= limit) {
+    const generateAll = (
+      index: number,
+      current: {
+        teamA: number[];
+        teamB: number[];
+      }[],
+    ) => {
+      if (index === sets.length) {
+        results.push([...current]);
+        return;
+      }
 
-  for (let i = 0; i < maxTry; i++) {
-    const combo = sets.map(
-      (options) => options[getRandomIndex(options.length)],
+      for (const option of sets[index]) {
+        current.push(option);
+        generateAll(index + 1, current);
+        current.pop();
+      }
+    };
+
+    generateAll(0, []);
+
+    return results;
+  }
+
+  // 全組み合わせが多すぎる場合は、
+  // ランダムに選ぶが、重複は許さない
+  const seen = new Set<string>();
+
+  const createKey = (
+    combination: {
+      teamA: number[];
+      teamB: number[];
+    }[],
+  ): string => {
+    return combination
+      .map((team) => {
+        const teamA = [...team.teamA].sort((a, b) => a - b).join(",");
+
+        const teamB = [...team.teamB].sort((a, b) => a - b).join(",");
+
+        return `${teamA}/${teamB}`;
+      })
+      .join("|");
+  };
+
+  // 無限ループ防止
+  const maxAttempts = limit * 20;
+
+  let attempts = 0;
+
+  while (results.length < limit && attempts < maxAttempts) {
+    attempts++;
+
+    const combination = sets.map(
+      (options) => options[Math.floor(Math.random() * options.length)],
     );
-    results.push(combo);
+
+    const key = createKey(combination);
+
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    results.push(combination);
   }
 
   return results;
 };
-
 /**
  * 4人グループを2人ずつのチームに分割するすべての組み合わせを生成します。
  *
@@ -921,7 +986,7 @@ export const scoreMatch = (
     for (const p2 of match.teamA) {
       if (p1 !== p2) {
         const count = countPairedBefore(p1, p2, matches);
-        score += count * -1;
+        score += count * -10;
       }
     }
   }
@@ -929,7 +994,7 @@ export const scoreMatch = (
   for (const p1 of match.teamA) {
     for (const p2 of match.teamB) {
       const count = countFacedBefore(p1, p2, matches);
-      score += count * -1;
+      score += count * -3;
     }
   }
 
