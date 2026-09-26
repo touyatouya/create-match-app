@@ -17,7 +17,6 @@ export const useAddPlayer = () => {
 
     const result = [...players, newPlayer];
     setPlayers(result);
-    console.log("result", result);
     return result;
   };
 

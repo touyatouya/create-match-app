@@ -1,4 +1,3 @@
-import { getPlayerIds } from "@/features/match/logic/getPlayerIds";
 import { getMinMatchCount } from "@/features/player/logic/getMinMatchCount";
 import { GameRound, Player } from "@/types";
 import { getMatchCount } from "./getMatchCount";
@@ -8,10 +7,10 @@ export const attachMatchOffset = (
   gameRounds: GameRound[],
   players: Player[],
 ): Player => {
-  const otherPlayerIds = getPlayerIds(players).filter(
-    (pId) => pId !== player.id,
-  );
-  const min = getMinMatchCount(gameRounds, otherPlayerIds);
+  const otherPlayers = players.filter((p) => p.id !== player.id);
+
+  const min = getMinMatchCount(gameRounds, otherPlayers);
+  console.log("min", min);
   const prevMatchCount = getMatchCount(player.id, gameRounds);
 
   return {

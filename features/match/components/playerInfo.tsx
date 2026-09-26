@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { getMatchCount } from "@/shared/logic/getMatchCount";
+import { getMcOffset } from "@/shared/logic/getMcOffset";
 import { getPlayerGender } from "@/shared/logic/getPlayerGender";
 import { getPlayerName } from "@/shared/logic/getPlayerName";
 import GenderIcon from "@/ui/GenderIcon";
@@ -18,6 +19,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
 
   const gender = getPlayerGender(playerId, players);
   const gameCount = getMatchCount(playerId, gameRounds);
+  const matchOffset = getMcOffset(players, playerId);
 
   return (
     <View style={styles.playerInfo}>
@@ -38,7 +40,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({ playerId }) => {
 
       {playerId != null && (
         <View style={styles.subInfo}>
-          <Text style={styles.getGameCount}>{gameCount}</Text>
+          <Text style={styles.getGameCount}>{gameCount + matchOffset}</Text>
           <Text style={styles.playerGender}>
             <GenderIcon gender={gender} size={18} />
           </Text>

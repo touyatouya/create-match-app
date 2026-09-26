@@ -39,16 +39,18 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
   const joinPlayer = (id: number): void => {
     let targetPlayer = players.find((player) => player.id === id);
     if (targetPlayer == null) return;
+    const isJoined = targetPlayer.isJoin;
 
-    if (targetPlayer?.isJoin) {
+    if (isJoined) {
       const updatePairs = pairs.filter(
         (pair) => pair.player1 !== id && pair.player2 !== id,
       );
       setPairs(updatePairs);
     }
-    targetPlayer.isJoin = true;
+    targetPlayer.isJoin = !isJoined;
 
-    if (isAdjustMatchCount) {
+    if (isAdjustMatchCount && !isJoined) {
+      console.log("attach");
       targetPlayer = attachMatchOffset(targetPlayer, gameRounds, players);
     }
     const newPlayers = players.map((p) => {

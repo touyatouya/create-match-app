@@ -15,7 +15,7 @@ export const generateNewPlayer = (
     name: isAnonymous ? (anonymousPlayerCount + 1).toString() : name,
     gender: Gender.未設定,
     matchOffset: 0,
-    isJoin: false,
+    isJoin: true,
     isRest: false,
     rank: Rank.未設定,
     isAnonymous,

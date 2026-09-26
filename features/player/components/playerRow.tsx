@@ -1,6 +1,7 @@
 import ColorPalette from "@/constants/color";
 import { AppContext } from "@/context/AppContext";
 import { playerScreenStyles } from "@/features/player/styles";
+import { getMcOffset } from "@/shared/logic/getMcOffset";
 import { globalStyles } from "@/styles/global";
 import { Player } from "@/types";
 import Checkbox from "@/ui/CheckBox";
@@ -26,7 +27,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
   joinPlayer,
   removePlayer,
 }) => {
-  const { gameRounds } = useContext(AppContext);
+  const { gameRounds, players } = useContext(AppContext);
   const isJoin = item.isJoin;
 
   return (
@@ -57,7 +58,7 @@ const PlayerRow: React.FC<PlayerRowProps> = ({
           <GenderIcon gender={item.gender} />
         </Text>
         <Text style={[playerScreenStyles.cellMatch]}>
-          {getMatchCount(item.id, gameRounds)}
+          {getMatchCount(item.id, gameRounds) + getMcOffset(players, item.id)}
         </Text>
       </TouchableOpacity>
       {isEdit ? (

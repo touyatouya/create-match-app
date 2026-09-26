@@ -2,6 +2,7 @@ import ColorPalette from "@/constants/color";
 import { FONT_SIZE } from "@/constants/fonts";
 import { AppContext } from "@/context/AppContext";
 import { getMatchCount } from "@/shared/logic/getMatchCount";
+import { getMcOffset } from "@/shared/logic/getMcOffset";
 import { globalStyles } from "@/styles/global";
 import GenderIcon from "@/ui/GenderIcon";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,7 @@ interface RestCellProps {
 }
 
 const RestCell: React.FC<RestCellProps> = ({ player }) => {
-  const { gameRounds, dispRound, swap } = useContext(AppContext);
+  const { gameRounds, dispRound, swap, players } = useContext(AppContext);
 
   const { selectRestSwap } = useSwapPlayer();
 
@@ -50,7 +51,8 @@ const RestCell: React.FC<RestCellProps> = ({ player }) => {
       </View>
       <View style={styles.subInfo}>
         <Text style={styles.getGameCount}>
-          {getMatchCount(player.id, gameRounds)}
+          {getMatchCount(player.id, gameRounds) +
+            getMcOffset(players, player.id)}
         </Text>
         <Text style={styles.playerGender}>
           <GenderIcon gender={player.gender} size={18} />
