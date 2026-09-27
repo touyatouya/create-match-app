@@ -1,6 +1,7 @@
 import { getPlayerIds } from "@/features/match/logic/getPlayerIds";
 import { Gender, Player, Rank } from "@/types";
 import { generateUniqId } from "@/utils/createId";
+import { getNextAnonymousNumber } from "./getNextAnonymousNumber";
 
 export const generateNewPlayer = (
   players: Player[],
@@ -9,17 +10,19 @@ export const generateNewPlayer = (
 ) => {
   const existingIds = getPlayerIds(players);
   const newId = generateUniqId(existingIds);
-  const anonymousPlayerCount = players.filter((p) => p.isAnonymous).length;
+
+  const anonymousNumber = isAnonymous ? getNextAnonymousNumber(players) : null;
+
   const newPlayer: Player = {
     id: newId,
-    name: isAnonymous ? (anonymousPlayerCount + 1).toString() : name,
+    name: isAnonymous ? anonymousNumber!.toString() : name,
     gender: Gender.未設定,
     matchOffset: 0,
     isJoin: true,
     isRest: false,
     rank: Rank.未設定,
     isAnonymous,
-    anonymousNumber: isAnonymous ? anonymousPlayerCount + 1 : null,
+    anonymousNumber: isAnonymous ? anonymousNumber : null,
   };
   return newPlayer;
 };
