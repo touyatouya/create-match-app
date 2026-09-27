@@ -287,7 +287,7 @@ export function selectBestGameRounds(
   // partitionsは、[[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], ...]
   const partitions = getRandomGroupPartitions(
     [...joinedPlayers],
-    500,
+    100,
     courts,
     joinedPairs,
     initialGameRounds,
@@ -324,7 +324,7 @@ export function selectBestGameRounds(
     //   ...
     // ]
     // 各コートから1つずつチーム分けを選んだ組み合わせを取得
-    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 500);
+    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 50);
 
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {
@@ -343,15 +343,23 @@ export function selectBestGameRounds(
         })),
       };
 
-      const totalScore = courtTeams.reduce((acc, team) => {
-        return (
-          acc +
-          (team.teamA.length + team.teamB.length < 2
-            ? 0
-            : scoreMatch(team, historyCounts) +
-              scoreGender(team, players, genderSetting))
-        );
-      }, 0);
+      let pairScore = 0;
+      let facedScore = 0;
+      let genderScore = 0;
+
+      for (const team of courtTeams) {
+        if (team.teamA.length + team.teamB.length < 2) {
+          continue;
+        }
+
+        const matchScore = scoreMatchDetail(team, historyCounts);
+
+        pairScore += matchScore.pairScore;
+        facedScore += matchScore.facedScore;
+        genderScore += scoreGender(team, players, genderSetting);
+      }
+
+      const totalScore = pairScore + facedScore + genderScore;
 
       if (totalScore > bestScore) {
         bestScore = totalScore;
@@ -704,29 +712,37 @@ const getRandomGroupPartitions = (
     return results;
   }
 
+  const fixedGroups = initialGroups.map((group) => [...group]);
+
   for (let i = 0; i < trials; i++) {
-    // [[player1, player2], [player3, player4], ...]の形に変換
-    const pairPlayers: number[][] = pairs.map((pair) => [
-      pair.player1,
-      pair.player2,
-    ]);
+    const pairPlayers = pairs.map((pair) => [pair.player1, pair.player2]);
+
     const shuffledPairPlayers = shuffle(pairPlayers);
-    // [player1, player2, ...]の形に変換
-    const unPairPlayers: number[] = players.filter(
+
+    const unPairPlayers = players.filter(
       (player) =>
         !pairs.some(
           (pair) => pair.player1 === player || pair.player2 === player,
         ),
     );
+
     const shuffledUnPairPlayers = shuffle(unPairPlayers);
 
-    let groups: number[][] = initialGroups; // コートごとのグループを格納する配列　[[player1, player2, player3, player4], ...]
+    // 毎試行、新しいgroupsを作る
+    const groups: number[][] = fixedGroups.map((group) => [...group]);
 
-    for (let i = 0; groups.flat().length < courts.length * 4; i++) {
-      let court: number[] = initialGroups[i] ? [...initialGroups[i]] : []; // 1コート分のプレイヤーを格納する配列 [player1, player2, player3, player4]
+    for (
+      let courtIndex = 0;
+      groups.flat().length < courts.length * 4;
+      courtIndex++
+    ) {
+      let court: number[] = fixedGroups[courtIndex]
+        ? [...fixedGroups[courtIndex]]
+        : [];
+
       while (court.length < 4) {
         const random = Math.random() - 0.5;
-        // ペアがいなくなった、またはコートが3つ目の場合、またはランダム値が0以下の場合は、ペアではないプレイヤーをコートに追加
+
         if (
           shuffledPairPlayers.length === 0 ||
           court.length === 3 ||
@@ -734,20 +750,17 @@ const getRandomGroupPartitions = (
         ) {
           const headPlayer = shuffledUnPairPlayers.shift();
           court.push(headPlayer!);
-          // ペアがいる場合、またはランダム値が0より大きい場合は、ペアのプレイヤーをコートに追加
-        } else if (shuffledPairPlayers[0] != null && random > 0) {
+        } else if (shuffledPairPlayers.length > 0 && random > 0) {
           const headPlayer = shuffledPairPlayers.shift();
           court.push(...headPlayer!);
         }
       }
-      // コートに4人揃ったらgroupsに追加
+
       if (court.length === 4) {
-        groups[i] = court;
+        groups[courtIndex] = court;
       }
     }
 
-    // "1,2,3,4|5,6,7,8|9,10,11,12" というユニークキーを作る
-    // これにより、「順番が違うだけの同じ組み合わせ」を除外できる
     const key = groups
       .map((g) => [...g].sort((a, b) => a - b).join(","))
       .sort()
@@ -1073,7 +1086,7 @@ export const scoreMatch = (
         const key = getPlayerPairKey(team[i], team[j]);
         const count = historyCounts.paired.get(key) ?? 0;
 
-        score += count * -10;
+        score += count * -1;
       }
     }
   }
@@ -1084,11 +1097,53 @@ export const scoreMatch = (
       const key = getPlayerPairKey(p1, p2);
       const count = historyCounts.faced.get(key) ?? 0;
 
-      score += count * -3;
+      score += count * -1;
     }
   }
 
   return score;
+};
+
+type MatchScoreDetail = {
+  pairScore: number;
+  facedScore: number;
+  totalScore: number;
+};
+
+const scoreMatchDetail = (
+  match: { teamA: number[]; teamB: number[] },
+  historyCounts: MatchHistoryCounts,
+): MatchScoreDetail => {
+  let pairScore = 0;
+  let facedScore = 0;
+
+  // ペアのスコア
+  for (const team of [match.teamA, match.teamB]) {
+    for (let i = 0; i < team.length; i++) {
+      for (let j = i + 1; j < team.length; j++) {
+        const key = getPlayerPairKey(team[i], team[j]);
+        const count = historyCounts.paired.get(key) ?? 0;
+
+        pairScore += count * -10;
+      }
+    }
+  }
+
+  // 対戦のスコア
+  for (const p1 of match.teamA) {
+    for (const p2 of match.teamB) {
+      const key = getPlayerPairKey(p1, p2);
+      const count = historyCounts.faced.get(key) ?? 0;
+
+      facedScore += count * -3;
+    }
+  }
+
+  return {
+    pairScore,
+    facedScore,
+    totalScore: pairScore + facedScore,
+  };
 };
 
 // 性別設定に沿った組み合わせだと高得点

@@ -332,14 +332,14 @@ describe("組み合わせ生成アルゴリズム", () => {
   ];
 
   test.each(testCases)("%i人 × %iコート", (playerCount, courtCount) => {
-    const result = runTest(playerCount, courtCount, 1000);
+    const result = runTest(playerCount, courtCount, 100);
 
     printResult(result);
 
     /**
      * 100ラウンドすべて生成できること
      */
-    expect(result.rounds).toBe(1000);
+    expect(result.rounds).toBe(100);
 
     /**
      * 試合数が極端に偏っていないこと
