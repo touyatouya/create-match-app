@@ -317,14 +317,14 @@ export function selectBestGameRounds(
         : [{ teamA: [], teamB: [] }];
     });
 
-    // 計算量削減のため100個に制限
+    // 計算量削減のため500個に制限
     // allCourtTeamCombinationsは、[
     //   [{teamA: [1,2], teamB: [3,4]}, {teamA: [5,6], teamB: [7,8]}, {teamA: [9,10], teamB: [11,12]}],
     //   [{teamA: [1,3], teamB: [2,4]}, {teamA: [5,6], teamB: [7,8]}, {teamA: [9,10], teamB: [11,12]}],
     //   ...
     // ]
     // 各コートから1つずつチーム分けを選んだ組み合わせを取得
-    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 100);
+    const allCourtTeamCombinations = combineLimited(allTeamSplitSets, 500);
 
     for (const courtTeams of allCourtTeamCombinations) {
       const gameRound: GameRound = {
@@ -1067,13 +1067,13 @@ export const scoreMatch = (
   let score = 0;
 
   // 味方との過去の組み合わせが多いほど減点
-  for (const p1 of match.teamA) {
-    for (const p2 of match.teamA) {
-      if (p1 !== p2) {
-        const key = getPlayerPairKey(p1, p2);
+  for (const team of [match.teamA, match.teamB]) {
+    for (let i = 0; i < team.length; i++) {
+      for (let j = i + 1; j < team.length; j++) {
+        const key = getPlayerPairKey(team[i], team[j]);
         const count = historyCounts.paired.get(key) ?? 0;
 
-        score += count * -1;
+        score += count * -10;
       }
     }
   }
@@ -1084,7 +1084,7 @@ export const scoreMatch = (
       const key = getPlayerPairKey(p1, p2);
       const count = historyCounts.faced.get(key) ?? 0;
 
-      score += count * -1;
+      score += count * -3;
     }
   }
 
