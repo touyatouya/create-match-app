@@ -6,7 +6,7 @@ export const useMoveDispRound = () => {
 
   const moveDispRound = (direction: "next" | "prev") => {
     if (direction === "next") {
-      if (dispRound < gameRounds.length - 1) {
+      if (dispRound < gameRounds.length) {
         setDispRound(dispRound + 1);
       }
     } else {
