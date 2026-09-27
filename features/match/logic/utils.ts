@@ -265,6 +265,9 @@ export function selectBestGameRounds(
 ): GameRound {
   const totalNeeded = courts.length * 4;
 
+  // 過去試合のペア・対戦回数を最初に1回だけ集計
+  const historyCounts = createMatchHistoryCounts(matches);
+
   // 最終的な任意参加者を決定
   const joinedPlayers = getJoinPlayers(
     requiredPlayers,
@@ -345,7 +348,7 @@ export function selectBestGameRounds(
           acc +
           (team.teamA.length + team.teamB.length < 2
             ? 0
-            : scoreMatch(team, matches) +
+            : scoreMatch(team, historyCounts) +
               scoreGender(team, players, genderSetting))
         );
       }, 0);
@@ -621,6 +624,51 @@ const countFacedBefore = (
     joinedTeamAMatches.filter((match) => match.teamB.includes(player2)).length +
     joinedTeamBMatches.filter((match) => match.teamA.includes(player2)).length
   );
+};
+
+type MatchHistoryCounts = {
+  paired: Map<string, number>;
+  faced: Map<string, number>;
+};
+
+const getPlayerPairKey = (player1: number, player2: number): string => {
+  return player1 < player2 ? `${player1}-${player2}` : `${player2}-${player1}`;
+};
+
+const createMatchHistoryCounts = (matches: MatchType[]): MatchHistoryCounts => {
+  const paired = new Map<string, number>();
+  const faced = new Map<string, number>();
+
+  for (const match of matches) {
+    // =========================
+    // 同じチームだった回数
+    // =========================
+    for (const team of [match.teamA, match.teamB]) {
+      for (let i = 0; i < team.length; i++) {
+        for (let j = i + 1; j < team.length; j++) {
+          const key = getPlayerPairKey(team[i], team[j]);
+
+          paired.set(key, (paired.get(key) ?? 0) + 1);
+        }
+      }
+    }
+
+    // =========================
+    // 対戦した回数
+    // =========================
+    for (const playerA of match.teamA) {
+      for (const playerB of match.teamB) {
+        const key = getPlayerPairKey(playerA, playerB);
+
+        faced.set(key, (faced.get(key) ?? 0) + 1);
+      }
+    }
+  }
+
+  return {
+    paired,
+    faced,
+  };
 };
 
 /**
@@ -1009,13 +1057,12 @@ export const getTeamSplits = (
   }
 };
 
-// なるべく異なる人と試合すると高得点
 export const scoreMatch = (
   match: {
     teamA: number[];
     teamB: number[];
   },
-  matches: MatchType[],
+  historyCounts: MatchHistoryCounts,
 ): number => {
   let score = 0;
 
@@ -1023,16 +1070,21 @@ export const scoreMatch = (
   for (const p1 of match.teamA) {
     for (const p2 of match.teamA) {
       if (p1 !== p2) {
-        const count = countPairedBefore(p1, p2, matches);
-        score += count * -10;
+        const key = getPlayerPairKey(p1, p2);
+        const count = historyCounts.paired.get(key) ?? 0;
+
+        score += count * -1;
       }
     }
   }
-  // 相手との過去の対戦が多いほどさらに減点（優先度高）
+
+  // 相手との過去の対戦が多いほど減点
   for (const p1 of match.teamA) {
     for (const p2 of match.teamB) {
-      const count = countFacedBefore(p1, p2, matches);
-      score += count * -3;
+      const key = getPlayerPairKey(p1, p2);
+      const count = historyCounts.faced.get(key) ?? 0;
+
+      score += count * -1;
     }
   }
 
