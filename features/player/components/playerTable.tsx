@@ -50,7 +50,6 @@ const PlayerTable: React.FC<PlayerTableProps> = ({
     targetPlayer.isJoin = !isJoined;
 
     if (isAdjustMatchCount && !isJoined) {
-      console.log("attach");
       targetPlayer = attachMatchOffset(targetPlayer, gameRounds, players);
     }
     const newPlayers = players.map((p) => {
