@@ -1,11 +1,15 @@
 // matchGeneration.test.ts
 
-import { selectBestGameRounds } from "../features/match/logic/utils";
+import {
+  selectBestGameRounds,
+  selectPlayersForNextRound,
+} from "../features/match/logic/utils";
 
 import {
   Court,
   GameRound,
   Gender,
+  GenerateMode,
   Match as MatchType,
   Player,
   Rank,
@@ -116,35 +120,6 @@ const countMatches = (matches: MatchType[]): Map<number, number> => {
 };
 
 /**
- * 1ラウンド生成する
- *
- * participant selection はテスト対象外。
- * 「今回参加するプレイヤー」はあらかじめ指定する。
- */
-const generateRound = (
-  joinedPlayers: number[],
-  courts: Court[],
-  gameRounds: GameRound[],
-  players: Player[],
-): GameRound => {
-  return selectBestGameRounds(
-    joinedPlayers,
-    [],
-    courts,
-    gameRounds,
-    [],
-    gameRounds.flatMap((round) => round.matches),
-    players,
-    {
-      men: false,
-      woman: false,
-      mix: false,
-    },
-    true,
-  );
-};
-
-/**
  * テスト本体
  */
 const runTest = (
@@ -158,29 +133,47 @@ const runTest = (
   let gameRounds: GameRound[] = [];
 
   for (let round = 0; round < roundCount; round++) {
-    /**
-     * 今回は「参加者選定」はテスト対象外。
-     *
-     * 人数がコート数×4より多い場合は、
-     * ラウンドごとに参加者をローテーションする。
-     */
-    const playersPerRound = courtCount * 4;
+    const matches = gameRounds.flatMap((round) => round.matches);
 
-    const startIndex = (round * playersPerRound) % playerCount;
+    const { priorityPlayers, normalPlayers, avaibleCourts } =
+      selectPlayersForNextRound(
+        players,
+        courts,
+        gameRounds,
+        matches,
+        [],
+        GenerateMode.FILL_EMPTY,
+        true,
+      );
 
-    const joinedPlayers = Array.from({ length: playersPerRound }, (_, i) => {
-      return ((startIndex + i) % playerCount) + 1;
-    });
-
-    const gameRound = generateRound(joinedPlayers, courts, gameRounds, players);
+    const gameRound = selectBestGameRounds(
+      priorityPlayers.map((p) => p.id),
+      normalPlayers.map((p) => p.id),
+      avaibleCourts,
+      gameRounds,
+      [],
+      matches,
+      players,
+      {
+        men: false,
+        woman: false,
+        mix: false,
+      },
+      true,
+    );
 
     expect(gameRound).toBeDefined();
 
-    if (!gameRound) {
-      continue;
-    }
+    // テスト上では「このラウンドが終了した」状態にする
+    const completedGameRound: GameRound = {
+      ...gameRound,
+      matches: gameRound.matches.map((match) => ({
+        ...match,
+        canInsertNext: true,
+      })),
+    };
 
-    gameRounds.push(gameRound);
+    gameRounds.push(completedGameRound);
   }
 
   const matches = gameRounds.flatMap((round) => round.matches);
@@ -339,14 +332,14 @@ describe("組み合わせ生成アルゴリズム", () => {
   ];
 
   test.each(testCases)("%i人 × %iコート", (playerCount, courtCount) => {
-    const result = runTest(playerCount, courtCount, 100);
+    const result = runTest(playerCount, courtCount, 1000);
 
     printResult(result);
 
     /**
      * 100ラウンドすべて生成できること
      */
-    expect(result.rounds).toBe(100);
+    expect(result.rounds).toBe(1000);
 
     /**
      * 試合数が極端に偏っていないこと

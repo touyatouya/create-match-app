@@ -30,95 +30,16 @@ export const createMatch = async (
   setDispRound: React.Dispatch<React.SetStateAction<number>>,
   setNewGames: React.Dispatch<React.SetStateAction<MatchType["id"][]>>,
 ): Promise<void> => {
-  const notFinishedMatches =
-    genareteMode === GenerateMode.REPLACE_ALL
-      ? []
-      : matches.filter((match) => !match.canInsertNext);
-
-  const playingPlayer = notFinishedMatches.flatMap((match) => [
-    ...match.teamA,
-    ...match.teamB,
-  ]);
-  const sortedPlayer: (Player & { matchCount: number })[] = players
-    .filter(
-      (player) =>
-        player.isJoin &&
-        !player.isRest &&
-        (playingPlayer == null ||
-          playingPlayer.length === 0 ||
-          !playingPlayer.includes(player.id)),
-    )
-    .map((p) => {
-      return {
-        ...p,
-        matchCount: getMatchCount(p.id, gameRounds) + p.matchOffset,
-      };
-    })
-    .sort((a, b) => a.matchCount - b.matchCount);
-
-  let separatedPlayers: Player[][] = [];
-  let matchCountSeparete_i = 0;
-  for (let player_i = 0; player_i < sortedPlayer.length; player_i++) {
-    if (
-      player_i !== 0 &&
-      sortedPlayer[player_i - 1].matchCount < sortedPlayer[player_i].matchCount
-    ) {
-      matchCountSeparete_i++;
-    }
-    if (separatedPlayers[matchCountSeparete_i] == null)
-      separatedPlayers[matchCountSeparete_i] = [];
-    separatedPlayers[matchCountSeparete_i].push(sortedPlayer[player_i]);
-  }
-
-  const playingCourtIds = gameRounds
-    .flatMap((gameRound) => gameRound.matches)
-    .filter((match) =>
-      genareteMode === GenerateMode.REPLACE_ALL ? false : !match.canInsertNext,
-    )
-    .flatMap((match) => match.courtId);
-
-  const avaibleCourts =
-    genareteMode === GenerateMode.FILL_EMPTY
-      ? courts.filter(
-          (court) =>
-            playingCourtIds == null ||
-            playingCourtIds.length === 0 ||
-            !playingCourtIds.includes(court.id),
-        )
-      : courts;
-
-  const totalNeeded =
-    avaibleCourts.length * 4 -
-    gameRounds
-      .flatMap((round) => round.matches)
-      .filter((match) => match.teamA.length + match.teamB.length < 4)
-      .flatMap((match) => [...match.teamA, ...match.teamB]).length;
-
-  // priorityPlayersには、試合回数がnormalPlayersより1以上少なく、コート数×4人より少ない人数が入る
-  let priorityPlayers: Player[] = [];
-  let normalPlayers: Player[] = [];
-  for (let i = 0; i < separatedPlayers.length; i++) {
-    if (normalPlayers.length > 0) {
-      priorityPlayers = [...priorityPlayers, ...normalPlayers];
-      normalPlayers = [];
-    }
-    normalPlayers = [...separatedPlayers[i]];
-    if (!isPreferMatchCountOverPair) {
-      const normalPlayerIds = normalPlayers.map((p) => p.id);
-      const otherPlayerIds = players
-        .filter((player) => !normalPlayerIds.includes(player.id))
-        .map((p) => p.id);
-      const pairPlayerIds = findPairedPlayers(
-        otherPlayerIds,
-        normalPlayerIds,
-        pairs,
-      );
-      const pairPlayers = players.filter((p) => pairPlayerIds.includes(p.id));
-      normalPlayers = [...normalPlayers, ...pairPlayers];
-    }
-
-    if (priorityPlayers.length + normalPlayers.length >= totalNeeded) break;
-  }
+  const { priorityPlayers, normalPlayers, avaibleCourts } =
+    selectPlayersForNextRound(
+      players,
+      courts,
+      gameRounds,
+      matches,
+      pairs,
+      genareteMode,
+      isPreferMatchCountOverPair,
+    );
 
   const gameRound: GameRound = selectBestGameRounds(
     priorityPlayers.map((player) => player.id),
@@ -212,6 +133,123 @@ export const createMatch = async (
     version: Constants.expoConfig?.version,
   });
 };
+
+export function selectPlayersForNextRound(
+  players: Player[],
+  courts: Court[],
+  gameRounds: GameRound[],
+  matches: MatchType[],
+  pairs: Pair[],
+  genareteMode: GenerateMode,
+  isPreferMatchCountOverPair: boolean,
+): {
+  priorityPlayers: Player[];
+  normalPlayers: Player[];
+  avaibleCourts: Court[];
+} {
+  const notFinishedMatches =
+    genareteMode === GenerateMode.REPLACE_ALL
+      ? []
+      : matches.filter((match) => !match.canInsertNext);
+
+  const playingPlayer = notFinishedMatches.flatMap((match) => [
+    ...match.teamA,
+    ...match.teamB,
+  ]);
+
+  const sortedPlayer: (Player & { matchCount: number })[] = players
+    .filter(
+      (player) =>
+        player.isJoin &&
+        !player.isRest &&
+        (playingPlayer.length === 0 || !playingPlayer.includes(player.id)),
+    )
+    .map((p) => ({
+      ...p,
+      matchCount: getMatchCount(p.id, gameRounds) + p.matchOffset,
+    }))
+    .sort((a, b) => a.matchCount - b.matchCount);
+
+  let separatedPlayers: Player[][] = [];
+  let matchCountSeparete_i = 0;
+
+  for (let player_i = 0; player_i < sortedPlayer.length; player_i++) {
+    if (
+      player_i !== 0 &&
+      sortedPlayer[player_i - 1].matchCount < sortedPlayer[player_i].matchCount
+    ) {
+      matchCountSeparete_i++;
+    }
+
+    if (separatedPlayers[matchCountSeparete_i] == null) {
+      separatedPlayers[matchCountSeparete_i] = [];
+    }
+
+    separatedPlayers[matchCountSeparete_i].push(sortedPlayer[player_i]);
+  }
+
+  const playingCourtIds = gameRounds
+    .flatMap((gameRound) => gameRound.matches)
+    .filter((match) =>
+      genareteMode === GenerateMode.REPLACE_ALL ? false : !match.canInsertNext,
+    )
+    .flatMap((match) => match.courtId);
+
+  const avaibleCourts =
+    genareteMode === GenerateMode.FILL_EMPTY
+      ? courts.filter(
+          (court) =>
+            playingCourtIds.length === 0 || !playingCourtIds.includes(court.id),
+        )
+      : courts;
+
+  const totalNeeded =
+    avaibleCourts.length * 4 -
+    gameRounds
+      .flatMap((round) => round.matches)
+      .filter((match) => match.teamA.length + match.teamB.length < 4)
+      .flatMap((match) => [...match.teamA, ...match.teamB]).length;
+
+  let priorityPlayers: Player[] = [];
+  let normalPlayers: Player[] = [];
+
+  for (let i = 0; i < separatedPlayers.length; i++) {
+    if (normalPlayers.length > 0) {
+      priorityPlayers = [...priorityPlayers, ...normalPlayers];
+      normalPlayers = [];
+    }
+
+    normalPlayers = [...separatedPlayers[i]];
+
+    if (!isPreferMatchCountOverPair) {
+      const normalPlayerIds = normalPlayers.map((p) => p.id);
+
+      const otherPlayerIds = players
+        .filter((player) => !normalPlayerIds.includes(player.id))
+        .map((p) => p.id);
+
+      const pairPlayerIds = findPairedPlayers(
+        otherPlayerIds,
+        normalPlayerIds,
+        pairs,
+      );
+
+      const pairPlayers = players.filter((p) => pairPlayerIds.includes(p.id));
+
+      normalPlayers = [...normalPlayers, ...pairPlayers];
+    }
+
+    if (priorityPlayers.length + normalPlayers.length >= totalNeeded) {
+      break;
+    }
+  }
+
+  return {
+    priorityPlayers,
+    normalPlayers,
+    avaibleCourts,
+  };
+}
 
 // スコアの高いコート構成を選ぶ関数
 export function selectBestGameRounds(

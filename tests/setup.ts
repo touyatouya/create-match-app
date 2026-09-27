@@ -25,3 +25,7 @@ vi.mock("react-native", () => ({
     OS: "ios",
   },
 }));
+
+vi.setConfig({
+  testTimeout: 60_000,
+});
